@@ -12,8 +12,6 @@ fetch's link to the rest of the world
 
 ## Contract
 
-This is a service that accepts the users identity and enabled integrations as an input along with the search term. It returns
-you the results of the search query, ranked along with some statistics about the number of matches per source. It also
-takes care of pagination for you.
-
-This will also allow you to filter queries to sources and to relevant dates.
+This is a libary that allows you to, query all enabled integrations. You can filter to specific sources, dates if you want to.
+Link ranks and sorts the results for you, it paginates for free as well. Well it will do all this when we start writing
+some code.
