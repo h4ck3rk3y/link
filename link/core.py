@@ -1,5 +1,7 @@
 from .user import UserTokens
 
+DEFAULT_PAGE_SIZE = 15
+
 
 class SourcesEnabled(object):
 
@@ -50,7 +52,7 @@ class Results(object):
         # number of results in current result object
         self.__hits = 7
         # size of the page
-        self.__page_size = 15
+        self.__page_size = DEFAULT_PAGE_SIZE
         # a list of result objects as big as the page size
         self.__results = [SingleResult]
         # current page number
@@ -69,7 +71,7 @@ class Search(object):
         self.user = user
         assert(self.user != None)
 
-    def search(self, query: str, page_size=15, offset=0):
+    def search(self, query: str, page_size=DEFAULT_PAGE_SIZE, offset=0):
         """ search all enabled integrations for the given user.
 
         Parameters
@@ -86,17 +88,17 @@ class Search(object):
         Returns a Results object
         """
 
-    def search_range(self, query, from_date: int = None, to_date: int = None, page_size=15, offset=0):
+    def search_range(self, query, from_date: int = None, to_date: int = None, page_size=DEFAULT_PAGE_SIZE, offset=0):
         """ search a specific date range 
             Returns a Results Object
         """
 
-    def search_source_and_range(self, query, sources: SourcesEnabled, from_date: int = None, to_date: int = None, page_size=15, offset=0):
+    def search_source_and_range(self, query, sources: SourcesEnabled, from_date: int = None, to_date: int = None, page_size=DEFAULT_PAGE_SIZE5, offset=0):
         """ search a date range along with specific sources
             Returns a results object
         """
 
-    def search_source(self, query, sources: SourcesEnabled, page_size=15, offset=0):
+    def search_source(self, query, sources: SourcesEnabled, page_size=DEFAULT_PAGE_SIZE, offset=0):
         """ search a specific source 
             Returns a results object
         """
