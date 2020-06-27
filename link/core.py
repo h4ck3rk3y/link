@@ -63,42 +63,8 @@ class Results(object):
         return self.__statistics
 
 
-class Search(object):
+class Link(object):
     """ this is the core class and should be used outside
     the package for search """
 
     def __init__(self, user: UserTokens):
-        self.user = user
-        assert(self.user != None)
-
-    def search(self, query: str, page_size=DEFAULT_PAGE_SIZE, offset=0):
-        """ search all enabled integrations for the given user.
-
-        Parameters
-        ----------
-            query: str, required
-            The search query
-
-            page_size: int, default pagination
-            Number of results per page
-
-            offset: int, page number
-            Which page to pick
-
-        Returns a Results object
-        """
-
-    def search_range(self, query, from_date: int = None, to_date: int = None, page_size=DEFAULT_PAGE_SIZE, offset=0):
-        """ search a specific date range 
-            Returns a Results Object
-        """
-
-    def search_source_and_range(self, query, sources: SourcesEnabled, from_date: int = None, to_date: int = None, page_size=DEFAULT_PAGE_SIZE5, offset=0):
-        """ search a date range along with specific sources
-            Returns a results object
-        """
-
-    def search_source(self, query, sources: SourcesEnabled, page_size=DEFAULT_PAGE_SIZE, offset=0):
-        """ search a specific source 
-            Returns a results object
-        """
