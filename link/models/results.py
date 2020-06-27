@@ -100,7 +100,7 @@ class SourceResult(object):
 
     def topk_page(self, k, page):
         result = []
-        page = filter(self.__pages, lambda p: p.page)
+        page = next((p for p in self.__pages if p.page) == page, [])
         for single_result in page:
             if len(result) >= k:
                 break

@@ -5,6 +5,20 @@ from .searchers.stackoverflow import StackOverflow
 from .models.results import Results
 
 
+def immutable(attribute_name, default=None):
+    def decorator_immutable(method):
+        def inner(ref, attribute=None):
+            keys_as_list = (list(a.__dict__.keys()))
+            interesting_attribute = next((
+                x for x in keys_as_list if x.endswith(attribute_name)), None)
+            assert(interesting_attribute != None), "Attribute not found"
+            assert(ref.__dict__[interesting_attribute]
+                   == default), "Attribute already set"
+            return method(ref, attribute)
+        return inner
+    return decorator_immutable
+
+
 class Link(object):
     """ this is the core class and should be used outside
     the package for search """
