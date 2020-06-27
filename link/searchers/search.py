@@ -35,6 +35,5 @@ class Search(object):
         self.__query = None
         self.__fromdate = None
         self.__enddate = None
-        self.__dateformat = None
         self.__pagesize = DEFAULT_PAGE_SIZE
         self.__page = DEFAULT_PAGE

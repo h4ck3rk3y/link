@@ -4,6 +4,7 @@ import requests
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
+DATE_FORMAT = "YYYY-mm-dd"
 
 
 class StackOverflow(Search):
@@ -17,9 +18,9 @@ class StackOverflow(Search):
         payload = {"intitle": self.__query}
 
         if self.__enddate:
-            payload["enddate"] = self.__enddate
+            payload["enddate"] = self.__enddate.strftime("DATE_FORMAT")
         if self.__fromdate:
-            payload["fromdate"] = self.__fromdate
+            payload["fromdate"] = self.__fromdate.srtftime(DATE_FORMAT)
         if self.__pagesize:
             payload["pagesize"] = self.__pagesize
         if self.__page:

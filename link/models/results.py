@@ -84,7 +84,7 @@ class SourceResult(object):
     def page(self, page_number):
         return self.__pages[page_number]
 
-    def add(self, page: Page, page_number):
+    def add(self, page: Page, page_number=None):
         if not page_number:
             self.__pages.append(page)
 
