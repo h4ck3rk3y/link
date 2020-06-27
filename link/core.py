@@ -29,7 +29,7 @@ class Link(object):
                 self.__enddate).query(self.__query).page(self.__page).pagesize(self.__page_size).fetch()
             result.add_source(stackoverflow)
 
-        return result.topk(self.__page_size)
+        return result
 
     def page_size(self, page_size):
         self.__page_size = page_size
