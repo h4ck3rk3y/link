@@ -1,6 +1,7 @@
 
 from .constants import *
 from ..models.results import SourceResult
+from ..decorators import immutable
 
 
 class Search(object):
@@ -18,22 +19,27 @@ class Search(object):
         assert(self.__token != ""), "Token can't be empty"
         return SourceResult("")
 
+    @immutable("query")
     def query(self, query):
-        self.__query = ""
+        self.__query = query
         return self
 
+    @immutable("fromdate")
     def fromdate(self, fromdate):
         self.__fromdate = fromdate
         return self
 
+    @immutable("enddate")
     def enddate(self, enddate):
         self.__enddate = enddate
         return self
 
+    @immutable("pagesize", DEFAULT_PAGE_SIZE)
     def pagesize(self, pagesize):
         self.__pagesize = pagesize
         return self
 
+    @immutable("page", DEFAULT_PAGE)
     def page(self, page):
         self.__page = page
         return self

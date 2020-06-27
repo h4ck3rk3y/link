@@ -3,20 +3,7 @@ from .models.sources_enabled import SourcesEnabled
 from .searchers.constants import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 from .searchers.stackoverflow import StackOverflow
 from .models.results import Results
-
-
-def immutable(attribute_name, default=None):
-    def decorator_immutable(method):
-        def inner(ref, attribute=None):
-            keys_as_list = (list(a.__dict__.keys()))
-            interesting_attribute = next((
-                x for x in keys_as_list if x.endswith(attribute_name)), None)
-            assert(interesting_attribute != None), "Attribute not found"
-            assert(ref.__dict__[interesting_attribute]
-                   == default), "Attribute already set"
-            return method(ref, attribute)
-        return inner
-    return decorator_immutable
+from .decorators import immutable
 
 
 class Link(object):
@@ -45,22 +32,27 @@ class Link(object):
 
         return result
 
+    @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size
         return self
 
+    @immutable("page", DEFAULT_PAGE)
     def page(self, page):
         self.__page_size = page
         return self
 
+    @immutable("formdate")
     def fromdate(self, fromdate):
         self.__fromdate = fromdate
         return self
 
+    @immutable("enddate")
     def enddate(self, enddate):
         self.__enddate = enddate
         return self
 
+    @immutable("query")
     def query(self, query):
         self.__query = query
         return self
