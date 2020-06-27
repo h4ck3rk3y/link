@@ -6,6 +6,13 @@ from .models.results import Results
 from .decorators import immutable
 
 
+###
+# @ToDo will probably tweak this a little to not support page number but
+# instead support a next() button
+# The backend could create a search using the builder call fetch
+# return results to the user, persist the object somewhere, redis?, dictionary?
+# if the user requests another page then the backend can call next()
+###
 class Link(object):
     """ this is the core class and should be used outside
     the package for search """
