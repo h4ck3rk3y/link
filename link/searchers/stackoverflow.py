@@ -12,6 +12,11 @@ class StackOverflow(Search):
     def __init__(self):
         super().__init__()
 
+    @staticmethod
+    def builder(self, token=None):
+        self.__token = token
+        return StackOverflow()
+
     def fetch(self):
         assert(self.__query != None), "Query cannot be empty"
 
