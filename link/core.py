@@ -16,4 +16,4 @@ class Link(object):
     """ this is the core class and should be used outside
     the package for search """
 
-    def __init__(self, user: UserTokens):
+    def __init__(self, user: UserTokens, sources: SourcesEnabled):
