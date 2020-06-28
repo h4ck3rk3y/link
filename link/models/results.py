@@ -45,6 +45,9 @@ class SingleResult(object):
     def __str__(self):
         return "Link:{} Preview Text:{} Source:{}".format(self.__link, self.__preview, self.__source)
 
+    def __repr__(self):
+        return self.__str__()
+
 
 class Page(object):
 

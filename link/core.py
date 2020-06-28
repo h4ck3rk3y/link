@@ -23,7 +23,7 @@ class Link(object):
                 stackoverflow=stackoverflow, github=github, trello=trello, slack=slack)
 
         super().__init__()
-        self.__page = 0
+        self.__page = 1
         self.__results = Results()
         if self.__sources_enabled.stackoverflow:
             self.__stackoverflow = None
@@ -37,12 +37,16 @@ class Link(object):
     def fetch(self):
         self.__validate()
 
-        if self.__sources_enabled.stackoverflow and not self.__stackoverflow:
-            page = self.__stackoverflow = StackOverflow.builder(UserTokens.stackoverflow).fromdate(self.__fromdate).enddate(
-                self.__enddate).query(self.__query).pagesize(self.__page_size).fetch(self.__page)
+        if self.__sources_enabled.stackoverflow:
+            if not self.__stackoverflow:
+                self.__stackoverflow = StackOverflow.builder(UserTokens.stackoverflow).fromdate(self.__fromdate).enddate(
+                    self.__enddate).query(self.__query).pagesize(self.__page_size)
+
+            page = self.__stackoverflow.fetch(self.__page)
             self.__stackoverflow_result.add(page)
             self.__results.add_source_result(self.__stackoverflow_result)
 
+        self.__page += 1
         return self.__results.topk(self.__page_size)
 
     @immutable("page_size", DEFAULT_PAGE_SIZE)
@@ -114,7 +118,6 @@ class Link(object):
         assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello != False), "No source enabled"
 
     def __reset(self):
-        self.__page = 0
         self.__page_size = DEFAULT_PAGE_SIZE
         self.__fromdate = None
         self.__enddate = None

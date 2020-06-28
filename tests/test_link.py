@@ -7,5 +7,9 @@ class TestLink(unittest.TestCase):
 
     def test_links_build(self):
         user_token = UserTokens(stackoverflow=True)
-        link = Link.builder(user_token).query("foo").fetch()
+        link = Link.builder(user_token).query("foo").page_size(5)
+        first_set = set([x.preview for x in link.fetch()])
+        second_set = set([x.preview for x in link.fetch()])
         self.assertIsNotNone(link, "link shouldnt be none")
+        self.assertLessEqual(len(second_set), len(first_set))
+        self.assertNotEqual(first_set, second_set)
