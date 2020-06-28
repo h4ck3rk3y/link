@@ -9,32 +9,31 @@ DATE_FORMAT = "YYYY-mm-dd"
 
 class StackOverflow(Search):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, token=None):
+        super().__init__(token=token)
 
     @staticmethod
-    def builder(self, token=None):
-        self.__token = token
-        return StackOverflow()
+    def builder(token=None):
+        return StackOverflow(token)
 
     def fetch(self):
-        assert(self.__query != None), "Query cannot be empty"
+        assert(self._query != None), "Query cannot be empty"
 
-        payload = {"intitle": self.__query}
+        payload = {"intitle": self._query, "site": SOURCENAME}
 
-        if self.__enddate:
-            payload["enddate"] = self.__enddate.strftime("DATE_FORMAT")
-        if self.__fromdate:
-            payload["fromdate"] = self.__fromdate.srtftime(DATE_FORMAT)
-        if self.__pagesize:
-            payload["pagesize"] = self.__pagesize
-        if self.__page:
-            payload["page"] = self.__page
+        if self._enddate:
+            payload["enddate"] = self._enddate.strftime("DATE_FORMAT")
+        if self._fromdate:
+            payload["fromdate"] = self._fromdate.srtftime(DATE_FORMAT)
+        if self._pagesize:
+            payload["pagesize"] = self._pagesize
+        if self._page:
+            payload["page"] = self._page
 
         response = requests.get(URL, params=payload).json()
 
         source_result = SourceResult("stackoverflow")
-        page = Page(self.__page, self.__pagesize)
+        page = Page(self._page, self._pagesize)
 
         for item in response['items']:
             preview = item['title']

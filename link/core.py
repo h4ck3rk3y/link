@@ -6,13 +6,6 @@ from .models.results import Results
 from .decorators import immutable
 
 
-###
-# @ToDo will probably tweak this a little to not support page number but
-# instead support a next() button
-# The backend could create a search using the builder call fetch
-# return results to the user, persist the object somewhere, redis?, dictionary?
-# if the user requests another page then the backend can call next()
-###
 class Link(object):
     """ this is the core class and should be used outside
     the package for search """
@@ -21,12 +14,20 @@ class Link(object):
         """ sources enabled being set to None implies all integrations for which token is set will be searched"""
         self.__sources_enabled = sources_enabled
         self.__user_tokens = user_tokens
+        if self.__sources_enabled is None:
+            stackoverflow = user_tokens.stackoverflow is not None
+            trello = user_tokens.trello is not None
+            github = user_tokens.github is not None
+            slack = user_tokens.slack is not None
+            self.__sources_enabled = SourcesEnabled(
+                stackoverflow=stackoverflow, github=github, trello=trello, slack=slack)
+
         super().__init__()
         self.__reset()
 
     @staticmethod
-    def builder(self):
-        return Link(self.__user_tokens, self.__sources_enabled)
+    def builder(user_tokens: UserTokens, sources_enabled: SourcesEnabled = None):
+        return Link(user_tokens, sources_enabled)
 
     def fetch(self):
         self.__validate()
@@ -111,7 +112,6 @@ class Link(object):
         assert(self.__query != ""), "Query cant be empty"
         assert(self.__user_tokens != None), "User Tokens cant be none"
         assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello != False), "No source enabled"
-        assert(self.__built != False), "Build hasn't been called"
 
     def __reset(self):
         self.__page = DEFAULT_PAGE
@@ -119,4 +119,3 @@ class Link(object):
         self.__fromdate = None
         self.__enddate = None
         self.__query = None
-        self.__built = False
