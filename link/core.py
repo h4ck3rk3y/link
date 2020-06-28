@@ -1,8 +1,8 @@
 from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
-from .searchers.constants import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
+from .searchers.constants import DEFAULT_PAGE_SIZE
 from .searchers.stackoverflow import StackOverflow
-from .models.results import Results
+from .models.results import Results, SourceResult
 from .decorators import immutable
 
 
@@ -23,6 +23,11 @@ class Link(object):
                 stackoverflow=stackoverflow, github=github, trello=trello, slack=slack)
 
         super().__init__()
+        self.__page = 0
+        self.__results = Results()
+        if self.__sources_enabled.stackoverflow:
+            self.__stackoverflow = None
+            self.__stackoverflow_result = SourceResult("stackoverflow")
         self.__reset()
 
     @staticmethod
@@ -31,23 +36,18 @@ class Link(object):
 
     def fetch(self):
         self.__validate()
-        result = Results()
 
-        if self.__sources_enabled.stackoverflow:
-            stackoverflow = StackOverflow.builder(UserTokens.stackoverflow).fromdate(self.__fromdate).enddate(
-                self.__enddate).query(self.__query).page(self.__page).pagesize(self.__page_size).fetch()
-            result.add_source(stackoverflow)
+        if self.__sources_enabled.stackoverflow and not self.__stackoverflow:
+            page = self.__stackoverflow = StackOverflow.builder(UserTokens.stackoverflow).fromdate(self.__fromdate).enddate(
+                self.__enddate).query(self.__query).pagesize(self.__page_size).fetch(self.__page)
+            self.__stackoverflow_result.add(page)
+            self.__results.add_source_result(self.__stackoverflow_result)
 
-        return result
+        return self.__results.topk(self.__page_size)
 
     @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size
-        return self
-
-    @immutable("page", DEFAULT_PAGE)
-    def page(self, page):
-        self.__page_size = page
         return self
 
     @immutable("formdate")
@@ -114,7 +114,7 @@ class Link(object):
         assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello != False), "No source enabled"
 
     def __reset(self):
-        self.__page = DEFAULT_PAGE
+        self.__page = 0
         self.__page_size = DEFAULT_PAGE_SIZE
         self.__fromdate = None
         self.__enddate = None

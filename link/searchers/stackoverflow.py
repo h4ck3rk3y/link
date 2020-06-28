@@ -16,7 +16,7 @@ class StackOverflow(Search):
     def builder(token=None):
         return StackOverflow(token)
 
-    def fetch(self):
+    def fetch(self, page=0):
         assert(self._query != None), "Query cannot be empty"
 
         payload = {"intitle": self._query, "site": SOURCENAME}
@@ -27,13 +27,12 @@ class StackOverflow(Search):
             payload["fromdate"] = self._fromdate.srtftime(DATE_FORMAT)
         if self._pagesize:
             payload["pagesize"] = self._pagesize
-        if self._page:
-            payload["page"] = self._page
+        if page:
+            payload["page"] = page
 
         response = requests.get(URL, params=payload).json()
 
-        source_result = SourceResult("stackoverflow")
-        page = Page(self._page, self._pagesize)
+        page = Page(page, self._pagesize)
 
         for item in response['items']:
             preview = item['title']
@@ -41,6 +40,4 @@ class StackOverflow(Search):
             single_result = SingleResult(preview, link, SOURCENAME)
             page.add(single_result)
 
-        source_result.add(page)
-
-        return source_result
+        return page

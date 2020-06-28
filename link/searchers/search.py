@@ -1,23 +1,23 @@
 
 from .constants import *
-from ..models.results import SourceResult
+from ..models.results import Page
 from ..decorators import immutable
 
 
 class Search(object):
 
     def __init__(self, token):
-        self.__token = token
+        self._token = token
         self.__reset()
 
     @staticmethod
     def builder(token=None):
         return Search(token)
 
-    def fetch(self):
-        assert(self.__query != ""), "Query can't be empty"
-        assert(self.__token != ""), "Token can't be empty"
-        return SourceResult("")
+    def fetch(self, page=0):
+        assert(self._query != ""), "Query can't be empty"
+        assert(self._token != ""), "Token can't be empty"
+        return Page(0)
 
     @immutable("query")
     def query(self, query):
@@ -39,14 +39,8 @@ class Search(object):
         self._pagesize = pagesize
         return self
 
-    @immutable("page", DEFAULT_PAGE)
-    def page(self, page):
-        self._page = page
-        return self
-
     def __reset(self):
         self._query = None
         self._fromdate = None
         self._enddate = None
         self._pagesize = DEFAULT_PAGE_SIZE
-        self._page = DEFAULT_PAGE

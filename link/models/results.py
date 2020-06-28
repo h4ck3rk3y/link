@@ -8,6 +8,7 @@ class SingleResult(object):
         self.__preview = preview
         self.__link = link
         self.__source = source
+        self.__fetched = False
 
     @property
     def preview(self):
@@ -32,6 +33,14 @@ class SingleResult(object):
     @source.setter
     def source(self, value):
         self.__source = value
+
+    @property
+    def fetched(self):
+        return self.__fetched
+
+    @fetched.setter
+    def fetched(self, value):
+        self.__fetched = value
 
     def __str__(self):
         return "Link:{} Preview Text:{} Source:{}".format(self.__link, self.__preview, self.__source)
@@ -91,11 +100,11 @@ class SourceResult(object):
     def topk(self, k):
         result = []
         for page in self.__pages:
-            if len(result) >= k:
-                break
             for single_result in page:
-                if len(result) >= k:
+                if not single_result.fetched:
                     result.append(single_result)
+            if len(result) == k:
+                break
         return result
 
     def topk_page(self, k, page):
@@ -112,8 +121,8 @@ class Results(object):
     def __init__(self):
         self.__sources = {}
 
-    def add_source(self, source: SourceResult):
-        self.__sources[source] = SourceResult(source)
+    def add_source_result(self, source_result: SourceResult):
+        self.__sources[source_result.sourcename] = source_result
 
     def hits(self, source):
         if source in self.__sources:
@@ -123,15 +132,17 @@ class Results(object):
                 "Referred to undefined source {}".format(source))
 
     def topk(self, k):
-        results = []
-        leftover = 0
+        output = []
         per_source = self.__per_source(k)
-        for source in sorted(self.__sources.keys()):
-            value = self.__sources[source]
-            results_for_source = value.topk(per_source + leftover)
-            leftover = per_source - len(results_for_source)
-            results.extend(results_for_source)
-        return results[:k]
+        leftover = 0
+        for source_name in sorted(self.__sources.keys()):
+            source_result = self.__sources[source_name]
+            results = source_result.topk(per_source + leftover)
+            leftover = per_source + len(results)
+            for single_result in results:
+                output.append(single_result)
+                single_result.fetched = True
+        return output
 
     def get(self):
         return self.topk(REALLY_LARGE_NUMBER)
