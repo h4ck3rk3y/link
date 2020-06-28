@@ -39,7 +39,7 @@ class Link(object):
 
         if self.__sources_enabled.stackoverflow:
             if not self.__stackoverflow:
-                self.__stackoverflow = StackOverflow.builder(UserTokens.stackoverflow).fromdate(self.__fromdate).enddate(
+                self.__stackoverflow = StackOverflow.builder(self.__user_tokens.stackoverflow).fromdate(self.__fromdate).enddate(
                     self.__enddate).query(self.__query).pagesize(self.__page_size)
 
             page = self.__stackoverflow.fetch(self.__page)
