@@ -1,5 +1,5 @@
-class UserTokens(object):
-    
+class Base(object):
+
     def __init__(self, slack=None, github=None, trello=None, stackoverflow=None):
         self.__slack = slack
         self.__github = github
@@ -17,7 +17,7 @@ class UserTokens(object):
     @property
     def github(self):
         return self.__github
-    
+
     @github.setter
     def github(self, github):
         self.__github = github
@@ -25,7 +25,7 @@ class UserTokens(object):
     @property
     def trello(self):
         return self.__trello
-    
+
     @trello.setter
     def trello(self, trello):
         self.__trello = trello
@@ -33,9 +33,7 @@ class UserTokens(object):
     @property
     def stackoverflow(self):
         return self.__stackoverflow
-    
+
     @stackoverflow.setter
     def stackoverflow(self, stackoverflow):
         self.__stackoverflow = stackoverflow
-
-    

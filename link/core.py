@@ -1,104 +1,124 @@
-from .user import UserTokens
-
-DEFAULT_PAGE_SIZE = 15
-
-
-class SourcesEnabled(object):
-
-    def __init__(self, slack=True, github=True, stackoverflow=True, trello=True):
-        self.__slack = slack
-        self.__github = github
-        self.__trello = trello
-        self.__stackoverflow = stackoverflow
+from .models.user_tokens import UserTokens
+from .models.sources_enabled import SourcesEnabled
+from .searchers.constants import DEFAULT_PAGE_SIZE
+from .searchers.stackoverflow import StackOverflow
+from .models.results import Results, SourceResult
+from .decorators import immutable
 
 
-class Statistics(object):
-    def __init__(self, slack=0, github=0, stackoverflow=0, trello=0):
-        self.__slack = slack
-        self.__github = github
-        self.__trello = trello
-        self.__stackoverflow = stackoverflow
-
-    """you should be able to access statistics.slack etc"""
-
-
-class SingleResult(object):
-    def __init__(self):
-        self.preview = "preview Text"
-        self.source = "name of the source"
-        self.link = "link"
-
-
-class Results(object):
-    """ Any of the search query will return a Results object
-
-    To find out the total number of results use
-    results.hits
-
-    To get a list of result objects use
-    results.results
-
-    To get the current page number use
-    results.page_number
-
-    To get the total number(without paging) of slack results
-    results.statistics.slack
-
-    """
-
-    def __init__(self, statistics=None):
-        # a statistics object
-        self.__statistics = statistics
-        # number of results in current result object
-        self.__hits = 7
-        # size of the page
-        self.__page_size = DEFAULT_PAGE_SIZE
-        # a list of result objects as big as the page size
-        self.__results = [SingleResult]
-        # current page number
-        self.__page_number = 0
-
-    @property
-    def statistics(self):
-        return self.__statistics
-
-
-class Search(object):
+class Link(object):
     """ this is the core class and should be used outside
     the package for search """
 
-    def __init__(self, user: UserTokens):
-        self.user = user
-        assert(self.user != None)
+    def __init__(self, user_tokens: UserTokens, sources_enabled: SourcesEnabled = None):
+        """ sources enabled being set to None implies all integrations for which token is set will be searched"""
+        self.__sources_enabled = sources_enabled
+        self.__user_tokens = user_tokens
+        if self.__sources_enabled is None:
+            stackoverflow = user_tokens.stackoverflow is not None
+            trello = user_tokens.trello is not None
+            github = user_tokens.github is not None
+            slack = user_tokens.slack is not None
+            self.__sources_enabled = SourcesEnabled(
+                stackoverflow=stackoverflow, github=github, trello=trello, slack=slack)
 
-    def search(self, query: str, page_size=DEFAULT_PAGE_SIZE, offset=0):
-        """ search all enabled integrations for the given user.
+        super().__init__()
+        self.__page = 1
+        self.__results = Results()
+        if self.__sources_enabled.stackoverflow:
+            self.__stackoverflow = None
+            self.__stackoverflow_result = SourceResult("stackoverflow")
+        self.__reset()
 
-        Parameters
-        ----------
-            query: str, required
-            The search query
+    @staticmethod
+    def builder(user_tokens: UserTokens, sources_enabled: SourcesEnabled = None):
+        return Link(user_tokens, sources_enabled)
 
-            page_size: int, default pagination
-            Number of results per page
+    def fetch(self):
+        self.__validate()
 
-            offset: int, page number
-            Which page to pick
+        if self.__sources_enabled.stackoverflow:
+            if not self.__stackoverflow:
+                self.__stackoverflow = StackOverflow.builder(UserTokens.stackoverflow).fromdate(self.__fromdate).enddate(
+                    self.__enddate).query(self.__query).pagesize(self.__page_size)
 
-        Returns a Results object
-        """
+            page = self.__stackoverflow.fetch(self.__page)
+            self.__stackoverflow_result.add(page)
+            self.__results.add_source_result(self.__stackoverflow_result)
 
-    def search_range(self, query, from_date: int = None, to_date: int = None, page_size=DEFAULT_PAGE_SIZE, offset=0):
-        """ search a specific date range 
-            Returns a Results Object
-        """
+        self.__page += 1
+        return self.__results.topk(self.__page_size)
 
-    def search_source_and_range(self, query, sources: SourcesEnabled, from_date: int = None, to_date: int = None, page_size=DEFAULT_PAGE_SIZE5, offset=0):
-        """ search a date range along with specific sources
-            Returns a results object
-        """
+    @immutable("page_size", DEFAULT_PAGE_SIZE)
+    def page_size(self, page_size):
+        self.__page_size = page_size
+        return self
 
-    def search_source(self, query, sources: SourcesEnabled, page_size=DEFAULT_PAGE_SIZE, offset=0):
-        """ search a specific source 
-            Returns a results object
-        """
+    @immutable("formdate")
+    def fromdate(self, fromdate):
+        self.__fromdate = fromdate
+        return self
+
+    @immutable("enddate")
+    def enddate(self, enddate):
+        self.__enddate = enddate
+        return self
+
+    @immutable("query")
+    def query(self, query):
+        self.__query = query
+        return self
+
+    def slack_only(self):
+        self.__disable_all_sources()
+        self.__sources_enabled.slack = True
+        return self
+
+    def not_slack(self):
+        self.__sources_enabled.slack = False
+        return self
+
+    def github_only(self):
+        self.__disable_all_sources()
+        self.__sources_enabled.github = True
+        return self
+
+    def not_github(self):
+        self.__sources_enabled.github = False
+        return self
+
+    def trello_only(self):
+        self.__disable_all_sources()
+        self.__sources_enabled.trello = True
+        return self
+
+    def not_trello(self):
+        self.__sources_enabled.trello = False
+        return self
+
+    def stackoverflow_only(self):
+        self.__disable_all_sources()
+        self.__sources_enabled.stackoverflow = True
+        return self
+
+    def not_stackoverflow(self):
+        self.__sources_enabled.stackoverflow = False
+        return self
+
+    def __disable_all_sources(self):
+        self.__sources_enabled.slack = False
+        self.__sources_enabled.stackoverflow = False
+        self.__sources_enabled.trello = False
+        self.__sources_enabled.github = False
+
+    def __validate(self):
+        assert(self.__query != None), "Query cant be None"
+        assert(self.__query != ""), "Query cant be empty"
+        assert(self.__user_tokens != None), "User Tokens cant be none"
+        assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello != False), "No source enabled"
+
+    def __reset(self):
+        self.__page_size = DEFAULT_PAGE_SIZE
+        self.__fromdate = None
+        self.__enddate = None
+        self.__query = None
