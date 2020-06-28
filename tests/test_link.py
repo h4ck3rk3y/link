@@ -6,7 +6,8 @@ import unittest
 class TestLink(unittest.TestCase):
 
     def test_links_build(self):
-        user_token = UserTokens(stackoverflow=True)
+        user_token = UserTokens(
+            stackoverflow="not really needed for stackoverflow to work")
         link = Link.builder(user_token).query("foo").page_size(5)
         first_set = set([x.preview for x in link.fetch()])
         second_set = set([x.preview for x in link.fetch()])
