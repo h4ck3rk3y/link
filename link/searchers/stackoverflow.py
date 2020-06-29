@@ -5,7 +5,6 @@ from datetime import datetime
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
-DATE_FORMAT = "YYYY-mm-dd"
 
 
 class StackOverflow(Search):
@@ -23,9 +22,9 @@ class StackOverflow(Search):
         payload = {"intitle": self._query, "site": SOURCENAME}
 
         if self._enddate:
-            payload["enddate"] = self._enddate.strftime("DATE_FORMAT")
+            payload["todate"] = int(self._enddate.timestamp())
         if self._fromdate:
-            payload["fromdate"] = self._fromdate.srtftime(DATE_FORMAT)
+            payload["fromdate"] = int(self._fromdate.timestamp())
         if self._pagesize:
             payload["pagesize"] = self._pagesize
         if page:
@@ -38,7 +37,7 @@ class StackOverflow(Search):
         for item in response['items']:
             preview = item['title']
             link = item['link']
-            date = datetime.fromtimestamp(item['last_activity_date'])
+            date = datetime.fromtimestamp(item['creation_date'])
             single_result = SingleResult(preview, link, SOURCENAME, date)
             page.add(single_result)
 
