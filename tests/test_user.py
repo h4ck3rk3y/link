@@ -23,7 +23,3 @@ class TestUser(unittest.TestCase):
         user = UserTokens()
         user.trello = "trello"
         self.assertEqual(user.trello, "trello")
-
-
-if __name__ == "__main__":
-    unittest.main()

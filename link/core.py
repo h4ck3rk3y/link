@@ -54,7 +54,7 @@ class Link(object):
         self.__page_size = page_size
         return self
 
-    @immutable("formdate")
+    @immutable("fromdate")
     def fromdate(self, fromdate):
         self.__fromdate = fromdate
         return self
