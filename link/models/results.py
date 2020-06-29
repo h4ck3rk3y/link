@@ -64,19 +64,8 @@ class Page(object):
         self.__page = page
         self.__results = []
 
-    @property
-    def page(self):
-        return self.__page
-
-    @page.setter
-    def page(self, value):
-        self.__page = value
-
     def add(self, item: SingleResult):
         self.__results.append(item)
-
-    def hits(self):
-        return len(self.__results)
 
     def __getitem__(self, key):
         return self.__results[key]
@@ -95,16 +84,6 @@ class SourceResult(object):
     def sourcename(self, sourcename):
         return sourcename
 
-    def hits(self):
-        total_hits = sum([page.hits() for page in self.__pages])
-        return total_hits
-
-    def __getitem__(self, key):
-        return self.__pages[key]
-
-    def page(self, page_number):
-        return self.__pages[page_number]
-
     def add(self, page: Page, page_number=None):
         if not page_number:
             self.__pages.append(page)
@@ -119,14 +98,6 @@ class SourceResult(object):
                 break
         return result
 
-    def topk_page(self, k, page):
-        result = []
-        page = next((p for p in self.__pages if p.page) == page, [])
-        for single_result in page:
-            if len(result) >= k:
-                break
-            result.append(single_result)
-
 
 class Results(object):
 
@@ -135,13 +106,6 @@ class Results(object):
 
     def add_source_result(self, source_result: SourceResult):
         self.__sources[source_result.sourcename] = source_result
-
-    def hits(self, source):
-        if source in self.__sources:
-            return self.__sources[source].hits()
-        else:
-            raise RuntimeError(
-                "Referred to undefined source {}".format(source))
 
     def topk(self, k):
         output = []
@@ -155,9 +119,6 @@ class Results(object):
                 output.append(single_result)
                 single_result.fetched = True
         return output
-
-    def get(self):
-        return self.topk(REALLY_LARGE_NUMBER)
 
     def __per_source(self, k):
         """ ceil division  of k by length of sources"""
