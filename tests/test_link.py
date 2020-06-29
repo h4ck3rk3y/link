@@ -19,6 +19,18 @@ class TestLink(unittest.TestCase):
         self.assertNotEqual(first_set, second_set)
         self.assertNotEqual(third_set, second_set)
 
+    def test_all_atributes_are_set(self):
+
+        user_token = UserTokens(
+            stackoverflow="not really needed for stackoverflow to work")
+        link = Link.builder(user_token).query("foo").page_size(1)
+        result = link.fetch()[0]
+
+        self.assertIsNotNone(result.link)
+        self.assertIsNotNone(result.preview)
+        self.assertIsNotNone(result.date)
+        self.assertIsNotNone(result.source)
+
     def test_date_filtering_works(self):
         user_token = UserTokens(
             stackoverflow="not really needed for stackoverflow to work")
