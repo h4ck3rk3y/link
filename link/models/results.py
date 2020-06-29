@@ -4,11 +4,12 @@ REALLY_LARGE_NUMBER = 2**1000
 
 
 class SingleResult(object):
-    def __init__(self, preview=None, link=None, source=None):
+    def __init__(self, preview=None, link=None, source=None, date=None):
         self.__preview = preview
         self.__link = link
         self.__source = source
         self.__fetched = False
+        self.__date = date
 
     @property
     def preview(self):
@@ -42,8 +43,16 @@ class SingleResult(object):
     def fetched(self, value):
         self.__fetched = value
 
+    @property
+    def date(self):
+        return self.__date
+
+    @date.setter
+    def date(self, value):
+        self.__date = value
+
     def __str__(self):
-        return "Link:{} Preview Text:{} Source:{}".format(self.__link, self.__preview, self.__source)
+        return "Link:{} Preview Text:{} Source:{} Date:{}".format(self.__link, self.__preview, self.__source, self.__date)
 
     def __repr__(self):
         return self.__str__()
