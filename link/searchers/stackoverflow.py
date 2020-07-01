@@ -2,6 +2,7 @@ from .search import Search
 from ..models.results import SingleResult, SourceResult, Page
 import requests
 from datetime import datetime
+from .constants import QUESTION
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
@@ -17,7 +18,8 @@ class StackOverflow(Search):
         return StackOverflow(token)
 
     def fetch(self, page=0):
-        assert(self._query != None), "Query cannot be empty"
+        assert(self._query != None and self._query !=
+               ""), "Query cannot be empty"
 
         payload = {"intitle": self._query, "site": SOURCENAME}
 
@@ -38,7 +40,8 @@ class StackOverflow(Search):
             preview = item['title']
             link = item['link']
             date = datetime.fromtimestamp(item['creation_date'])
-            single_result = SingleResult(preview, link, SOURCENAME, date)
+            single_result = SingleResult(
+                preview, link, SOURCENAME, date, QUESTION)
             page.add(single_result)
 
         return page

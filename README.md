@@ -8,7 +8,7 @@ fetch's link to the rest of the world
 1. [Stack Overflow](https://api.stackexchange.com/docs)
 2. [Slack](https://api.slack.com/methods/search.messages)
 3. [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/#search)
-4. [Github](https://developer.github.com/v3/search/)
+4. [Github](https://docs.github.com/en/rest/reference/search)
 
 ## Contract
 
