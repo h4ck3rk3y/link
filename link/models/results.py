@@ -4,12 +4,13 @@ REALLY_LARGE_NUMBER = 2**1000
 
 
 class SingleResult(object):
-    def __init__(self, preview=None, link=None, source=None, date=None):
+    def __init__(self, preview=None, link=None, source=None, date=None, category=None):
         self.__preview = preview
         self.__link = link
         self.__source = source
         self.__fetched = False
         self.__date = date
+        self.__category = None
 
     @property
     def preview(self):
@@ -51,8 +52,16 @@ class SingleResult(object):
     def date(self, value):
         self.__date = value
 
+    @property
+    def category(self):
+        return self.__category
+
+    @category.setter
+    def category(self, value):
+        self.__category = value
+
     def __str__(self):
-        return f"Link:{self.__link} Preview Text:{self.__preview} Source:{self.__source} Date:{self.__date}"
+        return f"Link:{self.__link} Preview Text:{self.__preview} Source:{self.__source} Date:{self.__date} Category:{self.__category}"
 
     def __repr__(self):
         return self.__str__()
@@ -92,10 +101,11 @@ class SourceResult(object):
         result = []
         for page in self.__pages:
             for single_result in page:
+                if len(result) == k:
+                    break
                 if not single_result.fetched:
                     result.append(single_result)
-            if len(result) == k:
-                break
+
         return result
 
 
@@ -114,7 +124,7 @@ class Results(object):
         for source_name in sorted(self.__sources.keys()):
             source_result = self.__sources[source_name]
             results = source_result.topk(per_source + leftover)
-            leftover = per_source + len(results)
+            leftover = per_source - len(results)
             for single_result in results:
                 output.append(single_result)
                 single_result.fetched = True

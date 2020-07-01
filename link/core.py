@@ -2,6 +2,7 @@ from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
 from .searchers.constants import DEFAULT_PAGE_SIZE
 from .searchers.stackoverflow import StackOverflow
+from .searchers.github import Github
 from .models.results import Results, SourceResult
 from .decorators import immutable
 
@@ -28,6 +29,11 @@ class Link(object):
         if self.__sources_enabled.stackoverflow:
             self.__stackoverflow = None
             self.__stackoverflow_result = SourceResult("stackoverflow")
+
+        if self.__sources_enabled.github:
+            self.__github = None
+            self.__github_result = SourceResult("github")
+
         self.__reset()
 
     @staticmethod
@@ -45,6 +51,14 @@ class Link(object):
             page = self.__stackoverflow.fetch(self.__page)
             self.__stackoverflow_result.add(page)
             self.__results.add_source_result(self.__stackoverflow_result)
+
+        if self.__sources_enabled.github:
+            if not self.__github:
+                self.__github = Github.builder(
+                    self.__user_tokens.github).query(self.__query).pagesize(self.__page_size)
+            page = self.__github.fetch(self.__page_size)
+            self.__github_result.add(page)
+            self.__results.add_source_result(self.__github_result)
 
         self.__page += 1
         return self.__results.topk(self.__page_size)
