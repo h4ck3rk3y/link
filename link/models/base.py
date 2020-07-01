@@ -37,3 +37,6 @@ class Base(object):
     @stackoverflow.setter
     def stackoverflow(self, stackoverflow):
         self.__stackoverflow = stackoverflow
+
+    def __repr__(self):
+        return self.__str__()

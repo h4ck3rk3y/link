@@ -7,4 +7,4 @@ class SourcesEnabled(Base):
         super().__init__(slack, github, trello, stackoverflow)
 
     def __to__str(self):
-        return "slack:{} github:{} trello:{} stackoverflow:{}".format(self.slack, self.github, self.trello, self.stackoverflow)
+        return f"slack:{self.slack} github:{self.github} trello:{self.trello} stackoverflow:{self.stackoverflow}"
