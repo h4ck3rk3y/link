@@ -52,7 +52,7 @@ class SingleResult(object):
         self.__date = value
 
     def __str__(self):
-        return "Link:{} Preview Text:{} Source:{} Date:{}".format(self.__link, self.__preview, self.__source, self.__date)
+        return f"Link:{self.__link} Preview Text:{self.__preview} Source:{self.__source} Date:{self.__date}"
 
     def __repr__(self):
         return self.__str__()

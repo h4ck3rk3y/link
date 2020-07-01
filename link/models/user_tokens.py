@@ -7,4 +7,4 @@ class UserTokens(Base):
         super().__init__(slack, github, trello, stackoverflow)
 
     def __str__(self):
-        return "User tokens enabled for slack:{} github:{} trello:{} stackoverflow:{}".format(self.slack != None, self.github != None, self.trello != None, self.stackoverflow != None)
+        return f"User tokens enabled for slack:{self.slack!=None} github:{self.github!=None} trello:{self.trello!=None} stackoverflow:{self.stackoverflow!=None}"
