@@ -89,3 +89,36 @@ class TestLink(unittest.TestCase):
         self.assertEqual(github_count, 6)
         self.assertEqual(so_count, 6)
         self.assertEqual(len(results), 12)
+
+    def test_next_previous(self):
+
+        user_token = UserTokens(stackoverflow="foobar", github="fizzbuzz")
+        link = Link.builder(user_token).query("python").page_size(12)
+
+        first_result_a = link.fetch()
+        second_result_a = link.fetch()
+
+        first_result_b = link.previous()
+        second_result_b = link.fetch()
+
+        third_results_a = link.fetch()
+        fourth_result_a = link.fetch()
+        fifth_result_a = link.fetch()
+        sixth_result_a = link.fetch()
+
+        fifth_result_b = link.previous()
+        fourth_result_b = link.previous()
+        third_result_b = link.previous()
+
+        self.assertEqual(first_result_a, first_result_b)
+        self.assertEqual(second_result_a, second_result_b)
+        self.assertEqual(third_results_a, third_result_b)
+        self.assertEqual(fourth_result_a, fourth_result_b)
+        self.assertEqual(fifth_result_a, fifth_result_b)
+
+        self.assertNotEqual(third_results_a, first_result_a)
+        self.assertNotEqual(second_result_a, third_results_a)
+        self.assertNotEqual(first_result_a, second_result_a)
+        self.assertNotEqual(sixth_result_a, fifth_result_a)
+        self.assertNotEqual(fifth_result_a, fourth_result_a)
+        self.assertNotEqual(fourth_result_a, third_results_a)

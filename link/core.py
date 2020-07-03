@@ -25,7 +25,9 @@ class Link(object):
 
         super().__init__()
         self.__page = 1
+        self.__pages = []
         self.__results = Results()
+
         if self.__sources_enabled.stackoverflow:
             self.__stackoverflow = None
             self.__stackoverflow_result = SourceResult("stackoverflow")
@@ -42,6 +44,10 @@ class Link(object):
 
     def fetch(self):
         self.__validate()
+
+        if len(self.__pages) >= self.__page:
+            self.__page += 1
+            return self.__pages[self.__page-2]
 
         if self.__sources_enabled.stackoverflow:
             if not self.__stackoverflow:
@@ -61,7 +67,15 @@ class Link(object):
             self.__results.add_source_result(self.__github_result)
 
         self.__page += 1
-        return self.__results.topk(self.__page_size)
+        output = self.__results.topk(self.__page_size)
+        self.__pages.append(output)
+        return output
+
+    def previous(self):
+        if self.__page < 3:
+            return []
+        self.__page -= 1
+        return self.__pages[self.__page-2]
 
     @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
