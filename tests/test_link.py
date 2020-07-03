@@ -89,3 +89,22 @@ class TestLink(unittest.TestCase):
         self.assertEqual(github_count, 6)
         self.assertEqual(so_count, 6)
         self.assertEqual(len(results), 12)
+
+    def test_next_previous(self):
+
+        user_token = UserTokens(stackoverflow="foobar", github="fizzbuzz")
+        link = Link.builder(user_token).query("python").page_size(12)
+
+        results = link.fetch()
+        second_results = link.fetch()
+
+        first_results = link.previous()
+        second_results_again = link.fetch()
+        third_results = link.fetch()
+
+        self.assertEqual(results, first_results)
+        self.assertEqual(second_results, second_results_again)
+
+        self.assertNotEqual(third_results, first_results)
+        self.assertNotEqual(second_results, first_results)
+        self.assertNotEqual(third_results, second_results)
