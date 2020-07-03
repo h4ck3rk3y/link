@@ -75,7 +75,7 @@ class Link(object):
         if self.__page < 3:
             return []
         self.__page -= 1
-        return self.__pages[self.__page-1]
+        return self.__pages[self.__page-2]
 
     @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
