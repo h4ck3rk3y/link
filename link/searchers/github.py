@@ -41,6 +41,11 @@ class Github(Search):
         result = Page(page, self._pagesize)
         response = requests.get(URL, params=payload, headers=HEADERS).json()
 
+        # TODO: fix this
+        if 'items' not in response:
+            print("ERROR!!", response)
+            return result
+
         for item in response['items']:
             link = item['url']
             preview = item['title']
