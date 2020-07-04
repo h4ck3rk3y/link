@@ -65,6 +65,19 @@ class SingleResult(object):
 
     def __repr__(self):
         return self.__str__()
+    
+    def to_json(self):
+        json_value = {
+         "preview": self.preview,
+         "link": self.link,
+         "source": self.source,
+         "date": self.date.timestamp(),
+        }
+
+        if (self.category):
+            json_value["category"] = self.category
+
+        return json_value
 
 
 class Page(object):
