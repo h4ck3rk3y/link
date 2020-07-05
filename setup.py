@@ -1,8 +1,8 @@
-from setuptools import setup
+import setuptools
 
-setup(
+setuptools.setup(
     name='link',
-    packages=['link'],
+    packages=setuptools.find_packages()
     description="Link - Fetch's link to the rest of world",
     version='0.1',
     url='https://github.com/h4ck3rk3y/link',
