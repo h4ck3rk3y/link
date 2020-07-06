@@ -10,9 +10,9 @@ class TestLink(unittest.TestCase):
         user_token = UserTokens(
             stackoverflow="not really needed for stackoverflow to work")
         link = Link.builder(user_token).query("foo").page_size(5)
-        first_set = set([x.preview for x in link.fetch()])
-        second_set = set([x.preview for x in link.fetch()])
-        third_set = set([x.preview for x in link.fetch()])
+        first_set = set([x.title for x in link.fetch()])
+        second_set = set([x.title for x in link.fetch()])
+        third_set = set([x.title for x in link.fetch()])
         self.assertIsNotNone(link, "link shouldnt be none")
         self.assertLessEqual(len(second_set), len(first_set))
         self.assertLessEqual(len(third_set), len(second_set))
@@ -30,6 +30,7 @@ class TestLink(unittest.TestCase):
         self.assertIsNotNone(result.preview)
         self.assertIsNotNone(result.date)
         self.assertIsNotNone(result.source)
+        self.assertIsNotNone(result.title)
 
     def test_date_filtering_works(self):
         user_token = UserTokens(
@@ -61,11 +62,13 @@ class TestLink(unittest.TestCase):
         link = results[0].link
         preview = results[0].preview
         source = results[0].source
+        title = results[0].title
 
         self.assertIsNotNone(date)
         self.assertIsNotNone(link)
         self.assertIsNotNone(preview)
         self.assertIsNotNone(source)
+        self.assertIsNotNone(title)
 
     def test_both_github_and_stackoverflow(self):
 
@@ -92,7 +95,7 @@ class TestLink(unittest.TestCase):
 
     def test_next_previous(self):
 
-        user_token = UserTokens(stackoverflow="foobar", github="fizzbuzz")
+        user_token = UserTokens(stackoverflow="foobar")
         link = Link.builder(user_token).query("python").page_size(12)
 
         first_result_a = link.fetch()
@@ -125,9 +128,20 @@ class TestLink(unittest.TestCase):
 
     def tets_odd_number_of_pulls(self):
 
-        user_token = UserTokens(stackoverflow="foobar", github="fizzbuzz")
+        user_token = UserTokens(stackoverflow="foobar")
         link = Link.builder(user_token).query("python").page_size(13)
 
         result = link.fetch()
 
         self.assertEqual(len(result), 13)
+
+    def test_github_urls_are_not_api_urls(self):
+
+        user_token = UserTokens(
+            github="this isn't really needed but needed for private results")
+        link = Link.builder(user_token).query("python").page_size(6)
+
+        urls = [x.link for x in link.fetch()]
+
+        for url in urls:
+            self.assertTrue(url.startswith("https://github.com"))
