@@ -65,13 +65,13 @@ class SingleResult(object):
 
     def __repr__(self):
         return self.__str__()
-    
+
     def to_json(self):
         json_value = {
-         "preview": self.preview,
-         "link": self.link,
-         "source": self.source,
-         "date": self.date.timestamp(),
+            "preview": self.preview,
+            "link": self.link,
+            "source": self.source,
+            "date": self.date.timestamp(),
         }
 
         if (self.category):
@@ -139,6 +139,8 @@ class Results(object):
             results = source_result.topk(per_source + leftover)
             leftover = per_source - len(results)
             for single_result in results:
+                if len(output) == k:
+                    break
                 output.append(single_result)
                 single_result.fetched = True
         return output
