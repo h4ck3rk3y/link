@@ -37,11 +37,15 @@ class StackOverflow(Search):
         page = Page(page, self._pagesize)
 
         for item in response['items']:
-            preview = item['title']
+            preview = self.generate_preview(item)
+            title = item['title']
             link = item['link']
             date = datetime.fromtimestamp(item['creation_date'])
             single_result = SingleResult(
-                preview, link, SOURCENAME, date, QUESTION)
+                preview, link, SOURCENAME, date, QUESTION, title)
             page.add(single_result)
 
         return page
+
+    def generate_preview(self, item):
+        return f"This question has been viewed {item['view_count']} times and has {item['answer_count']} answers"

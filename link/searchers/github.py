@@ -43,17 +43,18 @@ class Github(Search):
 
         # TODO: fix this
         if 'items' not in response:
-            print("ERROR!!", response)
+            print("Rate limited exceeded for the Github API")
             return result
 
         for item in response['items']:
-            link = item['url']
-            preview = item['title']
+            link = item['html_url']
+            preview = item['body']
+            title = item['title']
             created_at = datetime.strptime(
                 item["created_at"], "%Y-%m-%dT%H:%M:%SZ")
 
             single_result = SingleResult(
-                preview, link, SOURCENAME, created_at, ISSUE)
+                preview, link, SOURCENAME, created_at, ISSUE, title)
             result.add(single_result)
 
         return result
