@@ -122,3 +122,12 @@ class TestLink(unittest.TestCase):
         self.assertNotEqual(sixth_result_a, fifth_result_a)
         self.assertNotEqual(fifth_result_a, fourth_result_a)
         self.assertNotEqual(fourth_result_a, third_results_a)
+
+    def tets_odd_number_of_pulls(self):
+
+        user_token = UserTokens(stackoverflow="foobar", github="fizzbuzz")
+        link = Link.builder(user_token).query("python").page_size(13)
+
+        result = link.fetch()
+
+        self.assertEqual(len(result), 13)
