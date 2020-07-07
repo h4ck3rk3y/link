@@ -31,4 +31,6 @@ jobs:
 workflows:
   main:
     jobs:
+      - deploy-job
       - tests
+      - publish
