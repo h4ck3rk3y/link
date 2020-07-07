@@ -17,12 +17,18 @@ jobs:
   publish:
     executor: python/default
     steps: 
-       - add_ssh_keys:
+        - add_ssh_keys:
           fingerprints:
             - b6:48:80:38:11:f7:f6:31:25:4d:04:41:37:d2:a5:41
-       - git config user.email "anomaly.the@gmail.com"
-       - git config user.name "Gyanendra Mishra"
-       - python ./circleci/update-tags.py
+        - run: 
+            command: git config user.email "anomaly.the@gmail.com"
+            name: Set git user.email
+        - run:
+            command: git config user.name "Gyanendra Mishra"
+            name: Set git user name
+        - run:
+            command: python ./circleci/update-tags.py
+            name: Push tags
 
 workflows:
   version: 2
