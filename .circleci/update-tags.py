@@ -14,6 +14,8 @@ def get_version():
 
 
 def delete_and_publish(tag):
+	# returns true regardless of tag being deleted or not
+        # allows for situations where tag doesn't exist
 	os.system(f"git tag -d {tag} || true")
 	os.system(f"git push origin :refs/tags/{tag}")
 	os.system(f"git tag {tag}")
