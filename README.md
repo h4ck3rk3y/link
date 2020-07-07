@@ -35,3 +35,13 @@ python -m unittest discover
 
 This is a libary that allows you to, query all enabled integrations. You can filter to specific sources, dates if you want to.
 Link ranks and sorts the results for you, it paginates for free as well. Well it will do all this when we start writing some code.
+
+## Versioning
+
+If you are developing Link, make sure that you handle versioning correctly. Link follows semver but in addition to the semantic versioning we also have tags like "1.x" and "2.x", we do this till we have our own self hosted
+artifactory
+
+1. Change the version in setup.py
+2. Get the PR merged
+3. Tag github with the new tag that you used in setup.py
+4. Use the major version from that tag and push another tag whihc looks like "MAJOR_VERSION.x"
