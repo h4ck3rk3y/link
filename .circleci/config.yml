@@ -1,10 +1,11 @@
-version: 2
+version: 2.1
 
 orbs:
   python: circleci/python@0.2.1
 
 jobs:
   deploy-job:
+    executor: python/default
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -20,6 +21,7 @@ jobs:
           command: python -m unittest
           name: Unit tests
   publish:
+    executor: python/default
     steps: 
        - git config user.email "anomaly.the@gmail.com"
        - git config user.name "Gyanendra Mishra"
