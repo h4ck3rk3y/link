@@ -20,9 +20,6 @@ jobs:
           command: python -m unittest
           name: Unit tests
   publish:
-    filters:
-      branches:
-        only: master
     steps: 
        - git config user.email "anomaly.the@gmail.com"
        - git config user.name "Gyanendra Mishra"
@@ -33,4 +30,8 @@ workflows:
     jobs:
       - deploy-job
       - tests
-      - publish
+      - publish:
+          filters:
+            branches:
+              only: master
+        
