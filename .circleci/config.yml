@@ -26,6 +26,7 @@ jobs:
        - python ./circleci/update-tags.py
 
 workflows:
+  version: 2
   main:
     jobs:
       - deploy-job
@@ -33,5 +34,6 @@ workflows:
       - publish:
           filters:
             branches:
-              only: master
-        
+              only:
+                - master
+
