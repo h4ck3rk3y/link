@@ -4,6 +4,11 @@ orbs:
   python: circleci/python@0.2.1
 
 jobs:
+  deploy-job:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - b6:48:80:38:11:f7:f6:31:25:4d:04:41:37:d2:a5:41
   tests:
     executor: python/default
     steps:
@@ -14,6 +19,14 @@ jobs:
       - run:
           command: python -m unittest
           name: Unit tests
+  publish:
+    filters:
+      branches:
+        only: master
+    steps: 
+       - git config user.email "anomaly.the@gmail.com"
+       - git config user.name "Gyanendra Mishra"
+       - python ./circleci/update-tags.py
 
 workflows:
   main:
