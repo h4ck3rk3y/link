@@ -18,8 +18,8 @@ jobs:
     executor: python/default
     steps: 
         - add_ssh_keys:
-          fingerprints:
-            - b6:48:80:38:11:f7:f6:31:25:4d:04:41:37:d2:a5:41
+            fingerprints:
+              - b6:48:80:38:11:f7:f6:31:25:4d:04:41:37:d2:a5:41
         - run: 
             command: git config user.email "anomaly.the@gmail.com"
             name: Set git user.email
