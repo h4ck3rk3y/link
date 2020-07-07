@@ -14,10 +14,10 @@ def get_version():
 
 
 def delete_and_publish(tag):
-	os.system(f"git tag -d {tag}")
-	os.system(f"git push oriign :refs/tags/{tag}")
+	os.system(f"git tag -d {tag} || true")
+	os.system(f"git push origin :refs/tags/{tag}")
 	os.system(f"git tag {tag}")
-	os.system(f"git push --tags")
+	os.system(f"git push origin {tag}")
 
 def main():
 	whole, major, minor, patch = get_version()
