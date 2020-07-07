@@ -23,3 +23,6 @@ def main():
 	whole, major, minor, patch = get_version()
 	delete_and_publish(whole)
 	delete_and_publish(f"{major}.x")
+
+if __name__ == "__main__":
+	main()
