@@ -42,6 +42,5 @@ If you are developing Link, make sure that you handle versioning correctly. Link
 artifactory
 
 1. Change the version in setup.py
-2. Get the PR merged
-3. Tag github with the new tag that you used in setup.py
-4. Use the major version from that tag and push another tag whihc looks like "MAJOR_VERSION.x"
+2. After the PR gets merged Circle will automatically create a tag and publish the tag to MAJOR_VERSION.x and semver
+3. If you don't change the version between commits circle will keep retagging with the current semver and MAJOR_VERSION.x
