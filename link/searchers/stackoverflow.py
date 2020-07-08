@@ -3,9 +3,11 @@ from ..models.results import SingleResult, SourceResult, Page
 import requests
 from datetime import datetime
 from .constants import QUESTION
+import logging
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
+logger = logging.getLogger(__name__)
 
 
 class StackOverflow(Search):
@@ -35,6 +37,14 @@ class StackOverflow(Search):
         response = requests.get(URL, params=payload).json()
 
         page = Page(page, self._pagesize)
+
+        if 'items' not in response:
+            # for searches stack overflow allows about 300 searches
+            # without api token per day.
+            # with a token that limit is up to 10,000
+            logger.warn(
+                f"stackoverflow search failed with {response['error_message']}")
+            return page
 
         for item in response['items']:
             preview = self.generate_preview(item)
