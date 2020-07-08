@@ -4,6 +4,9 @@ import requests
 import base64
 from datetime import datetime
 from .constants import ISSUE
+import logging
+
+logger = logging.getLogger(__name__)
 
 HEADERS = {
     "Accept": "application/vnd.github.v3+json"
@@ -41,9 +44,11 @@ class Github(Search):
         result = Page(page, self._pagesize)
         response = requests.get(URL, params=payload, headers=HEADERS).json()
 
-        # TODO: fix this
         if 'items' not in response:
-            print("Rate limited exceeded for the Github API")
+            # for authenticated requests github allows 30 queries / minute
+            # for unauthenticated requests github allows 10 queries / minute
+            logging.warn(
+                f"github search didn't work it failed with. Message: {response['message']}")
             return result
 
         for item in response['items']:
