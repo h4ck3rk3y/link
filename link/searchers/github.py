@@ -40,7 +40,7 @@ class Github(Search):
         if page:
             payload['page'] = page
 
-        HEADERS["Authorization"] = f"Basic: {self._token}"
+        HEADERS["Authorization"] = f"token {self._token}"
 
         result = Page(page, self._pagesize)
         response = requests.get(URL, params=payload, headers=HEADERS).json()
