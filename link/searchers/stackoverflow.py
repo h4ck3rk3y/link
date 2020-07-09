@@ -9,6 +9,15 @@ URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
 logger = logging.getLogger(__name__)
 
+"""
+for searches stack overflow allows about 300 searches
+without api token per day.
+with a token that limit is up to 10,000
+
+in so the searches can't be personalized
+
+"""
+
 
 class StackOverflow(Search):
 
@@ -39,10 +48,7 @@ class StackOverflow(Search):
         page = Page(page, self._pagesize)
 
         if 'items' not in response:
-            # for searches stack overflow allows about 300 searches
-            # without api token per day.
-            # with a token that limit is up to 10,000
-            logger.warn(
+            logger.warning(
                 f"stackoverflow search failed with {response['error_message']}")
             return page
 

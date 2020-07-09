@@ -15,6 +15,16 @@ HEADERS = {
 URL = "https://api.github.com/search/issues"
 SOURCENAME = "github"
 
+"""
+https://docs.github.com/en/rest/reference/search
+
+for authenticated requests github allows 30 queries / minute
+for unauthenticated requests github allows 10 queries / minute
+
+to test personal auth you can create a token with repo permissions
+and put in your username.
+"""
+
 
 class Github(Search):
 
@@ -40,15 +50,14 @@ class Github(Search):
         if page:
             payload['page'] = page
 
-        HEADERS["Authorization"] = f"token {self._token}"
+        if self._token != "":
+            HEADERS["Authorization"] = f"token {self._token}"
 
         result = Page(page, self._pagesize)
         response = requests.get(URL, params=payload, headers=HEADERS).json()
 
         if 'items' not in response:
-            # for authenticated requests github allows 30 queries / minute
-            # for unauthenticated requests github allows 10 queries / minute
-            logging.warn(
+            logging.warning(
                 f"github search didn't work it failed with. Message: {response['message']}")
             return result
 
