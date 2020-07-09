@@ -1,13 +1,14 @@
 
-from .constants import *
+from .constants import DEFAULT_PAGE_SIZE
 from ..models.results import Page
 from ..decorators import immutable
 
 
 class Search(object):
 
-    def __init__(self, token):
-        self._token = token
+    def __init__(self, user):
+        self._username = user.username
+        self._token = user.token
         self.__reset()
 
     @staticmethod

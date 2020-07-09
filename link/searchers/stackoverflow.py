@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 class StackOverflow(Search):
 
-    def __init__(self, token=None):
-        super().__init__(token=token)
+    def __init__(self, user=None):
+        super().__init__(user=user)
 
     @staticmethod
-    def builder(token=None):
-        return StackOverflow(token)
+    def builder(user=None):
+        return StackOverflow(user)
 
     def fetch(self, page=0):
         assert(self._query != None and self._query !=

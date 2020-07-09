@@ -18,20 +18,21 @@ SOURCENAME = "github"
 
 class Github(Search):
 
-    def __init__(self, token=None):
-        super().__init__(token=token)
+    def __init__(self, user=None):
+        super().__init__(user=user)
 
     @staticmethod
-    def builder(token=None):
-        return Github(token)
+    def builder(user=None):
+        return Github(user)
 
     def fetch(self, page=0):
         assert(self._query != None and self.query !=
                ""), "Query cannot be empty"
 
-        # @ToDo add more qualifiers
-        # Here we can specify the user and make it personal
         payload = {"q": f"{self._query}"}
+
+        if self._username:
+            payload["q"] = f"{self._query}+user:{self._username}"
 
         if self._pagesize:
             payload['per_page'] = self._pagesize
