@@ -64,9 +64,9 @@ class Github(Search):
         assert(self._query != None and self.query !=
                ""), "Query cannot be empty"
 
-        if self.__number_of_items > page*self._pagesize:
+        if self.__number_of_items >= page*self._pagesize:
             logging.info(
-                "we already seem to have enough results, not searching for more")
+                f"we already seem to have enough results: {self.__number_of_items}, not searching for more")
             return
 
         payload = {"q": f"{self._query}"}
