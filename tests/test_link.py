@@ -148,8 +148,7 @@ class TestLink(unittest.TestCase):
 
         categories = set([x.category for x in result])
 
-        self.assertNotEqual(len(categories), 0)
-        self.assertNotEqual(len(categories), 1)
+        self.assertGreater(len(categories), 1)
 
         self.assertNotEqual(len(urls), 0)
 
