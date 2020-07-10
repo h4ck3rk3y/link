@@ -5,4 +5,4 @@ DEFAULT_PAGE_SIZE = 15
 QUESTION = "question"
 ISSUE = "issue"
 CODE = "code"
-COMMIT = "commit"
+REPO = "repository"

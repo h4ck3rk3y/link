@@ -140,9 +140,16 @@ class TestLink(unittest.TestCase):
 
         user_token = UserTokens(
             github=UserToken(token=""))
-        link = Link.builder(user_token).query("python").page_size(6)
+        link = Link.builder(user_token).query("python").page_size(20)
 
-        urls = [x.link for x in link.fetch()]
+        result = link.fetch()
+
+        urls = [x.link for x in result]
+
+        categories = set([x.category for x in result])
+
+        self.assertNotEqual(len(categories), 0)
+        self.assertNotEqual(len(categories), 1)
 
         self.assertNotEqual(len(urls), 0)
 
