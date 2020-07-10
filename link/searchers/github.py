@@ -105,8 +105,11 @@ class Github(Search):
                 link = item['html_url']
                 preview = item[attribute_map["preview"][endpoint]]
                 title = item[attribute_map["title"][endpoint]]
-                created_at = datetime.strptime(
-                    item["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+
+                created_at = None
+                if endpoint != CODE_URL:
+                    created_at = datetime.strptime(
+                        item["created_at"], "%Y-%m-%dT%H:%M:%SZ")
 
                 single_result = SingleResult(
                     preview, link, SOURCENAME, created_at, category_map[endpoint], title)
