@@ -5,6 +5,7 @@ import base64
 from datetime import datetime
 from .constants import ISSUE, CODE, REPO
 import logging
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +89,9 @@ class Github(Search):
 
     def combine_sources(self, payload, headers, page):
         endpoints = [ISSUES_URL, REPO_URL, CODE_URL]
+        if not self._username:
+            # code search requires repo, username or org to be set
+            del endpoints[2]
         result = []
         page = Page(page)
         for endpoint in endpoints:
@@ -95,7 +99,7 @@ class Github(Search):
                 endpoint, params=payload, headers=headers).json()
             if 'items' not in response:
                 logging.warning(
-                    f"github search didn't work it failed with. Message: {response['message']}")
+                    f"github search for endpoint {endpoint} didn't work it failed with. Message: {response['message']}")
                 continue
             for item in response['items']:
                 link = item['html_url']
@@ -105,10 +109,14 @@ class Github(Search):
                     item["created_at"], "%Y-%m-%dT%H:%M:%SZ")
 
                 single_result = SingleResult(
-                    preview, link, SOURCENAME, created_at, ISSUE, title)
+                    preview, link, SOURCENAME, created_at, category_map[endpoint], title)
                 self.__number_of_items += 1
                 result.append((single_result, item['score']))
-        result = sorted(result, lambda x: x[1])
+
+        # we randomize the above results and then sort by score
+        # this allows different categories of results to appear
+        random.shuffle(result)
+        result = sorted(result, key=lambda x: x[1])
 
         if len(result) == 0:
             return
