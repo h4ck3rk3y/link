@@ -106,6 +106,7 @@ class Github(Search):
                 preview = item[attribute_map["preview"][endpoint]]
                 title = item[attribute_map["title"][endpoint]]
 
+                # code results don't have created_at
                 created_at = None
                 if endpoint != CODE_URL:
                     created_at = datetime.strptime(
