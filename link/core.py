@@ -62,7 +62,7 @@ class Link(object):
             if not self.__github:
                 self.__github = Github.builder(
                     self.__user_tokens.github).query(self.__query).pagesize(self.__page_size)
-            page = self.__github.fetch(self.__page_size)
+            page = self.__github.fetch(self.__page)
             self.__github_result.add(page)
             self.__results.add_source_result(self.__github_result)
 

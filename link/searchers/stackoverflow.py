@@ -9,15 +9,24 @@ URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
 logger = logging.getLogger(__name__)
 
+"""
+for searches stack overflow allows about 300 searches
+without api token per day.
+with a token that limit is up to 10,000
+
+in so the searches can't be personalized
+
+"""
+
 
 class StackOverflow(Search):
 
-    def __init__(self, token=None):
-        super().__init__(token=token)
+    def __init__(self, user=None):
+        super().__init__(user=user)
 
     @staticmethod
-    def builder(token=None):
-        return StackOverflow(token)
+    def builder(user=None):
+        return StackOverflow(user)
 
     def fetch(self, page=0):
         assert(self._query != None and self._query !=
@@ -39,10 +48,7 @@ class StackOverflow(Search):
         page = Page(page, self._pagesize)
 
         if 'items' not in response:
-            # for searches stack overflow allows about 300 searches
-            # without api token per day.
-            # with a token that limit is up to 10,000
-            logger.warn(
+            logger.warning(
                 f"stackoverflow search failed with {response['error_message']}")
             return page
 

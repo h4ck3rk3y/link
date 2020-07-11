@@ -1,5 +1,5 @@
 from link.core import Link
-from link.models.user_tokens import UserTokens
+from link.models.user_tokens import UserTokens, UserToken
 import unittest
 from datetime import datetime
 
@@ -8,7 +8,7 @@ class TestLink(unittest.TestCase):
 
     def test_links_build(self):
         user_token = UserTokens(
-            stackoverflow="not really needed for stackoverflow to work")
+            stackoverflow=UserToken(token=""))
         link = Link.builder(user_token).query("foo").page_size(5)
         first_set = set([x.title for x in link.fetch()])
         second_set = set([x.title for x in link.fetch()])
@@ -22,7 +22,7 @@ class TestLink(unittest.TestCase):
     def test_all_atributes_are_set(self):
 
         user_token = UserTokens(
-            stackoverflow="not really needed for stackoverflow to work")
+            stackoverflow=UserToken(token=""))
         link = Link.builder(user_token).query("foo").page_size(1)
         result = link.fetch()[0]
 
@@ -34,7 +34,7 @@ class TestLink(unittest.TestCase):
 
     def test_date_filtering_works(self):
         user_token = UserTokens(
-            stackoverflow="not really needed for stackoverflow to work")
+            stackoverflow=UserToken(token=""))
         link = Link.builder(user_token).query(
             "python").page_size(15).fromdate(datetime(2015, 5, 23)).enddate(datetime(2015, 5, 31))
 
@@ -50,7 +50,7 @@ class TestLink(unittest.TestCase):
     def test_github_works(self):
 
         user_token = UserTokens(
-            github="this isn't really needed but needed for private results")
+            github=UserToken(token=""))
         link = Link.builder(user_token).query("python").page_size(6)
 
         results = link.fetch()
@@ -72,7 +72,8 @@ class TestLink(unittest.TestCase):
 
     def test_both_github_and_stackoverflow(self):
 
-        user_token = UserTokens(stackoverflow="foobar", github="fizzbuzz")
+        user_token = UserTokens(stackoverflow=UserToken(
+            token=""), github=UserToken(token=""))
         link = Link.builder(user_token).query("python").page_size(12)
 
         results = link.fetch()
@@ -95,7 +96,7 @@ class TestLink(unittest.TestCase):
 
     def test_next_previous(self):
 
-        user_token = UserTokens(stackoverflow="foobar")
+        user_token = UserTokens(stackoverflow=UserToken(token=""))
         link = Link.builder(user_token).query("python").page_size(12)
 
         first_result_a = link.fetch()
@@ -128,7 +129,7 @@ class TestLink(unittest.TestCase):
 
     def tets_odd_number_of_pulls(self):
 
-        user_token = UserTokens(stackoverflow="foobar")
+        user_token = UserTokens(stackoverflow=UserToken(token=""))
         link = Link.builder(user_token).query("python").page_size(13)
 
         result = link.fetch()
@@ -138,10 +139,12 @@ class TestLink(unittest.TestCase):
     def test_github_urls_are_not_api_urls(self):
 
         user_token = UserTokens(
-            github="this isn't really needed but needed for private results")
+            github=UserToken(token=""))
         link = Link.builder(user_token).query("python").page_size(6)
 
         urls = [x.link for x in link.fetch()]
+
+        self.assertNotEqual(len(urls), 0)
 
         for url in urls:
             self.assertTrue(url.startswith("https://github.com"))
