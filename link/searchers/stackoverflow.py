@@ -45,7 +45,7 @@ class StackOverflow(Search):
 
         response = requests.get(URL, params=payload).json()
 
-        page = Page(page, self._pagesize)
+        page = Page(page)
 
         if 'items' not in response:
             logger.warning(

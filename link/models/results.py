@@ -91,7 +91,7 @@ class SingleResult(object):
 
 class Page(object):
 
-    def __init__(self, page, pagesize=None):
+    def __init__(self, page):
         self.__page = page
         self.__results = []
 
@@ -115,8 +115,8 @@ class SourceResult(object):
     def sourcename(self, sourcename):
         return sourcename
 
-    def add(self, page: Page, page_number=None):
-        if not page_number:
+    def add(self, page: Page):
+        if page:
             self.__pages.append(page)
 
     def topk(self, k):
