@@ -23,7 +23,7 @@ class TestLink(unittest.TestCase):
             self.assertLessEqual(time_elapsed, i)
             i = i/2.0
 
-    def test_both_github_and_stackoverflow(self):
+    def test_yolo_both_github_and_stackoverflow(self):
 
         user_token = UserTokens(stackoverflow=UserToken(
             token=""), github=UserToken(token=""))
