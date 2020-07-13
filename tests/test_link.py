@@ -17,7 +17,7 @@ class TestLink(unittest.TestCase):
         time_elapsed = later - now
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
-        self.assertLessEqual(len(result), 12)
+        self.assertEqual(len(result), 12)
         while True:
             if i < 0.0625:
                 break
@@ -34,7 +34,7 @@ class TestLink(unittest.TestCase):
         time_elapsed = later - now
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
-        self.assertLessEqual(len(result), 12)
+        self.assertEqual(len(result), 12)
         while True:
             if i < 0.03125:
                 break
@@ -52,7 +52,7 @@ class TestLink(unittest.TestCase):
         time_elapsed = later - now
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
-        self.assertLessEqual(len(result), 12)
+        self.assertEqual(len(result), 12)
         while True:
             if i < 0.0625:
                 break
