@@ -127,6 +127,8 @@ class SourceResult(object):
                     break
                 if not single_result.fetched:
                     result.append(single_result)
+            if len(result) == k:
+                break
 
         return result
 
@@ -152,6 +154,8 @@ class Results(object):
                     break
                 output.append(single_result)
                 single_result.fetched = True
+            if len(output) == k:
+                break
         return output
 
     def __per_source(self, k):
