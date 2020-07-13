@@ -12,22 +12,21 @@ HEADERS = {
 class TestLink(unittest.TestCase):
 
     def test_a_token_request_that_runs_before_everyone(self):
-        now = datetime.now()
-        response = requests.get(
-            "https://api.github.com/search/issues", headers=HEADERS, params={"q": "python", "per_page": 12})
-        data = response.json()
-        later = datetime.now()
-        time_elapsed = later - now
-        time_elapsed = time_elapsed.total_seconds()
-        requests.get(
-            "https://api.github.com/search/issues", headers=HEADERS, params={"q": "python", "per_page": 12})
-        i = 2.0
-        self.assertEqual(len(data['items']), 12)
-        while True:
-            if i < 0.0625:
-                break
-            self.assertLessEqual(time_elapsed, i)
-            i = i/2.0
+        for query in ["python", "java", "golang", "c++", "ocaml"]:
+            now = datetime.now()
+            response = requests.get(
+                "https://api.github.com/search/issues", headers=HEADERS, params={"q": query, "per_page": 12})
+            data = response.json()
+            later = datetime.now()
+            time_elapsed = later - now
+            time_elapsed = time_elapsed.total_seconds()
+            self.assertEqual(len(data['items']), 12)
+            i = 2.0
+            while True:
+                if i < 0.0625:
+                    break
+                self.assertLessEqual(time_elapsed, i)
+                i = i/2.0
 
     def test_warmup_the_request(self):
         user_token = UserTokens(stackoverflow=UserToken(
@@ -108,6 +107,7 @@ class TestLink(unittest.TestCase):
         time_elapsed = later - now
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
+        self.assertEqual(len(data['item']), 12)
         while True:
             if i < 0.0625:
                 break
