@@ -98,3 +98,21 @@ class TestLink(unittest.TestCase):
                 break
             self.assertLessEqual(time_elapsed, i)
             i = i/2.0
+
+    def test_z_token_request_that_runs_before_everyone(self):
+        now = datetime.now()
+        response = requests.get(
+            "https://api.github.com/search/issues", headers=HEADERS, params={"q": "python", "per_page": 12})
+        data = response.json()
+        later = datetime.now()
+        time_elapsed = later - now
+        time_elapsed = time_elapsed.total_seconds()
+        requests.get(
+            "https://api.github.com/search/issues", headers=HEADERS, params={"q": "python", "per_page": 12})
+        i = 2.0
+        self.assertEqual(len(data['items']), 12)
+        while True:
+            if i < 0.0625:
+                break
+            self.assertLessEqual(time_elapsed, i)
+            i = i/2.0
