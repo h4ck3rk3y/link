@@ -98,7 +98,7 @@ class TestLink(unittest.TestCase):
             self.assertLessEqual(time_elapsed, i)
             i = i/2.0
 
-    def test_z_token_request_that_runs_before_everyone(self):
+    def test_yz_token_request_that_runs_before_everyone(self):
         now = datetime.now()
         response = requests.get(
             "https://api.github.com/search/issues", headers=HEADERS, params={"q": "python", "per_page": 12})
