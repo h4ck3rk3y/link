@@ -36,7 +36,7 @@ class TestLink(unittest.TestCase):
         i = 2.0
         self.assertLessEqual(len(result), 12)
         while True:
-            if i < 0.0625:
+            if i < 0.03125:
                 break
             self.assertLessEqual(time_elapsed, i)
             i = i/2.0
