@@ -107,10 +107,8 @@ class TestLink(unittest.TestCase):
         later = datetime.now()
         time_elapsed = later - now
         time_elapsed = time_elapsed.total_seconds()
-        requests.get(
-            "https://api.github.com/search/issues", headers=HEADERS, params={"q": "python", "per_page": 12})
         i = 2.0
-        self.assertEqual(len(data['items']), 12)
+        self.assertEqual(len(data['items']), 20)
         while True:
             if i < 0.0625:
                 break
