@@ -80,6 +80,7 @@ class SingleResult(object):
             "preview": self.preview,
             "link": self.link,
             "source": self.source,
+            "title": self.title
         }
 
         if (self.date):
