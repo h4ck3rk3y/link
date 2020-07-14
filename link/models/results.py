@@ -80,8 +80,10 @@ class SingleResult(object):
             "preview": self.preview,
             "link": self.link,
             "source": self.source,
-            "date": self.date.timestamp(),
         }
+
+        if (self.date):
+            json_value["date"] = self.date.timestamp()
 
         if (self.category):
             json_value["category"] = self.category
