@@ -47,7 +47,7 @@ class TestLink(unittest.TestCase):
     def test_fire_forget_round_two(self):
         user_token = UserTokens(stackoverflow=UserToken(
             token=""), github=UserToken(token=""))
-        link = Link.builder(user_token).query("python").page_size(12)
+        link = Link.builder(user_token).query("golang").page_size(12)
         now = datetime.now()
         result = link.fetch()
         later = datetime.now()
@@ -66,7 +66,7 @@ class TestLink(unittest.TestCase):
     def test_fire_forget_terminal(self):
         user_token = UserTokens(stackoverflow=UserToken(
             token=""), github=UserToken(token=""))
-        link = Link.builder(user_token).query("python").page_size(12)
+        link = Link.builder(user_token).query("java").page_size(12)
         now = datetime.now()
         result = link.fetch()
         later = datetime.now()
