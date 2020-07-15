@@ -3,6 +3,8 @@ from link.models.user_tokens import UserTokens, UserToken
 import unittest
 from datetime import datetime
 import requests
+from pstats import Stats
+import cProfile
 
 HEADERS = {
     "Accept": "application/vnd.github.v3+json"
@@ -10,6 +12,20 @@ HEADERS = {
 
 
 class TestLink(unittest.TestCase):
+
+    def setUp(self):
+        """init each test"""
+        self.pr = cProfile.Profile()
+        self.pr.enable()
+        print("\n<<<---")
+
+    def tearDown(self):
+        """finish any test"""
+        p = Stats(self.pr)
+        p.strip_dirs()
+        p.sort_stats('tottime')
+        p.print_stats()
+        print("\n--->>>")
 
     def test_a_token_request_that_runs_before_everyone(self):
         for query in ["python", "java", "golang", "c++", "ocaml"]:
