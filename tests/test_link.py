@@ -38,6 +38,11 @@ class TestLink(unittest.TestCase):
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
         self.assertEqual(len(result), 12)
+        while i:
+            self.assertLessEqual(time_elapsed, i)
+            i = i / 2.0
+            if i < 0.0625:
+                break
 
     def test_fire_forget_round_two(self):
         user_token = UserTokens(stackoverflow=UserToken(
@@ -50,6 +55,13 @@ class TestLink(unittest.TestCase):
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
         self.assertEqual(len(result), 12)
+        i = 2.0
+        self.assertEqual(len(result), 12)
+        while i:
+            self.assertLessEqual(time_elapsed, i)
+            i = i / 2.0
+            if i < 0.0625:
+                break
 
     def test_fire_forget_terminal(self):
         user_token = UserTokens(stackoverflow=UserToken(
@@ -62,3 +74,10 @@ class TestLink(unittest.TestCase):
         time_elapsed = time_elapsed.total_seconds()
         i = 2.0
         self.assertEqual(len(result), 12)
+        i = 2.0
+        self.assertEqual(len(result), 12)
+        while i:
+            self.assertLessEqual(time_elapsed, i)
+            i = i / 2.0
+            if i < 0.0625:
+                break
