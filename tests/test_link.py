@@ -28,7 +28,7 @@ class TestLink(unittest.TestCase):
                 self.assertLessEqual(time_elapsed, i)
                 i = i/2.0
 
-    def test_xxfire_forget(self):
+    def test_fire_forget(self):
         user_token = UserTokens(stackoverflow=UserToken(
             token=""), github=UserToken(token=""))
         link = Link.builder(user_token).query("python").page_size(12)
