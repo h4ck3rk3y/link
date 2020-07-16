@@ -24,7 +24,10 @@ class TestLink(unittest.TestCase):
         user_token = UserTokens(
             stackoverflow=UserToken(token=""))
         link = Link.builder(user_token).query("foo").page_size(1)
-        result = link.fetch()[0]
+
+        result = link.fetch()
+        self.assertEqual(len(result), 1)
+        result = result[0]
 
         self.assertIsNotNone(result.link)
         self.assertIsNotNone(result.preview)

@@ -5,6 +5,7 @@ from datetime import datetime
 from .constants import QUESTION
 import logging
 from datetime import timedelta
+import re
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
@@ -57,8 +58,10 @@ class StackOverflow(Search):
         if 'items' not in response:
             logger.warning(
                 f"stackoverflow search failed with {response['error_message']}")
-            if response['error_message'].startsWith('too many requests from this IP'):
-                self._api_banned_till = datetime.now() + timedelta(hours=24)
+            if response['error_message'].startswith('too many requests from this IP'):
+                banned_until = self.parse_time_from_message(
+                    response['error_message'])
+                self._api_banned_till = datetime.now() + timedelta(seconds=banned_until)
             return
 
         for item in response['items']:
@@ -74,3 +77,8 @@ class StackOverflow(Search):
 
     def generate_preview(self, item):
         return f"This question has been viewed {item['view_count']} times and has {item['answer_count']} answers"
+
+    def parse_time_from_message(self, message):
+        pattern = re.compile("\\d+")
+        result = pattern.search(message)
+        return int(result.group(0))

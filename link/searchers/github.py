@@ -105,7 +105,7 @@ class Github(Search):
             response = requests.get(
                 endpoint, params=payload, headers=headers).json()
             if 'items' not in response:
-                if response['message'].startsWith('API rate limit exceeded'):
+                if response['message'].startswith('API rate limit exceeded'):
                     self._api_banned_till = datetime.now() + timedelta(seconds=60)
                 logging.warning(
                     f"github search for endpoint {endpoint} didn't work it failed with. Message: {response['message']}")

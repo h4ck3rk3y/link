@@ -46,8 +46,11 @@ class Search(object):
         if self._api_banned_till == None:
             return False, None
         current_date = datetime.now()
-        if current_date > self._api_banned_till:
+        if current_date < self._api_banned_till:
             return True, self._api_banned_till
+        else:
+            self._api_banned_till = None
+            return False, None
 
     def __reset(self):
         self._query = None
