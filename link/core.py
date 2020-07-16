@@ -83,6 +83,14 @@ class Link(object):
         self.__page -= 1
         return self.__pages[self.__page-2]
 
+    def stackoverflow_rate_limit_exceeded(self):
+        if self.__stackoverflow:
+            return self.__stackoverflow.rate_limit_exceeded()
+
+    def github_rate_limit_exceeded(self):
+        if self.__github:
+            return self.__github.rate_limit_exceeded()
+
     @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size

@@ -72,7 +72,8 @@ class Github(Search):
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
-            logging.warning(f"Rate limit has been exceeded {timelimit}")
+            logging.warning(
+                f"Rate limit has been exceeded, try after {timelimit}")
             return Page(page)
 
         payload = {"q": f"{self._query}"}
