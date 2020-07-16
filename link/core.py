@@ -49,7 +49,7 @@ class Link(object):
             self.__page += 1
             return self.__pages[self.__page-2]
 
-        if self.__results.unfetched_results() > self.__page_size:
+        if self.__results.unfetched_results() >= self.__page_size:
             self.__page += 1
             output = self.__results.topk(self.__page_size)
             self.__pages.append(output)
