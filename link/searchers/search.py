@@ -37,7 +37,7 @@ class Search(object):
 
     @immutable("pagesize", DEFAULT_PAGE_SIZE)
     def pagesize(self, pagesize):
-        self._pagesize = pagesize
+        self._pagesize = min(pagesize*2, 100)
         return self
 
     def __reset(self):
