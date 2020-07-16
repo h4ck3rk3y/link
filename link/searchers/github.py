@@ -68,13 +68,13 @@ class Github(Search):
         if self.__number_of_items >= page*self._pagesize:
             logging.info(
                 f"we already seem to have enough results: {self.__number_of_items}, not searching for more")
-            return Page(page)
+            return
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
             logging.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
-            return Page(page)
+            return
 
         payload = {"q": f"{self._query}"}
 
@@ -132,7 +132,7 @@ class Github(Search):
         result = sorted(result, key=lambda x: x[1])
 
         if len(result) == 0:
-            return page
+            return
 
         for item in result:
             page.add(item[0])

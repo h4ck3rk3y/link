@@ -39,7 +39,7 @@ class StackOverflow(Search):
         if status:
             logging.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
-            return Page(page)
+            return
 
         if self._enddate:
             payload["todate"] = int(self._enddate.timestamp())
@@ -59,7 +59,7 @@ class StackOverflow(Search):
                 f"stackoverflow search failed with {response['error_message']}")
             if response['error_message'].startsWith('too many requests from this IP'):
                 self._api_banned_till = datetime.now() + timedelta(hours=24)
-            return page
+            return
 
         for item in response['items']:
             preview = self.generate_preview(item)
