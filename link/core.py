@@ -49,6 +49,12 @@ class Link(object):
             self.__page += 1
             return self.__pages[self.__page-2]
 
+        if self.__results.unfetched_results() > self.__page_size:
+            self.__page += 1
+            output = self.__results.topk(self.__page_size)
+            self.__pages.append(output)
+            return output
+
         if self.__sources_enabled.stackoverflow:
             if not self.__stackoverflow:
                 self.__stackoverflow = StackOverflow.builder(self.__user_tokens.stackoverflow).fromdate(self.__fromdate).enddate(
