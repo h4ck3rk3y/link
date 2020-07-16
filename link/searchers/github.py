@@ -3,6 +3,7 @@ from ..models.results import Page, SingleResult
 import requests
 import base64
 from datetime import datetime
+from datetime import timedelta
 from .constants import ISSUE, CODE, REPO
 import logging
 import random
@@ -67,7 +68,12 @@ class Github(Search):
         if self.__number_of_items >= page*self._pagesize:
             logging.info(
                 f"we already seem to have enough results: {self.__number_of_items}, not searching for more")
-            return
+            return Page(page)
+
+        status, timelimit = self.rate_limit_exceeded()
+        if status:
+            logging.warning(f"Rate limit has been exceeded {timelimit}")
+            return Page(page)
 
         payload = {"q": f"{self._query}"}
 
@@ -98,6 +104,8 @@ class Github(Search):
             response = requests.get(
                 endpoint, params=payload, headers=headers).json()
             if 'items' not in response:
+                if response['message'].startsWith('API rate limit exceeded'):
+                    self._api_banned_till = datetime.now() + timedelta(seconds=60)
                 logging.warning(
                     f"github search for endpoint {endpoint} didn't work it failed with. Message: {response['message']}")
                 continue
@@ -123,7 +131,7 @@ class Github(Search):
         result = sorted(result, key=lambda x: x[1])
 
         if len(result) == 0:
-            return
+            return page
 
         for item in result:
             page.add(item[0])

@@ -2,6 +2,7 @@
 from .constants import DEFAULT_PAGE_SIZE
 from ..models.results import Page
 from ..decorators import immutable
+from datetime import datetime
 
 
 class Search(object):
@@ -9,6 +10,7 @@ class Search(object):
     def __init__(self, user):
         self._username = user.username
         self._token = user.token
+        self._api_banned_till = None
         self.__reset()
 
     @staticmethod
@@ -39,6 +41,13 @@ class Search(object):
     def pagesize(self, pagesize):
         self._pagesize = min(pagesize*2, 100)
         return self
+
+    def rate_limit_exceeded(self):
+        if self._api_banned_till == None:
+            return False, None
+        current_date = datetime.now()
+        if current_date > self._api_banned_till:
+            return True, self._api_banned_till
 
     def __reset(self):
         self._query = None
