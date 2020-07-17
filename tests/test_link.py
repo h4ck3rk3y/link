@@ -168,6 +168,3 @@ class TestLink(unittest.TestCase):
         result = link.fetch()
 
         self.assertGreaterEqual(len(result), 1)
-
-        for message in result:
-            print(message)
