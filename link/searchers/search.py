@@ -39,7 +39,7 @@ class Search(object):
 
     @immutable("pagesize", DEFAULT_PAGE_SIZE)
     def pagesize(self, pagesize):
-        self._pagesize = min(pagesize*2, 100)
+        self._pagesize = pagesize
         return self
 
     def rate_limit_exceeded(self):
