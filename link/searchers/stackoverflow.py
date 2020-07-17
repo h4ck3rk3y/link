@@ -4,6 +4,8 @@ import requests
 from datetime import datetime
 from .constants import QUESTION
 import logging
+from datetime import timedelta
+import re
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
@@ -34,6 +36,12 @@ class StackOverflow(Search):
 
         payload = {"intitle": self._query, "site": SOURCENAME}
 
+        status, timelimit = self.rate_limit_exceeded()
+        if status:
+            logging.warning(
+                f"Rate limit has been exceeded, try after {timelimit}")
+            return
+
         if self._enddate:
             payload["todate"] = int(self._enddate.timestamp())
         if self._fromdate:
@@ -50,7 +58,11 @@ class StackOverflow(Search):
         if 'items' not in response:
             logger.warning(
                 f"stackoverflow search failed with {response['error_message']}")
-            return page
+            if response['error_message'].startswith('too many requests from this IP'):
+                banned_until = self.parse_time_from_message(
+                    response['error_message'])
+                self._api_banned_till = datetime.now() + timedelta(seconds=banned_until)
+            return
 
         for item in response['items']:
             preview = self.generate_preview(item)
@@ -65,3 +77,8 @@ class StackOverflow(Search):
 
     def generate_preview(self, item):
         return f"This question has been viewed {item['view_count']} times and has {item['answer_count']} answers"
+
+    def parse_time_from_message(self, message):
+        pattern = re.compile("\\d+")
+        result = pattern.search(message)
+        return int(result.group(0))

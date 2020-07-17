@@ -122,6 +122,14 @@ class SourceResult(object):
         if page:
             self.__pages.append(page)
 
+    def unfetched_results(self):
+        count = 0
+        for page in self.__pages:
+            for single_result in page:
+                if not single_result.fetched:
+                    count += 1
+        return count
+
     def topk(self, k):
         result = []
         for page in self.__pages:
@@ -156,6 +164,12 @@ class Results(object):
                 output.append(single_result)
                 single_result.fetched = True
         return output
+
+    def unfetched_results(self):
+        count = 0
+        for _, source_result in self.__sources.items():
+            count += source_result.unfetched_results()
+        return count
 
     def __per_source(self, k):
         """ ceil division  of k by length of sources"""
