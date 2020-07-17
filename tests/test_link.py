@@ -158,3 +158,16 @@ class TestLink(unittest.TestCase):
 
         for url in urls:
             self.assertTrue(url.startswith("https://github.com"))
+
+    @unittest.skip("only run in person with token")
+    def test_slack(self):
+
+        user_token = UserTokens(slack=UserToken(token=""))
+
+        link = Link.builder(user_token).query("memes").page_size(5)
+        result = link.fetch()
+
+        self.assertGreaterEqual(len(result), 1)
+
+        for message in result:
+            print(message)

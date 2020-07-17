@@ -3,6 +3,7 @@ from .models.sources_enabled import SourcesEnabled
 from .searchers.constants import DEFAULT_PAGE_SIZE
 from .searchers.stackoverflow import StackOverflow
 from .searchers.github import Github
+from .searchers.slack import Slack
 from .models.results import Results, SourceResult
 from .decorators import immutable
 
@@ -35,6 +36,10 @@ class Link(object):
         if self.__sources_enabled.github:
             self.__github = None
             self.__github_result = SourceResult("github")
+
+        if self.__sources_enabled.slack:
+            self.__slack = None
+            self.__slack_result = SourceResult("slack")
 
         self.__reset()
 
@@ -72,6 +77,14 @@ class Link(object):
             self.__github_result.add(page)
             self.__results.add_source_result(self.__github_result)
 
+        if self.__sources_enabled.slack:
+            if not self.__slack:
+                self.__slack = Slack.builder(self.__user_tokens.slack).query(
+                    self.__query).pagesize(self.__page_size)
+            page = self.__slack.fetch(self.__page)
+            self.__slack_result.add(page)
+            self.__results.add_source_result(self.__slack_result)
+
         self.__page += 1
         output = self.__results.topk(self.__page_size)
         self.__pages.append(output)
@@ -90,6 +103,10 @@ class Link(object):
     def github_rate_limit_exceeded(self):
         if self.__github:
             return self.__github.rate_limit_exceeded()
+
+    def slack_rate_limit_exceeded(self):
+        if self.__slack:
+            return self.__slack.rate_limit_exceeded()
 
     @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
