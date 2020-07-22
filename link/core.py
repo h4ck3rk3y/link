@@ -4,6 +4,7 @@ from .searchers.constants import DEFAULT_PAGE_SIZE
 from .searchers.stackoverflow import StackOverflow
 from .searchers.github import Github
 from .searchers.slack import Slack
+from .searchers.trello import Trello
 from .models.results import Results, SourceResult
 from .decorators import immutable
 
@@ -40,6 +41,10 @@ class Link(object):
         if self.__sources_enabled.slack:
             self.__slack = None
             self.__slack_result = SourceResult("slack")
+
+        if self.__sources_enabled.trello:
+            self.__trello = None
+            self.__trello_result = SourceResult("trello")
 
         self.__reset()
 
@@ -85,6 +90,14 @@ class Link(object):
             self.__slack_result.add(page)
             self.__results.add_source_result(self.__slack_result)
 
+        if self.__sources_enabled.trello:
+            if not self.__trello:
+                self.__trello = Trello.builder(self.__user_tokens.trello).query(
+                    self.__query).pagesize(self.__page_size)
+            page = self.__trello.fetch(self.__page)
+            self.__trello_result.add(page)
+            self.__results.add_source_result(self.__trello_result)
+
         self.__page += 1
         output = self.__results.topk(self.__page_size)
         self.__pages.append(output)
@@ -106,6 +119,10 @@ class Link(object):
 
     def slack_rate_limit_exceeded(self):
         if self.__slack:
+            return self.__slack.rate_limit_exceeded()
+
+    def trello_rate_limit_exceeded(self):
+        if self.__trello:
             return self.__slack.rate_limit_exceeded()
 
     @immutable("page_size", DEFAULT_PAGE_SIZE)
