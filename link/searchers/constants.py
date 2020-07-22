@@ -7,3 +7,10 @@ ISSUE = "issue"
 CODE = "code"
 REPO = "repository"
 MESSAGE = "message"
+
+
+# Trello
+CARDS = "cards"
+BOARDS = "boards"
+ORGANIZATIONS = "organizations"
+MEMBERS = "members"

@@ -168,3 +168,73 @@ class TestLink(unittest.TestCase):
         result = link.fetch()
 
         self.assertGreaterEqual(len(result), 1)
+
+    @unittest.skip("this test should be done in person with an api key and token")
+    def test_trello_organizations(self):
+
+        token = ""
+        key = ""
+        user_token = UserTokens(trello=UserToken(token=token, username=key))
+
+        link = Link.builder(user_token).query("PilaniCoders").page_size(10)
+        result = link.fetch()
+
+        self.assertGreaterEqual(len(result), 1)
+
+        self.assertEqual(result[0].preview, "pilanicoders")
+        self.assertEqual(result[0].title, "PilaniCoders")
+        self.assertEqual(result[0].date, None)
+        self.assertEqual(result[0].link, None)
+
+    @unittest.skip("this test should be done in person with an api key and token")
+    def test_trello_members(self):
+
+        token = ""
+        key = ""
+        user_token = UserTokens(trello=UserToken(token=token, username=key))
+
+        link = Link.builder(user_token).query("Shubhankar").page_size(10)
+        result = link.fetch()
+
+        self.assertGreaterEqual(len(result), 1)
+
+        self.assertEqual(result[0].preview, "shubh24")
+        self.assertEqual(result[0].title, "Shubhankar Srivastava")
+        self.assertEqual(result[0].date, None)
+        self.assertEqual(result[0].link, None)
+
+    @unittest.skip("this test should be done in person with an api key and token")
+    def test_trello_boards(self):
+
+        token = ""
+        key = ""
+        user_token = UserTokens(trello=UserToken(token=token, username=key))
+
+        link = Link.builder(user_token).query("Focal").page_size(10)
+        result = link.fetch()
+
+        self.assertGreaterEqual(len(result), 1)
+
+        self.assertEqual(result[0].preview, None)
+        self.assertEqual(result[0].title, "Focal.AI")
+        self.assertEqual(result[0].date, None)
+        self.assertEqual(result[0].link, None)
+
+    @unittest.skip("this test should be done in person with an api key and token")
+    def test_trello_cards(self):
+
+        token = ""
+        key = ""
+        user_token = UserTokens(trello=UserToken(token=token, username=key))
+
+        link = Link.builder(user_token).query("Neural Network").page_size(10)
+        result = link.fetch()
+
+        self.assertGreaterEqual(len(result), 1)
+
+        self.assertEqual(
+            result[0].preview, "This engine would combine scores of all the three neural networks, and return an overall ranking. The scores would be nothing but the relevance score of every <image, tag> pair")
+        self.assertEqual(
+            result[0].title, "Engine to serve relevant search results")
+        self.assertEqual(result[0].date.year, 2018)
+        self.assertEqual(result[0].link, "https://trello.com/c/pOL4lk4a")

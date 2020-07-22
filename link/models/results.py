@@ -70,7 +70,7 @@ class SingleResult(object):
         self.__category = value
 
     def __str__(self):
-        return f"Link:{self.__link} Title:{self.__title} Preview Text:{self.__preview} Source:{self.__source} Date:{self.__date} Category:{self.__category}"
+        return f"Link:{self.__link}\nTitle:{self.__title}\nPreview Text:{self.__preview}\nSource:{self.__source}\nDate:{self.__date}\nCategory:{self.__category}"
 
     def __repr__(self):
         return self.__str__()
