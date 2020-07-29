@@ -156,6 +156,8 @@ class Results(object):
         leftover = 0
 
         for source_name in sorted(['trello', 'slack', 'github', 'stackoverflow']):
+            if source_name not in self.__sources:
+                continue
             source_result = self.__sources[source_name]
             results = source_result.topk(per_source + leftover)
             leftover = leftover + per_source - len(results)
