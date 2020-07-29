@@ -154,10 +154,11 @@ class Results(object):
         output = []
         per_source = self.__per_source(k)
         leftover = 0
-        for source_name in sorted(self.__sources.keys()):
+
+        for source_name in sorted(['trello', 'slack', 'github', 'stackoverflow']):
             source_result = self.__sources[source_name]
             results = source_result.topk(per_source + leftover)
-            leftover = per_source - len(results)
+            leftover = leftover + per_source - len(results)
             for single_result in results:
                 if len(output) == k:
                     break
