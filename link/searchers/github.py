@@ -1,6 +1,7 @@
 from .search import Search
 from ..models.results import Page, SingleResult
-import requests
+import asyncio
+import aiohttp
 import base64
 from datetime import datetime
 from datetime import timedelta
@@ -101,9 +102,11 @@ class Github(Search):
             del endpoints[2]
         result = []
         page = Page(page)
-        for endpoint in endpoints:
-            response = requests.get(
-                endpoint, params=payload, headers=headers).json()
+
+        loop = asyncio.get_event_loop()
+        data = loop.run_until_complete(fetch_all(endpoints, payload, headers))
+
+        for endpoint, response in data:
             if 'items' not in response:
                 if response['message'].startswith('API rate limit exceeded'):
                     self._api_banned_till = datetime.now() + timedelta(seconds=60)
@@ -137,3 +140,15 @@ class Github(Search):
         for item in result:
             page.add(item[0])
         return page
+
+
+async def fetch(session, url, params, headers):
+    async with session.get(url, params=params, headers=headers, ssl=False) as response:
+        res = await response.json()
+        return url, res
+
+
+async def fetch_all(urls, params, headers):
+    async with aiohttp.ClientSession() as session:
+        results = await asyncio.gather(*[fetch(session, url, params, headers) for url in urls], return_exceptions=True)
+        return results
