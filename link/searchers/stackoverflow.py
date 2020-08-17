@@ -9,7 +9,6 @@ import re
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
-logger = logging.getLogger(__name__)
 
 """
 for searches stack overflow allows about 300 searches
@@ -19,6 +18,8 @@ with a token that limit is up to 10,000
 in so the searches can't be personalized
 
 """
+
+logger = logging.getLogger(__name__)
 
 
 class StackOverflow(Search):
@@ -38,7 +39,7 @@ class StackOverflow(Search):
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
-            logging.warning(
+            logger.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
             return
 
@@ -51,6 +52,7 @@ class StackOverflow(Search):
         if page:
             payload["page"] = page
 
+        logger.info("Searching Stackoverflow")
         response = requests.get(URL, params=payload).json()
 
         page = Page(page)
@@ -63,6 +65,8 @@ class StackOverflow(Search):
                     response['error_message'])
                 self._api_banned_till = datetime.now() + timedelta(seconds=banned_until)
             return
+
+        logger.info(f"Stacksearch returned {len(response['items'])} results")
 
         for item in response['items']:
             preview = self.generate_preview(item)

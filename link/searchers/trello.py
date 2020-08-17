@@ -9,8 +9,6 @@ import random
 
 from collections import defaultdict
 
-logger = logging.getLogger(__name__)
-
 HEADERS = {
     "Accept": "application/json"
 }
@@ -58,6 +56,8 @@ If a request exceeds the limit, Trello will return a 429 error.
 https://developer.atlassian.com/cloud/trello/rest/api-group-search/#api-search-get
 """
 
+logger = logging.getLogger(__name__)
+
 
 class Trello(Search):
 
@@ -79,12 +79,12 @@ class Trello(Search):
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
-            logging.warning(
+            logger.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
             return
 
         if self.__number_of_items >= page*self._pagesize:
-            logging.info(
+            logger.info(
                 f"we already seem to have enough results: {self.__number_of_items}, not searching for more")
             return
 
@@ -106,15 +106,16 @@ class Trello(Search):
             payload['organizations_page'] = page
             payload['members_page'] = page
 
+        logger.debug(f"Searching trello")
         response = requests.get(SEARCH_URL, params=payload)
 
         if response.status_code == 429:
             self._api_banned_till = datetime.now() + timedelta(secodns=10)
-            logging.warning(
+            logger.warning(
                 f"API limit reached, please try after {self._api_banned_till}")
 
         if response.status_code != 200:
-            logging.warning(
+            logger.warning(
                 "For some reason we couldn't get a succesful response from the API")
 
         response_as_json = response.json()
@@ -142,6 +143,8 @@ class Trello(Search):
         # this allows different categories of results to appear
         random.shuffle(result)
         result = sorted(result, key=lambda x: x[1])
+
+        logger.info(f"Trello search returned {len(result)} results")
 
         if len(result) == 0:
             return

@@ -8,8 +8,6 @@ from .constants import ISSUE, CODE, REPO
 import logging
 import random
 
-logger = logging.getLogger(__name__)
-
 HEADERS = {
     "Accept": "application/vnd.github.v3+json"
 }
@@ -50,6 +48,8 @@ to test personal auth you can create a token with repo permissions
 and put in your username.
 """
 
+logger = logging.getLogger(__name__)
+
 
 class Github(Search):
 
@@ -66,13 +66,13 @@ class Github(Search):
                ""), "Query cannot be empty"
 
         if self.__number_of_items >= page*self._pagesize:
-            logging.info(
+            logger.info(
                 f"we already seem to have enough results: {self.__number_of_items}, not searching for more")
             return
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
-            logging.warning(
+            logger.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
             return
 
@@ -104,12 +104,15 @@ class Github(Search):
         for endpoint in endpoints:
             response = requests.get(
                 endpoint, params=payload, headers=headers).json()
+            logger.debug(f"Searching Github endpoint: {endpoint}")
             if 'items' not in response:
                 if response['message'].startswith('API rate limit exceeded'):
                     self._api_banned_till = datetime.now() + timedelta(seconds=60)
-                logging.warning(
+                logger.warning(
                     f"github search for endpoint {endpoint} didn't work it failed with. Message: {response['message']}")
                 continue
+            logger.info(
+                f"Searching Github for {endpoints} returned {len(response['items'])} results")
             for item in response['items']:
                 link = item['html_url']
                 preview = item[attribute_map["preview"][endpoint]]
@@ -130,6 +133,8 @@ class Github(Search):
         # this allows different categories of results to appear
         random.shuffle(result)
         result = sorted(result, key=lambda x: x[1])
+
+        logger.info(f"Github returned a total of f{len(result)} results")
 
         if len(result) == 0:
             return
