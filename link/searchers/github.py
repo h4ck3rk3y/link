@@ -134,7 +134,7 @@ class Github(Search):
         random.shuffle(result)
         result = sorted(result, key=lambda x: x[1])
 
-        logger.info(f"Github returned a total of f{len(result)} results")
+        logger.info(f"Github returned a total of {len(result)} results")
 
         if len(result) == 0:
             return
