@@ -76,7 +76,7 @@ class Slack(Search):
             return
 
         logger.info(
-            f"Slack returned {len(response['messages']['matches'])} results")
+            f"Slack returned {len(response_json['messages']['matches'])} results")
 
         for message in response_json["messages"]["matches"]:
             preview = message["text"]
