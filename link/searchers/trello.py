@@ -9,8 +9,6 @@ import random
 
 from collections import defaultdict
 
-logger = logging.getLogger(__name__)
-
 HEADERS = {
     "Accept": "application/json"
 }
@@ -106,6 +104,7 @@ class Trello(Search):
             payload['organizations_page'] = page
             payload['members_page'] = page
 
+        logging.debug(f"Searching trello")
         response = requests.get(SEARCH_URL, params=payload)
 
         if response.status_code == 429:
@@ -142,6 +141,8 @@ class Trello(Search):
         # this allows different categories of results to appear
         random.shuffle(result)
         result = sorted(result, key=lambda x: x[1])
+
+        logging.info(f"Trello search returned {len(result)} results")
 
         if len(result) == 0:
             return

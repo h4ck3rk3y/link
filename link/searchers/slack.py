@@ -9,7 +9,6 @@ import re
 
 URL = "https://slack.com/api/search.messages"
 SOURCENAME = "slack"
-logger = logging.getLogger(__name__)
 
 """
 just exploring the slack api here
@@ -53,6 +52,7 @@ class Slack(Search):
         if page:
             payload["page"] = page
 
+        logging.debug("Searching Slack")
         response = requests.get(URL, params=payload, headers=HEADERS)
 
         response_json = response.json()
@@ -60,7 +60,7 @@ class Slack(Search):
         page = Page(page)
 
         if not response_json['ok']:
-            logger.warning(
+            logging.warning(
                 f"slack search failed with {response_json['error']}")
             if response.status_code == 429:
                 retry_after = int(response.headers["Retry-After"])
@@ -72,6 +72,9 @@ class Slack(Search):
         if "messages" not in response_json or "matches" not in response_json["messages"]:
             logging.warning("Status okay but no matches")
             return
+
+        logging.info(
+            f"Slack returned {len(response['messages']['matches'])} results")
 
         for message in response_json["messages"]["matches"]:
             preview = message["text"]

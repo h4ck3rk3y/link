@@ -9,7 +9,6 @@ import re
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
-logger = logging.getLogger(__name__)
 
 """
 for searches stack overflow allows about 300 searches
@@ -51,18 +50,21 @@ class StackOverflow(Search):
         if page:
             payload["page"] = page
 
+        logging.info("Searching Stackoverflow")
         response = requests.get(URL, params=payload).json()
 
         page = Page(page)
 
         if 'items' not in response:
-            logger.warning(
+            logging.warning(
                 f"stackoverflow search failed with {response['error_message']}")
             if response['error_message'].startswith('too many requests from this IP'):
                 banned_until = self.parse_time_from_message(
                     response['error_message'])
                 self._api_banned_till = datetime.now() + timedelta(seconds=banned_until)
             return
+
+        logging.info(f"Stacksearch returned {len(response['items'])} results")
 
         for item in response['items']:
             preview = self.generate_preview(item)
