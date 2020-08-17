@@ -22,6 +22,8 @@ https://api.slack.com/docs/rate-limits#tier_t2
 
 HEADERS = {"Content-type": "application/x-www-form-urlencoded"}
 
+logger = logging.getLogger(__name__)
+
 
 class Slack(Search):
 
@@ -43,7 +45,7 @@ class Slack(Search):
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
-            logging.warning(
+            logger.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
             return
 
@@ -52,7 +54,7 @@ class Slack(Search):
         if page:
             payload["page"] = page
 
-        logging.debug("Searching Slack")
+        logger.debug("Searching Slack")
         response = requests.get(URL, params=payload, headers=HEADERS)
 
         response_json = response.json()
@@ -60,7 +62,7 @@ class Slack(Search):
         page = Page(page)
 
         if not response_json['ok']:
-            logging.warning(
+            logger.warning(
                 f"slack search failed with {response_json['error']}")
             if response.status_code == 429:
                 retry_after = int(response.headers["Retry-After"])
@@ -70,10 +72,10 @@ class Slack(Search):
             return
 
         if "messages" not in response_json or "matches" not in response_json["messages"]:
-            logging.warning("Status okay but no matches")
+            logger.warning("Status okay but no matches")
             return
 
-        logging.info(
+        logger.info(
             f"Slack returned {len(response['messages']['matches'])} results")
 
         for message in response_json["messages"]["matches"]:

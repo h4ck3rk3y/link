@@ -8,6 +8,7 @@ from .searchers.trello import Trello
 from .models.results import Results, SourceResult
 from .decorators import immutable
 import logging
+log = logging.getLogger(__name__)
 
 
 class Link(object):
@@ -57,7 +58,7 @@ class Link(object):
         self.__validate()
 
         if len(self.__pages) >= self.__page:
-            logging.info(
+            logger.info(
                 "We don't have to load another page as its already been loaded")
             self.__page += 1
             return self.__pages[self.__page-2]
@@ -70,7 +71,7 @@ class Link(object):
 
         if self.__sources_enabled.stackoverflow:
             if not self.__stackoverflow:
-                logging.info("Stackoverflow searcher is being created")
+                logger.info("Stackoverflow searcher is being created")
                 self.__stackoverflow = StackOverflow.builder(self.__user_tokens.stackoverflow).fromdate(self.__fromdate).enddate(
                     self.__enddate).query(self.__query).pagesize(self.__page_size)
 
@@ -80,7 +81,7 @@ class Link(object):
 
         if self.__sources_enabled.github:
             if not self.__github:
-                logging.info("Github searcher is being created")
+                logger.info("Github searcher is being created")
                 self.__github = Github.builder(
                     self.__user_tokens.github).query(self.__query).pagesize(self.__page_size)
             page = self.__github.fetch(self.__page)
@@ -89,7 +90,7 @@ class Link(object):
 
         if self.__sources_enabled.slack:
             if not self.__slack:
-                logging.info("Slack searcher is being created")
+                logger.info("Slack searcher is being created")
                 self.__slack = Slack.builder(self.__user_tokens.slack).query(
                     self.__query).pagesize(self.__page_size)
             page = self.__slack.fetch(self.__page)
@@ -98,7 +99,7 @@ class Link(object):
 
         if self.__sources_enabled.trello:
             if not self.__trello:
-                logging.info("Trello searcher is being created")
+                logger.info("Trello searcher is being created")
                 self.__trello = Trello.builder(self.__user_tokens.trello).query(
                     self.__query).pagesize(self.__page_size)
             page = self.__trello.fetch(self.__page)
@@ -112,9 +113,9 @@ class Link(object):
 
     def previous(self):
         if self.__page < 3:
-            logging.info("Went too far back, this page doesn't exist")
+            logger.info("Went too far back, this page doesn't exist")
             return []
-        logging.info("Fetching a previous page")
+        logger.info("Fetching a previous page")
         self.__page -= 1
         return self.__pages[self.__page-2]
 

@@ -19,6 +19,8 @@ in so the searches can't be personalized
 
 """
 
+logger = logging.getLogger(__name__)
+
 
 class StackOverflow(Search):
 
@@ -37,7 +39,7 @@ class StackOverflow(Search):
 
         status, timelimit = self.rate_limit_exceeded()
         if status:
-            logging.warning(
+            logger.warning(
                 f"Rate limit has been exceeded, try after {timelimit}")
             return
 
@@ -50,13 +52,13 @@ class StackOverflow(Search):
         if page:
             payload["page"] = page
 
-        logging.info("Searching Stackoverflow")
+        logger.info("Searching Stackoverflow")
         response = requests.get(URL, params=payload).json()
 
         page = Page(page)
 
         if 'items' not in response:
-            logging.warning(
+            logger.warning(
                 f"stackoverflow search failed with {response['error_message']}")
             if response['error_message'].startswith('too many requests from this IP'):
                 banned_until = self.parse_time_from_message(
@@ -64,7 +66,7 @@ class StackOverflow(Search):
                 self._api_banned_till = datetime.now() + timedelta(seconds=banned_until)
             return
 
-        logging.info(f"Stacksearch returned {len(response['items'])} results")
+        logger.info(f"Stacksearch returned {len(response['items'])} results")
 
         for item in response['items']:
             preview = self.generate_preview(item)
