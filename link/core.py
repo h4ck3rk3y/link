@@ -8,7 +8,8 @@ from .searchers.trello import Trello
 from .models.results import Results, SourceResult
 from .decorators import immutable
 import logging
-log = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
 
 
 class Link(object):
