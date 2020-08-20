@@ -126,7 +126,9 @@ class Trello(Search):
         result = []
         page = Page(page)
 
-        categories = [CARDS, BOARDS, MEMBERS, ORGANIZATIONS]
+        # disabling boards, members and organizations
+        # as they don't have links
+        categories = [CARDS]
 
         for category in categories:
             for index, row in enumerate(response_as_json[category]):
