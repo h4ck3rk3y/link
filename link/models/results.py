@@ -1,6 +1,10 @@
 
+import logging
 from .base import Base
 REALLY_LARGE_NUMBER = 2**1000
+
+
+logger = logging.getLogger(__name__)
 
 
 class SingleResult(object):
@@ -155,12 +159,20 @@ class Results(object):
         per_source = self.__per_source(k)
         leftover = 0
 
+        logger.info(
+            f"Fetching {k} results from what was fetched to return to user")
+        logger.info(f"Will be requesting {per_source} results per source")
+
         for source_name in sorted(['trello', 'slack', 'github', 'stackoverflow']):
             if source_name not in self.__sources:
                 continue
             source_result = self.__sources[source_name]
+            logger.info(
+                f"Requesting {per_source+ leftover} results from {source_name}")
             results = source_result.topk(per_source + leftover)
+            logger.info(f"Got back {len(results)} from {source_name}")
             leftover = leftover + per_source - len(results)
+            logger.info(f"New value of leftover is {leftover}")
             for single_result in results:
                 if len(output) == k:
                     break
