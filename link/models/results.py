@@ -164,7 +164,7 @@ class Results(object):
             f"Fetching {k} results from what was fetched to return to user")
         logger.info(f"Will be requesting {per_source} results per source")
 
-        while len(output < k) and len(self.__finished) != len(self.__sources):
+        while len(output) < k and len(self.__finished) != len(self.__sources):
             for source_name in ['trello', 'slack', 'github', 'stackoverflow']:
                 if source_name not in self.__sources or source_name in self.__finished:
                     continue
