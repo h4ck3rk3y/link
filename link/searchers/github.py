@@ -112,7 +112,7 @@ class Github(Search):
                     f"github search for endpoint {endpoint} didn't work it failed with. Message: {response['message']}")
                 continue
             logger.info(
-                f"Searching Github for {endpoints} returned {len(response['items'])} results")
+                f"Searching Github for {endpoint} returned {len(response['items'])} results")
             for item in response['items']:
                 link = item['html_url']
                 preview = item[attribute_map["preview"][endpoint]]
