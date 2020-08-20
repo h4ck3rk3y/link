@@ -173,7 +173,7 @@ class Results(object):
                     f"Requesting {per_source+ leftover} results from {source_name}")
                 results = source_result.topk(per_source + leftover)
                 logger.info(f"Got back {len(results)} from {source_name}")
-                if results == 0:
+                if len(results) == 0:
                     self.__finished.add(source_name)
                 leftover = leftover + per_source - len(results)
                 logger.info(f"New value of leftover is {leftover}")
