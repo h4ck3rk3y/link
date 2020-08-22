@@ -80,7 +80,7 @@ class Slack(Search):
 
         for message in response_json["messages"]["matches"]:
             preview = message["text"]
-            title = f"Message from {message['username']} on #{message['channel']['name']}"
+            title = f"Message from {message.get('username', 'unknown')} on #{message['channel']['name']}"
             link = message['permalink']
             date = datetime.fromtimestamp(float(message['ts']))
             single_result = SingleResult(
