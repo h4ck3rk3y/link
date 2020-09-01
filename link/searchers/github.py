@@ -78,9 +78,6 @@ class Github(Search):
 
         payload = {"q": f"{self._query}"}
 
-        if self._username:
-            payload["q"] = f"{self._query}+user:{self._username}"
-
         if self._pagesize:
             payload['per_page'] = self._pagesize
 
