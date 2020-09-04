@@ -36,14 +36,14 @@ GITHUB_QUALIFIERS = [
     "language",
     "topic",
     "topics",
-    "license"
+    "license",
     "is:public",
     "is:private",
     "mirror:true",
     "mirror:false",
     "archived:true",
     "archived:false",
-    "good-first-issues"
+    "good-first-issues",
     "help-wanted-issues",
     "is:curated",
     "is:featured",
@@ -81,7 +81,7 @@ GITHUB_QUALIFIERS = [
     "involves",
     "linked:pr",
     "linked:issue",
-    "-linked:pr"
+    "-linked:pr",
     "-linked:issue",
     "label:LABEL"
     "milestone",
@@ -126,5 +126,5 @@ GITHUB_QUALIFIERS = [
     "location",
     "followers",
     "fork:only",
-    "fork:true"
+    "fork:true",
 ]

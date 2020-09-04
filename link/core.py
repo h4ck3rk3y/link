@@ -116,7 +116,7 @@ class Link(object):
     def remove_github_filters(self, query):
         for qualifer in GITHUB_QUALIFIERS:
             if ":" in qualifer:
-                query = query.replace(qualifer, "")
+                query = query.replace(qualifer + " ", "")
             elif qualifer + ":" in query:
                 query = re.sub(qualifer + r":.*?\s", "", query)
         return query
@@ -145,22 +145,22 @@ class Link(object):
         if self.__trello:
             return self.__slack.rate_limit_exceeded()
 
-    @immutable("page_size", DEFAULT_PAGE_SIZE)
+    @ immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size
         return self
 
-    @immutable("fromdate")
+    @ immutable("fromdate")
     def fromdate(self, fromdate):
         self.__fromdate = fromdate
         return self
 
-    @immutable("enddate")
+    @ immutable("enddate")
     def enddate(self, enddate):
         self.__enddate = enddate
         return self
 
-    @immutable("query")
+    @ immutable("query")
     def query(self, query):
         self.__query = query
         self.__non_github_query = self.remove_github_filters(query)
