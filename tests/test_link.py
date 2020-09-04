@@ -238,3 +238,25 @@ class TestLink(unittest.TestCase):
             result[0].title, "Engine to serve relevant search results")
         self.assertEqual(result[0].date.year, 2018)
         self.assertEqual(result[0].link, "https://trello.com/c/pOL4lk4a")
+
+    def test_query_cleanup_for_pure_string_match(self):
+
+        query = "foobar in:public going"
+        result = "foobar going"
+
+        user_token = UserTokens(
+            stackoverflow=UserToken(token=""))
+        link = Link.builder(user_token).query(query)
+
+        self.assertEqual(link.remove_github_filters(query), result)
+
+    def test_query_for_regex_match(self):
+
+        query = "foobar in:public user:h4ck3rk3y can be user:psdh org:darkstark going"
+        result = "foobar can be going"
+
+        user_token = UserTokens(
+            stackoverflow=UserToken(token=""))
+        link = Link.builder(user_token).query(query)
+
+        self.assertEqual(link.remove_github_filters(query), result)
