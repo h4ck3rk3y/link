@@ -1,6 +1,6 @@
 from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
-from .searchers.constants import DEFAULT_PAGE_SIZE
+from .searchers.constants import DEFAULT_PAGE_SIZE, GITHUB_QUALIFIERS
 from .searchers.stackoverflow import StackOverflow
 from .searchers.github import Github
 from .searchers.slack import Slack
@@ -8,6 +8,7 @@ from .searchers.trello import Trello
 from .models.results import Results, SourceResult
 from .decorators import immutable
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class Link(object):
             if not self.__stackoverflow:
                 logger.info("Stackoverflow searcher is being created")
                 self.__stackoverflow = StackOverflow.builder(self.__user_tokens.stackoverflow).fromdate(self.__fromdate).enddate(
-                    self.__enddate).query(self.__query).pagesize(self.__page_size)
+                    self.__enddate).query(self.__non_github_query).pagesize(self.__page_size)
 
             page = self.__stackoverflow.fetch(self.__page)
             self.__stackoverflow_result.add(page)
@@ -93,7 +94,7 @@ class Link(object):
             if not self.__slack:
                 logger.info("Slack searcher is being created")
                 self.__slack = Slack.builder(self.__user_tokens.slack).query(
-                    self.__query).pagesize(self.__page_size)
+                    self.__non_github_query).pagesize(self.__page_size)
             page = self.__slack.fetch(self.__page)
             self.__slack_result.add(page)
             self.__results.add_source_result(self.__slack_result)
@@ -102,7 +103,7 @@ class Link(object):
             if not self.__trello:
                 logger.info("Trello searcher is being created")
                 self.__trello = Trello.builder(self.__user_tokens.trello).query(
-                    self.__query).pagesize(self.__page_size)
+                    self.__non_github_query).pagesize(self.__page_size)
             page = self.__trello.fetch(self.__page)
             self.__trello_result.add(page)
             self.__results.add_source_result(self.__trello_result)
@@ -111,6 +112,14 @@ class Link(object):
         output = self.__results.topk(self.__page_size)
         self.__pages.append(output)
         return output
+
+    def remove_github_filters(self, query):
+        for qualifer in GITHUB_QUALIFIERS:
+            if ":" in qualifer:
+                query = query.replace(qualifer + " ", "")
+            elif qualifer + ":" in query:
+                query = re.sub(qualifer + r":.*?\s", "", query)
+        return query
 
     def previous(self):
         if self.__page < 3:
@@ -136,24 +145,28 @@ class Link(object):
         if self.__trello:
             return self.__slack.rate_limit_exceeded()
 
-    @immutable("page_size", DEFAULT_PAGE_SIZE)
+    @ immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size
         return self
 
-    @immutable("fromdate")
+    @ immutable("fromdate")
     def fromdate(self, fromdate):
         self.__fromdate = fromdate
         return self
 
-    @immutable("enddate")
+    @ immutable("enddate")
     def enddate(self, enddate):
         self.__enddate = enddate
         return self
 
-    @immutable("query")
+    @ immutable("query")
     def query(self, query):
         self.__query = query
+        self.__non_github_query = self.remove_github_filters(query)
+        if self.__non_github_query != self.__query:
+            logger.info(
+                f"filtered query: {self.__non_github_query} different from query:{self.__query}")
         return self
 
     def slack_only(self):
