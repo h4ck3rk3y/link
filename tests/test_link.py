@@ -241,7 +241,7 @@ class TestLink(unittest.TestCase):
 
     def test_query_cleanup_for_pure_string_match(self):
 
-        query = "foobar in:public going"
+        query = "foobar is:public going"
         result = "foobar going"
 
         user_token = UserTokens(
@@ -252,7 +252,7 @@ class TestLink(unittest.TestCase):
 
     def test_query_for_regex_match(self):
 
-        query = "foobar in:public user:h4ck3rk3y can be user:psdh org:darkstark going"
+        query = "foobar is:public user:h4ck3rk3y can be user:psdh org:darkstark going"
         result = "foobar can be going"
 
         user_token = UserTokens(
