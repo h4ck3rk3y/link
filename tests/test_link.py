@@ -241,7 +241,7 @@ class TestLink(unittest.TestCase):
 
     def test_query_cleanup_for_pure_string_match(self):
 
-        query = "memes user:psdh"
+        query = "foobar is:public going"
         result = "foobar going"
 
         user_token = UserTokens(
