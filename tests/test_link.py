@@ -260,3 +260,23 @@ class TestLink(unittest.TestCase):
         link = Link.builder(user_token).query(query)
 
         self.assertEqual(link.remove_github_filters(query), result)
+
+    def test_query_that_ends_in_direct_match(self):
+        query = "memes is:private"
+        result = "memes"
+
+        user_token = UserTokens(
+            stackoverflow=UserToken(token=""))
+        link = Link.builder(user_token).query(query)
+
+        self.assertEqual(link.remove_github_filters(query), result)
+
+    def test_query_that_ends_in_regex_match(self):
+        query = "memes user:psdh"
+        result = "memes"
+
+        user_token = UserTokens(
+            stackoverflow=UserToken(token=""))
+        link = Link.builder(user_token).query(query)
+
+        self.assertEqual(link.remove_github_filters(query), result)

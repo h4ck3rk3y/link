@@ -116,9 +116,10 @@ class Link(object):
     def remove_github_filters(self, query):
         for qualifer in GITHUB_QUALIFIERS:
             if ":" in qualifer:
-                query = query.replace(qualifer + " ", "")
+                query = query.replace(" " + qualifer, "")
             elif qualifer + ":" in query:
                 query = re.sub(qualifer + r":.*?\s", "", query)
+                query = re.sub(" " + qualifer + r":.*?$", "", query)
         return query
 
     def previous(self):
@@ -164,9 +165,8 @@ class Link(object):
     def query(self, query):
         self.__query = query
         self.__non_github_query = self.remove_github_filters(query)
-        if self.__non_github_query != self.__query:
-            logger.info(
-                f"filtered query: {self.__non_github_query} different from query:{self.__query}")
+        logger.debug(
+            f"Filtered query is  raw query: {self.__non_github_query == self.__query}")
         return self
 
     def slack_only(self):
