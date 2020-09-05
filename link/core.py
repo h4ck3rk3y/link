@@ -116,9 +116,10 @@ class Link(object):
     def remove_github_filters(self, query):
         for qualifer in GITHUB_QUALIFIERS:
             if ":" in qualifer:
-                query = query.replace(qualifer + " ", "")
+                query = query.replace(" " + qualifer, "")
             elif qualifer + ":" in query:
                 query = re.sub(qualifer + r":.*?\s", "", query)
+                query = re.sub(" " + qualifer + r":.*?$", "", query)
         return query
 
     def previous(self):
