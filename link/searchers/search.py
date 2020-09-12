@@ -43,7 +43,7 @@ class Search(object):
         return self
 
     def rate_limit_exceeded(self):
-        if self._api_banned_till == None:
+        if self._api_banned_till is None:
             return False, None
         current_date = datetime.now()
         if current_date < self._api_banned_till:
