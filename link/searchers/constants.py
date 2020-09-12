@@ -16,7 +16,7 @@ ORGANIZATIONS = "organizations"
 MEMBERS = "members"
 
 
-GITHUB_QUALIFIERS = [
+GITHUB_QUALIFIERS = set([
     "in:file",
     "in:path",
     "in:name",
@@ -41,8 +41,6 @@ GITHUB_QUALIFIERS = [
     "is:private",
     "mirror:true",
     "mirror:false",
-    "archived:true",
-    "archived:false",
     "good-first-issues",
     "help-wanted-issues",
     "is:curated",
@@ -66,7 +64,7 @@ GITHUB_QUALIFIERS = [
     "type:pr",
     "type:issue",
     "is:pr",
-    "is:issue"
+    "is:issue",
     "in:title",
     "in:body",
     "in:comments",
@@ -83,7 +81,7 @@ GITHUB_QUALIFIERS = [
     "linked:issue",
     "-linked:pr",
     "-linked:issue",
-    "label:LABEL"
+    "label:LABEL",
     "milestone",
     "project",
     "status:pending",
@@ -119,12 +117,10 @@ GITHUB_QUALIFIERS = [
     "type:user",
     "type:org",
     "in:login",
-    "in:name",
     "fullname:",
     "in:email",
     "repos",
     "location",
-    "followers",
     "fork:only",
     "fork:true",
-]
+])

@@ -239,44 +239,38 @@ class TestLink(unittest.TestCase):
         self.assertEqual(result[0].date.year, 2018)
         self.assertEqual(result[0].link, "https://trello.com/c/pOL4lk4a")
 
-    def test_query_cleanup_for_pure_string_match(self):
 
-        query = "foobar is:public going"
-        result = "foobar going"
+    def test_different_non_github_queries(self):
+        test_cases = [
+            "is:public tomatoes are red user:psdh",
+            "tomatoes are red",
+            "memes user:psdh",
+            "memes is:private",
+            "foobar is:public user:h4ck3rk3y can be user:psdh org:darkstark going",
+            "foobar is:public going",
+            "tomatoes are red review:changes_requested",
+            "reviewed-by:tomatoes are red",
+            "user: psdh is sodhi",
+            "review-requested:sodhi is psdh",
+            "",
+        ]
 
-        user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
-        link = Link.builder(user_token).query(query)
+        expected_results = [
+            "tomatoes are red",
+            "tomatoes are red",
+            "memes",
+            "memes",
+            "foobar can be going",
+            "foobar going",
+            "tomatoes are red",
+            "are red",
+            "user: psdh is sodhi",
+            "is psdh",
+            ""
+        ]
+        user_token = UserTokens(stackoverflow=UserToken(token=""))
 
-        self.assertEqual(link.remove_github_filters(query), result)
+        for index, test in enumerate(test_cases):
+            link = Link.builder(user_token).query(test)
 
-    def test_query_for_regex_match(self):
-
-        query = "foobar is:public user:h4ck3rk3y can be user:psdh org:darkstark going"
-        result = "foobar can be going"
-
-        user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
-        link = Link.builder(user_token).query(query)
-
-        self.assertEqual(link.remove_github_filters(query), result)
-
-    def test_query_that_ends_in_direct_match(self):
-        query = "memes is:private"
-        result = "memes"
-
-        user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
-        link = Link.builder(user_token).query(query)
-
-        self.assertEqual(link.remove_github_filters(query), result)
-
-    def test_query_that_ends_in_regex_match(self):
-        query = "memes user:psdh"
-        result = "memes"
-
-        user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
-        link = Link.builder(user_token).query(query)
-
-        self.assertEqual(link.remove_github_filters(query), result)
+            self.assertEqual(expected_results[index], link.remove_github_filters(test))

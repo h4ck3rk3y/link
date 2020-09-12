@@ -114,13 +114,13 @@ class Link(object):
         return output
 
     def remove_github_filters(self, query):
-        for qualifer in GITHUB_QUALIFIERS:
-            if ":" in qualifer:
-                query = query.replace(" " + qualifer, "")
-            elif qualifer + ":" in query:
-                query = re.sub(qualifer + r":.*?\s", "", query)
-                query = re.sub(" " + qualifer + r":.*?$", "", query)
-        return query
+        regex_exp_for_qualifiers = r'([\w-]+:[\w-]+)'
+
+        for potential_qualifier in re.findall(regex_exp_for_qualifiers, query):
+            if potential_qualifier in GITHUB_QUALIFIERS or potential_qualifier.split(':')[0] in GITHUB_QUALIFIERS:
+                query = query.replace(potential_qualifier, "")
+
+        return re.sub(r'\s+', ' ', query).strip()
 
     def previous(self):
         if self.__page < 3:
