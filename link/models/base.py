@@ -1,10 +1,11 @@
 class Base(object):
 
-    def __init__(self, slack=None, github=None, trello=None, stackoverflow=None):
+    def __init__(self, slack=None, github=None, trello=None, stackoverflow=None, gitlab=None):
         self.__slack = slack
         self.__github = github
         self.__trello = trello
         self.__stackoverflow = stackoverflow
+        self.__gitlab = gitlab
 
     @property
     def slack(self):
@@ -37,6 +38,14 @@ class Base(object):
     @stackoverflow.setter
     def stackoverflow(self, stackoverflow):
         self.__stackoverflow = stackoverflow
+
+    @property
+    def gitlab(self):
+        return self.__gitlab
+
+    @stackoverflow.setter
+    def gitlab(self, gitlab):
+        self.__gitlab = gitlab
 
     def __repr__(self):
         return self.__str__()

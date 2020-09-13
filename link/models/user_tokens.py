@@ -29,8 +29,8 @@ class UserToken(object):
 
 class UserTokens(Base):
 
-    def __init__(self, slack: UserToken = None, github: UserToken = None, trello: UserToken = None, stackoverflow: UserToken = None):
-        super().__init__(slack, github, trello, stackoverflow)
+    def __init__(self, slack: UserToken = None, github: UserToken = None, trello: UserToken = None, stackoverflow: UserToken = None, gitlab: UserToken = None):
+        super().__init__(slack, github, trello, stackoverflow, gitlab)
 
     def __str__(self):
-        return f"User tokens enabled for slack:{self.slack!=None} github:{self.github!=None} trello:{self.trello!=None} stackoverflow:{self.stackoverflow!=None}"
+        return f"User tokens enabled for slack:{self.slack!=None} github:{self.github!=None} trello:{self.trello!=None} stackoverflow:{self.stackoverflow!=None} gitlab:{self.gitlab!=None}"
