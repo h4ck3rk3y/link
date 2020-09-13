@@ -63,7 +63,7 @@ class Gitlab(Search):
 
         headers = {}
         if self._token != "":
-            headers["PRIVATE-TOKEN"] = f"{self._token}"
+            payload['access_token'] = self._token
 
         result = self.combine_sources(payload, headers, page)
 
