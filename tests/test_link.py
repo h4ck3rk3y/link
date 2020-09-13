@@ -239,7 +239,6 @@ class TestLink(unittest.TestCase):
         self.assertEqual(result[0].date.year, 2018)
         self.assertEqual(result[0].link, "https://trello.com/c/pOL4lk4a")
 
-
     def test_different_non_github_queries(self):
         test_cases = [
             "is:public tomatoes are red user:psdh",
@@ -273,4 +272,29 @@ class TestLink(unittest.TestCase):
         for index, test in enumerate(test_cases):
             link = Link.builder(user_token).query(test)
 
-            self.assertEqual(expected_results[index], link.remove_github_filters(test))
+            self.assertEqual(
+                expected_results[index], link.remove_github_filters(test))
+
+    @unittest.skip("Needs a working gitlab token")
+    def test_gitlab_works(self):
+
+        user_token = UserTokens(
+            gitlab=UserToken(token=""))
+        link = Link.builder(user_token).query("file").page_size(6)
+
+        results = link.fetch()
+
+        self.assertGreaterEqual(len(results), 0)
+        self.assertEqual(len(results), 6)
+
+        date = results[0].date
+        link = results[0].link
+        preview = results[0].preview
+        source = results[0].source
+        title = results[0].title
+
+        self.assertIsNotNone(date)
+        self.assertIsNotNone(link)
+        self.assertIsNotNone(preview)
+        self.assertIsNotNone(source)
+        self.assertIsNotNone(title)

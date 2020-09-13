@@ -117,7 +117,7 @@ class Link(object):
         if self.__sources_enabled.gitlab:
             if not self.__gitlab:
                 logger.info("Gitlab searcher is being created")
-                self.__gitlab = Gitlab.builder(self.__user_tokens.trello).query(
+                self.__gitlab = Gitlab.builder(self.__user_tokens.gitlab).query(
                     self.__non_github_query).pagesize(self.__page_size)
             page = self.__gitlab.fetch(self.__page)
             self.__gitlab_result.add(page)
@@ -244,7 +244,7 @@ class Link(object):
         assert(self.__query != None), "Query cant be None"
         assert(self.__query != ""), "Query cant be empty"
         assert(self.__user_tokens != None), "User Tokens cant be none"
-        assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello != False), "No source enabled"
+        assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello or self.__sources_enabled.gitlab), "No source enabled"
 
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE

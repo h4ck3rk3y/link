@@ -43,7 +43,7 @@ class Base(object):
     def gitlab(self):
         return self.__gitlab
 
-    @stackoverflow.setter
+    @gitlab.setter
     def gitlab(self, gitlab):
         self.__gitlab = gitlab
 

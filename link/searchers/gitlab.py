@@ -8,7 +8,7 @@ from .constants import ISSUE, MERGE_REQUESTS, REPO
 import logging
 import random
 
-GITLAB_URL = "https://gitlab.example.com/api/v4/search"
+GITLAB_URL = "https://gitlab.com/api/v4/search"
 
 SOURCENAME = "gitlab"
 
@@ -35,7 +35,7 @@ class Gitlab(Search):
 
     @staticmethod
     def builder(user=None):
-        return Github(user)
+        return Gitlab(user)
 
     def fetch(self, page=0):
         assert(self._query != None and self.query !=
@@ -52,7 +52,8 @@ class Gitlab(Search):
                 f"Rate limit has been exceeded, try after {timelimit}")
             return
 
-        payload = {"search": f"{self._query}"}
+        payload = {}
+        payload["search"] = self._query
 
         if self._pagesize:
             payload['per_page'] = self._pagesize
@@ -69,13 +70,13 @@ class Gitlab(Search):
         return result
 
     def combine_sources(self, payload, headers, page):
-        scopes = ["projects", "issues", "merge_requests"]
+        scopes = ["issues", "projects", "merge_requests"]
         result = []
         page = Page(page)
         for scope in scopes:
             payload["scope"] = scope
             response = requests.get(
-                scope, params=payload, headers=headers).json()
+                GITLAB_URL, params=payload, headers=headers)
             logger.debug(f"Searching gitlab scope: {scope}")
             if response.status_code == 429:
                 self._api_banned_till = datetime.now(
@@ -83,16 +84,26 @@ class Gitlab(Search):
                 logger.warning(
                     f"gitlab search for endpoint {scope} didn't work it as rate limit  was hit")
                 continue
+
+            if response.status_code != 200:
+                logger.warning(
+                    f"Couldn't get a valid response for {scope} got {response.status_code}")
+                continue
+
+            response = response.json()
             logger.info(
                 f"Searching gitlab for {scope} returned {len(response)} results")
 
             for index, item in enumerate(response):
                 link = item['web_url']
                 preview = item["description"]
-                title = item["path_with_namespace"]
+                if scope == "projects":
+                    title = item["path_with_namespace"]
+                else:
+                    title = item["title"]
 
                 created_at = datetime.strptime(
-                    item["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+                    item["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ")
 
                 single_result = SingleResult(
                     preview, link, SOURCENAME, created_at, CATEGORYY_MAP[scope], title)
