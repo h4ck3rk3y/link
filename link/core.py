@@ -5,6 +5,7 @@ from .searchers.stackoverflow import StackOverflow
 from .searchers.github import Github
 from .searchers.slack import Slack
 from .searchers.trello import Trello
+from .searchers.gitlab import Gitlab
 from .models.results import Results, SourceResult
 from .decorators import immutable
 import logging
@@ -26,8 +27,9 @@ class Link(object):
             trello = user_tokens.trello is not None
             github = user_tokens.github is not None
             slack = user_tokens.slack is not None
+            gitlab = user_tokens.gitlab is not None
             self.__sources_enabled = SourcesEnabled(
-                stackoverflow=stackoverflow, github=github, trello=trello, slack=slack)
+                stackoverflow=stackoverflow, github=github, trello=trello, slack=slack, gitlab=gitlab)
 
         super().__init__()
         self.__page = 1
@@ -49,6 +51,10 @@ class Link(object):
         if self.__sources_enabled.trello:
             self.__trello = None
             self.__trello_result = SourceResult("trello")
+
+        if self.__sources_enabled.gitlab:
+            self.__gitlab = None
+            self.__gitlab_result = SourceResult("gitlab")
 
         self.__reset()
 
@@ -108,6 +114,15 @@ class Link(object):
             self.__trello_result.add(page)
             self.__results.add_source_result(self.__trello_result)
 
+        if self.__sources_enabled.gitlab:
+            if not self.__gitlab:
+                logger.info("Gitlab searcher is being created")
+                self.__gitlab = Gitlab.builder(self.__user_tokens.gitlab).query(
+                    self.__non_github_query).pagesize(self.__page_size)
+            page = self.__gitlab.fetch(self.__page)
+            self.__gitlab_result.add(page)
+            self.__results.add_source_result(self.__gitlab_result)
+
         self.__page += 1
         output = self.__results.topk(self.__page_size)
         self.__pages.append(output)
@@ -146,7 +161,11 @@ class Link(object):
         if self.__trello:
             return self.__slack.rate_limit_exceeded()
 
-    @ immutable("page_size", DEFAULT_PAGE_SIZE)
+    def gitlab_rate_limit_exceeded(self):
+        if self.__gitlab:
+            return self.__gitlab.rate_limit_exceeded()
+
+    @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size
         return self
@@ -205,17 +224,27 @@ class Link(object):
         self.__sources_enabled.stackoverflow = False
         return self
 
+    def gitlab_only(self):
+        self.__disable_all_sources()
+        self.__sources_enabled.gitlab = True
+        return self
+
+    def not_gitlab(self):
+        self.__sources_enabled.gitlab = False
+        return self
+
     def __disable_all_sources(self):
         self.__sources_enabled.slack = False
         self.__sources_enabled.stackoverflow = False
         self.__sources_enabled.trello = False
         self.__sources_enabled.github = False
+        self.__sources_enabled.gitlab = False
 
     def __validate(self):
         assert(self.__query != None), "Query cant be None"
         assert(self.__query != ""), "Query cant be empty"
         assert(self.__user_tokens != None), "User Tokens cant be none"
-        assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello != False), "No source enabled"
+        assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello or self.__sources_enabled.gitlab), "No source enabled"
 
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE

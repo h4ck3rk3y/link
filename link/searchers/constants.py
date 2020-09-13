@@ -7,6 +7,7 @@ ISSUE = "issue"
 CODE = "code"
 REPO = "repository"
 MESSAGE = "message"
+MERGE_REQUESTS = "merge_requests"
 
 
 # Trello
