@@ -9,6 +9,7 @@ import logging
 import re
 from collections import defaultdict
 from pathlib import Path
+import grequests
 
 logger = logging.getLogger(__name__)
 
@@ -58,18 +59,18 @@ class Link(object):
             self.__pages.append(output)
             return output
 
-        # page = self.__stackoverflow.fetch(self.__page)
-        # self.__stackoverflow_result.add(page)
-        # self.__results.add_source_result(self.__stackoverflow_result)
-
         if not self.__fetchers:
-            for source in self.__sources_enabled.tokens:
-                for name, module in self.__fetchers_modules.items():
-                    if module.Searcher.source == source:
-                        logger.info(
-                            f"Creating fetcher for {source} with module {name}")
-                        self.__fetchers[source].append(
-                            module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size))
+            self.initialize_fetchers()
+
+        requests = []
+        for source in self.__sources_enabled.tokens:
+            for fetcher in self.__fetchers[source]:
+                requests.append(fetcher.construct_request(self.__page))
+        pages = grequests.map(requests)
+
+        self.__source_results["stackoverflow"].add(pages[0])
+        self.__results.add_source_result(
+            self.__source_results["stackoverflow"])
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
@@ -85,6 +86,15 @@ class Link(object):
                 fetchers[searcher_name] = import_module(
                     f".searchers.{searcher_name}", package="link")
         self.__fetchers_modules = fetchers
+
+    def initialize_fetchers(self):
+        for source in self.__sources_enabled.tokens:
+            for name, module in self.__fetchers_modules.items():
+                if module.Searcher.source == source:
+                    logger.info(
+                        f"Creating fetcher for {source} with module {name}")
+                    self.__fetchers[source].append(
+                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size))
 
     @staticmethod
     def remove_github_filters(query):

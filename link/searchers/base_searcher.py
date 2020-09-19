@@ -15,7 +15,6 @@ class BaseSearcher(object):
         self.per_page = per_page
         self.rate_limit_expiry = None
         self.sourcename = sourcename
-
         assert(type(query) == str and query !=
                ""), "Query has to be a non empty string"
 

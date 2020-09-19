@@ -163,7 +163,7 @@ class Results(object):
         logger.info(f"Will be requesting {per_source} results per source")
 
         while len(output) < k and len(self.__finished) != len(self.__sources):
-            for source_name in ['trello', 'slack', 'github', 'stackoverflow', 'gitlab']:
+            for source_name in sorted(self.__sources.keys()):
                 if source_name not in self.__sources or source_name in self.__finished:
                     continue
                 source_result = self.__sources[source_name]
