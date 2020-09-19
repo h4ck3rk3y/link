@@ -21,12 +21,12 @@ class BaseSearcher(object):
         """ parses the response and sends returns a page"""
         raise NotImplementedError("define the method in the dervied class")
 
-    def validate(self, response):
+    def validate(self, response) -> bool:
         """ validate the response to check if its indeed expected otherwise raise
         errors. Also validate if rate limits have been violated"""
         raise NotImplementedError("define the method in the derived class")
 
-    def validate_and_parse(self, response):
+    def validate_and_parse(self, response) -> Page:
         if not self.validate(response):
             logger.warn("Response isn't valid not proceeding")
             return None
