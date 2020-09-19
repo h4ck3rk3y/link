@@ -147,7 +147,7 @@ class TestLink(unittest.TestCase):
     @unittest.skip("only run in person with token")
     def test_slack(self):
 
-        user_token = UserTokens(slack=UserToken(token=""))
+        user_token = UserTokens({"slack": UserToken(token="")})
 
         link = Link.builder(user_token).query("memes").page_size(5)
         result = link.fetch()
@@ -159,7 +159,8 @@ class TestLink(unittest.TestCase):
 
         token = ""
         key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
+        user_token = UserTokens(
+            {"trello": UserToken(token=token, username=key)})
 
         link = Link.builder(user_token).query("PilaniCoders").page_size(10)
         result = link.fetch()
@@ -176,7 +177,8 @@ class TestLink(unittest.TestCase):
 
         token = ""
         key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
+        user_token = UserTokens(
+            {"trello": UserToken(token=token, username=key)})
 
         link = Link.builder(user_token).query("Shubhankar").page_size(10)
         result = link.fetch()
@@ -193,7 +195,8 @@ class TestLink(unittest.TestCase):
 
         token = ""
         key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
+        user_token = UserTokens(
+            {"trello": UserToken(token=token, username=key)})
 
         link = Link.builder(user_token).query("Focal").page_size(10)
         result = link.fetch()
@@ -210,7 +213,8 @@ class TestLink(unittest.TestCase):
 
         token = ""
         key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
+        user_token = UserTokens(
+            {"trello": UserToken(token=token, username=key)})
 
         link = Link.builder(user_token).query("Neural Network").page_size(10)
         result = link.fetch()
@@ -252,7 +256,7 @@ class TestLink(unittest.TestCase):
             "is psdh",
             ""
         ]
-        user_token = UserTokens(stackoverflow=UserToken(token=""))
+        user_token = UserTokens({"stackoverflow": UserToken(token="")})
 
         for index, test in enumerate(test_cases):
             link = Link.builder(user_token).query(test)
@@ -263,8 +267,8 @@ class TestLink(unittest.TestCase):
     @unittest.skip("Needs a working gitlab token")
     def test_gitlab_works(self):
 
-        user_token = UserTokens(
-            gitlab=UserToken(token=""))
+        user_token = UserTokens({
+            "gitlab": UserToken(token="")})
         link = Link.builder(user_token).query("file").page_size(6)
 
         results = link.fetch()
