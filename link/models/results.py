@@ -106,6 +106,9 @@ class Page(object):
     def __getitem__(self, key):
         return self.__results[key]
 
+    def extend(self, another):
+        return self.__results.extend(another.__results)
+
     def __len__(self):
         return len(self.__results)
 
@@ -113,44 +116,35 @@ class Page(object):
 class SourceResult(object):
     def __init__(self, sourcename: str):
         self.__sourcename = sourcename
-        self.__pages = []
+        self.page = Page()
 
-    @property
+    @ property
     def sourcename(self):
         return self.__sourcename
 
-    @sourcename.setter
+    @ sourcename.setter
     def sourcename(self, sourcename):
         return sourcename
 
-    def last_page_result_count(self):
-        return len(self.__pages[-1])
-
     def add(self, page: Page):
-        if page:
-            self.__pages.append(page)
+        self.page.extend(page)
 
     def unfetched_results(self):
         count = 0
-        for page in self.__pages:
-            for single_result in page:
-                if not single_result.fetched:
-                    count += 1
+        for single_result in self.page:
+            if not single_result.fetched:
+                count += 1
         return count
 
     def topk(self, k):
         result = []
-        for page in self.__pages:
-            for single_result in page:
-                if len(result) == k:
-                    break
-                if not single_result.fetched:
-                    result.append(single_result)
+        for single_result in self.page:
+            if len(result) == k:
+                break
+            if not single_result.fetched:
+                result.append(single_result)
 
         return result
-
-    def __len__(self):
-        return len(self.__pages)
 
 
 class Results(object):

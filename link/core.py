@@ -95,16 +95,15 @@ class Link(object):
 
     def initialize_fetchers(self):
         for source in self.__sources_enabled.tokens:
+            soure_result = SourceResult(source)
             for name, module in self.__fetchers_modules.items():
                 if module.Searcher.source == source:
                     logger.info(
                         f"Creating fetcher for {source} with module {name}")
-                    soure_result = SourceResult(
-                        module.Searcher.name)
-                    self.__source_results[module.Searcher.name] = soure_result
+                    self.__source_results[module.Searcher.source] = soure_result
                     self.__results.add_source_result(soure_result)
                     self.__fetchers[source].append(
-                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, self.__source_results[module.Searcher.name]))
+                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, soure_result))
 
     @staticmethod
     def remove_github_filters(query):
