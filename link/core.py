@@ -8,6 +8,7 @@ from .decorators import immutable
 import logging
 import re
 from collections import defaultdict
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,8 @@ class Link(object):
         self.__sources_enabled = sources_enabled
         self.__user_tokens = user_tokens
         if self.__sources_enabled is None:
-            self.__sources_enabled = self.__user_tokens.tokens.keys()
+            self.__sources_enabled = SourcesEnabled(
+                self.__user_tokens.tokens.keys())
 
         super().__init__()
         self.__page = 1
@@ -31,7 +33,7 @@ class Link(object):
         self.__fetchers_modules = {}
         self.__fetchers = defaultdict(list)
 
-        for source in self.__sources_enabled:
+        for source in self.__sources_enabled.tokens:
             self.__source_results[source] = SourceResult("source")
 
         self.load_searchers()
@@ -76,11 +78,12 @@ class Link(object):
 
     def load_searchers(self):
         fetchers = {}
-        for searcher in os.listdir("./searchers"):
+        searcher_directory = Path(__file__).parent / "searchers"
+        for searcher in os.listdir(searcher_directory):
             if searcher.startswith("link_"):
                 searcher_name = searcher.replace(".py", "")
                 fetchers[searcher_name] = import_module(
-                    f"searchers.{searcher_name}")
+                    f".searchers.{searcher_name}", package="link")
         self.__fetchers_modules = fetchers
 
     @staticmethod
@@ -121,7 +124,7 @@ class Link(object):
         assert(self.__query != None), "Query cant be None"
         assert(self.__query != ""), "Query cant be empty"
         assert(self.__user_tokens != None), "User Tokens cant be none"
-        assert(len(self.__sources_enabled) > 0), "No source enabled"
+        assert(len(self.__sources_enabled.tokens) > 0), "No source enabled"
 
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE
