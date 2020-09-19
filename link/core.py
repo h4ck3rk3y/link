@@ -69,8 +69,8 @@ class Link(object):
 
         grequests.map(requests)
 
-        self.__results.add_source_result(
-            self.__source_results["stackoverflow"])
+        for _, result in self.__source_results.items():
+            self.__results.add_source_result(result)
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
