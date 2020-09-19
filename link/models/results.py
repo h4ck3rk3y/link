@@ -1,7 +1,6 @@
 
 from collections import defaultdict
 import logging
-from .base import Base
 REALLY_LARGE_NUMBER = 2**1000
 
 logger = logging.getLogger(__name__)
