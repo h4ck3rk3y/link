@@ -7,6 +7,10 @@ from datetime import timedelta
 """
 base model of the github searcher
 construct request and validate are shared!
+
+https://docs.github.com/en/rest/reference/search
+for authenticated requests github allows 30 queries / minute
+for unauthenticated requests github allows 10 queries / minute
 """
 
 
@@ -21,7 +25,7 @@ class Github(BaseSearcher):
         self.current_page = page
         payload = {"q": self.query,
                    "page": page, "per_page": self.per_page}
-        headers = {}
+        headers = {"Accept": "application/vnd.github.v3+json"}
         if self.token:
             headers["Authorization"] = f"token {self.token}"
         return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]}, headers=headers)
