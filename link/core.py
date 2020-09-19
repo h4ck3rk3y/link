@@ -64,12 +64,12 @@ class Link(object):
 
         if not self.__fetchers:
             for source in self.__sources_enabled.tokens:
-                for name, module in self.__fetchers_modules:
-                    if module.source == source:
+                for name, module in self.__fetchers_modules.items():
+                    if module.Searcher.source == source:
                         logger.info(
                             f"Creating fetcher for {source} with module {name}")
                         self.__fetchers[source].append(
-                            module(self.__user_tokens[source].token, self.__user_tokens[source].username, self.__query, self.__page_size))
+                            module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size))
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
