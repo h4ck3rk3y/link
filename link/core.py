@@ -60,10 +60,12 @@ class Link(object):
         # self.__stackoverflow_result.add(page)
         # self.__results.add_source_result(self.__stackoverflow_result)
 
-        if self.__fetchers:
+        if not self.__fetchers:
             for source in self.__sources_enabled.tokens:
-                for _, module in self.__fetchers_modules:
+                for name, module in self.__fetchers_modules:
                     if module.source == source:
+                        logger.info(
+                            f"Creating fetcher for {source} with module {name}")
                         self.__fetchers[source].append(
                             module(self.__user_tokens[source].token, self.__user_tokens[source].username, self.__query, self.__page_size))
 

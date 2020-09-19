@@ -24,7 +24,7 @@ class BaseSearcher(object):
         """
         raise NotImplementedError("define the method in the derived class")
 
-    def parse(self, response, page) -> Page:
+    def parse(self, response) -> Page:
         """ parses the response and sends returns a page"""
         raise NotImplementedError("define the method in the dervied class")
 
@@ -33,7 +33,7 @@ class BaseSearcher(object):
         errors. Also validate if rate limits have been violated"""
         raise NotImplementedError("define the method in the derived class")
 
-    def validate_and_parse(self, response, page=0) -> Page:
+    def validate_and_parse(self, response) -> Page:
         status, banned_till = self.validate(response)
         if not status:
             logger.warn("Response isn't valid not proceeding")
@@ -41,7 +41,7 @@ class BaseSearcher(object):
                 logger.warn("Rate limit exceeded")
                 self.rate_limit_expiry = banned_till
             return None
-        return self.parse(response, page)
+        return self.parse(response)
 
     def rate_limit_exceeded(self):
         """ parses a response and checks whether rate limits have been violated """

@@ -29,7 +29,7 @@ class StackOverflow(BaseSearcher):
         self.current_page = page
         payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
-        return grequests.get(url=self.url, params=payload)
+        return grequests.get(url=self.url, params=payload, hooks={'response': self.validate_and_parse})
 
     def validate(self, response):
         banned_until = None
@@ -41,15 +41,15 @@ class StackOverflow(BaseSearcher):
             return False, banned_until
         return True, banned_until
 
-    def parse(self, response, page):
-        result_page = Page(page)
+    def parse(self, response):
+        result_page = Page()
         for item in response['items']:
             preview = StackOverflow.generate_preview(item)
             title = item['title']
             link = item['link']
             date = datetime.fromtimestamp(item['creation_date'])
             single_result = SingleResult(
-                preview, link, SOURCENAME, date, QUESTION, title)
+                preview, link, StackOverflow.source, date, QUESTION, title)
             result_page.add(single_result)
 
         return result_page

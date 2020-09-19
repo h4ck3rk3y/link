@@ -97,8 +97,7 @@ class SingleResult(object):
 
 class Page(object):
 
-    def __init__(self, page):
-        self.__page = page
+    def __init__(self):
         self.__results = []
 
     def add(self, item: SingleResult):
