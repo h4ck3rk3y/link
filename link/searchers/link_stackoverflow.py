@@ -3,7 +3,6 @@ import grequests
 from ..models.results import SingleResult, SourceResult, Page
 from datetime import datetime
 from .constants import QUESTION
-import logging
 from datetime import timedelta
 import re
 
@@ -16,8 +15,6 @@ with a token that limit is up to 10,000
 in so the searches can't be personalized
 
 """
-
-logger = logging.getLogger(__name__)
 
 URL = "https://api.stackexchange.com/2.2/search"
 SOURCENAME = "stackoverflow"
