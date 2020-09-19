@@ -51,7 +51,7 @@ class Searcher(BaseSearcher):
             single_result = SingleResult(
                 preview, link, Searcher.source, date, QUESTION, title)
             result_page.add(single_result)
-        self.sourcename.add(result_page)
+        return result_page
 
     @ staticmethod
     def generate_preview(item):
