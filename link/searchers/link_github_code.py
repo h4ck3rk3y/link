@@ -10,7 +10,7 @@ class Searcher(Github):
 
     source = "github"
     url = "https://api.github.com/search/code"
-    name = "github_repos"
+    name = "github_code"
 
     def __init__(self, token, username, query, per_page, source_result):
         super().__init__(token, username, query, per_page,
