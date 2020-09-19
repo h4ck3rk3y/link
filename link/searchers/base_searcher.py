@@ -42,7 +42,7 @@ class BaseSearcher(object):
                 logger.warning(f"Rate limit exceeded for {self.name}")
                 self.rate_limit_expiry = banned_till
             return None
-        self.source_result.add(self.parse(response))
+        self.source_result.add(self.parse(response.json()))
         return None
 
     def rate_limit_exceeded(self):

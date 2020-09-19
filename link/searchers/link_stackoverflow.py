@@ -45,7 +45,7 @@ class Searcher(BaseSearcher):
 
     def parse(self, response):
         result_page = Page()
-        for item in response.json()['items']:
+        for item in response['items']:
             preview = Searcher.generate_preview(item)
             title = item['title']
             link = item['link']
