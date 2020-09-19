@@ -32,7 +32,6 @@ class Link(object):
         self.__results = Results()
         self.__source_results = {}
         self.__fetchers_modules = {}
-        self.__failed_or_exhausted_fetchers = set()
         self.__fetchers = defaultdict(list)
         self.load_searchers()
         self.__reset()
@@ -65,18 +64,16 @@ class Link(object):
                 if fetcher.rate_limit_exceeded():
                     logger.warning(
                         f"Skipping {fetcher.name} as rate limit is exceeded")
-                elif fetcher.name in self.__failed_or_exhausted_fetchers:
+                elif fetcher.irrecoverable_error():
+                    logger.warning(
+                        f"Skipping {fetcher.name} as last run ran into an unknown error")
+                elif fetcher.is_exhausted():
                     logger.info(
-                        f"Skipping {fetcher.name} as all possible results have been retrieved or has errored")
+                        f"Skipping {fetcher.name} as all results have been retrieved")
                 else:
                     requests.append(fetcher.construct_request(self.__page))
 
         grequests.map(requests)
-
-        for _, source_fetchers in self.__fetchers.items():
-            for fetcher in source_fetchers:
-                if fetcher.irrecoverable_error() or fetcher.is_exhausted():
-                    self.__failed_or_exhausted_fetchers.add(fetcher.name)
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
