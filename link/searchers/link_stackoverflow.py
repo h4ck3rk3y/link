@@ -21,6 +21,7 @@ class Searcher(BaseSearcher):
 
     source = "stackoverflow"
     url = "https://api.stackexchange.com/2.2/search"
+    name = "stackoverflow"
 
     def __init__(self, token, username, query, per_page, source_result):
         super().__init__(token, username, query, per_page, source_result, self.source)

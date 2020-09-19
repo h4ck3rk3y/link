@@ -32,11 +32,8 @@ class Link(object):
         self.__results = Results()
         self.__source_results = {}
         self.__fetchers_modules = {}
+        self.__exhausted = set()
         self.__fetchers = defaultdict(list)
-
-        for source in self.__sources_enabled.tokens:
-            self.__source_results[source] = SourceResult(source)
-
         self.load_searchers()
         self.__reset()
 
@@ -65,12 +62,20 @@ class Link(object):
         requests = []
         for source in self.__sources_enabled.tokens:
             for fetcher in self.__fetchers[source]:
+                if fetcher.rate_limit_exceeded():
+                    logger.warn(
+                        f"Skipping {fetcher.name} as rate limit is exceeded")
+                if fetcher.name in self.__exhausted:
+                    logger.info(
+                        f"Skipping {fetcher.name} as all possible results have been retrieved")
                 requests.append(fetcher.construct_request(self.__page))
 
         grequests.map(requests)
 
-        for _, result in self.__source_results.items():
+        for name, result in self.__source_results.items():
             self.__results.add_source_result(result)
+            if result.last_page_result_count() < self.__page_size:
+                self.__exhausted.add(name)
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
@@ -93,8 +98,10 @@ class Link(object):
                 if module.Searcher.source == source:
                     logger.info(
                         f"Creating fetcher for {source} with module {name}")
+                    self.__source_results[module.Searcher.name] = SourceResult(
+                        module.Searcher.name)
                     self.__fetchers[source].append(
-                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, self.__source_results[source]))
+                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, self.__source_results[module.Searcher.name]))
 
     @staticmethod
     def remove_github_filters(query):

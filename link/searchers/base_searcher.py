@@ -46,5 +46,5 @@ class BaseSearcher(object):
 
     def rate_limit_exceeded(self):
         """ parses a response and checks whether rate limits have been violated """
-        if self.rate_limit_expiry > datetime.now():
+        if self.rate_limit_expiry and self.rate_limit_expiry > datetime.now():
             return True

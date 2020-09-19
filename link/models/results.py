@@ -106,6 +106,9 @@ class Page(object):
     def __getitem__(self, key):
         return self.__results[key]
 
+    def __len__(self):
+        return len(self.__results)
+
 
 class SourceResult(object):
     def __init__(self, sourcename: str):
@@ -119,6 +122,9 @@ class SourceResult(object):
     @sourcename.setter
     def sourcename(self, sourcename):
         return sourcename
+
+    def last_page_result_count(self):
+        return len(self.__pages[-1])
 
     def add(self, page: Page):
         if page:
