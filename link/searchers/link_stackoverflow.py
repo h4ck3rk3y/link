@@ -16,20 +16,20 @@ in so the searches can't be personalized
 
 """
 
-URL = "https://api.stackexchange.com/2.2/search"
-SOURCENAME = "stackoverflow"
-
 
 class StackOverflow(BaseSearcher):
 
+    source = "stackoverflow"
+    url = "https://api.stackexchange.com/2.2/search"
+
     def __init__(self, token, username, query, per_page):
-        super().__init__(token, username, query, per_page, SOURCENAME)
+        super().__init__(token, username, query, per_page, self.source)
 
     def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
         self.current_page = page
-        payload = {"intitle": self.query, "site": SOURCENAME,
+        payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
-        return grequests.get(url=URL, params=payload)
+        return grequests.get(url=self.url, params=payload)
 
     def validate(self, response):
         banned_until = None

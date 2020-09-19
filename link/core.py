@@ -1,15 +1,13 @@
 from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
+import os
 from .searchers.constants import DEFAULT_PAGE_SIZE, GITHUB_QUALIFIERS
-from .searchers.stackoverflow import StackOverflow
-from .searchers.github import Github
-from .searchers.slack import Slack
-from .searchers.trello import Trello
-from .searchers.gitlab import Gitlab
+from importlib import import_module
 from .models.results import Results, SourceResult
 from .decorators import immutable
 import logging
 import re
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +28,13 @@ class Link(object):
         self.__pages = []
         self.__results = Results()
         self.__source_results = {}
+        self.__fetchers_modules = {}
+        self.__fetchers = defaultdict(list)
 
         for source in self.__sources_enabled:
             self.__source_results[source] = SourceResult("source")
 
+        self.load_searchers()
         self.__reset()
 
     @staticmethod
@@ -55,26 +56,33 @@ class Link(object):
             self.__pages.append(output)
             return output
 
-        if self.__sources_enabled.stackoverflow:
-            if not self.__stackoverflow:
-                logger.info("Stackoverflow searcher is being created")
-                self.__stackoverflow = StackOverflow.builder(self.__user_tokens.stackoverflow).fromdate(self.__fromdate).enddate(
-                    self.__enddate).query(self.__non_github_query).pagesize(self.__page_size)
+        # page = self.__stackoverflow.fetch(self.__page)
+        # self.__stackoverflow_result.add(page)
+        # self.__results.add_source_result(self.__stackoverflow_result)
 
-            page = self.__stackoverflow.fetch(self.__page)
-            self.__stackoverflow_result.add(page)
-            self.__results.add_source_result(self.__stackoverflow_result)
-
-        for source in self.__sources_enabled.tokens:
-            """ To Do Implement Async Stuff Here"""
-            pass
+        if self.__fetchers:
+            for source in self.__sources_enabled.tokens:
+                for _, module in self.__fetchers_modules:
+                    if module.source == source:
+                        self.__fetchers[source].append(
+                            module(self.__user_tokens[source].token, self.__user_tokens[source].username, self.__query, self.__page_size))
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
         self.__pages.append(output)
         return output
 
-    def remove_github_filters(self, query):
+    def load_searchers(self):
+        fetchers = {}
+        for searcher in os.listdir("./searchers"):
+            if searcher.startswith("link_"):
+                searcher_name = searcher.replace(".py", "")
+                fetchers[searcher_name] = import_module(
+                    f"searchers.{searcher_name}")
+        self.__fetchers_modules = fetchers
+
+    @staticmethod
+    def remove_github_filters(query):
         regex_exp_for_qualifiers = r'([\w-]+:[\w-]+)'
 
         for potential_qualifier in re.findall(regex_exp_for_qualifiers, query):
@@ -96,20 +104,10 @@ class Link(object):
         self.__page_size = page_size
         return self
 
-    @immutable("fromdate")
-    def fromdate(self, fromdate):
-        self.__fromdate = fromdate
-        return self
-
-    @immutable("enddate")
-    def enddate(self, enddate):
-        self.__enddate = enddate
-        return self
-
     @immutable("query")
     def query(self, query):
         self.__query = query
-        self.__non_github_query = self.remove_github_filters(query)
+        self.__non_github_query = Link.remove_github_filters(query)
         logger.debug(
             f"Filtered query is  raw query: {self.__non_github_query == self.__query}")
         return self
@@ -125,6 +123,4 @@ class Link(object):
 
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE
-        self.__fromdate = None
-        self.__enddate = None
         self.__query = None
