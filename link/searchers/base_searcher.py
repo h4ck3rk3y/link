@@ -8,13 +8,13 @@ logger = logging.getLogger(__name__)
 
 class BaseSearcher(object):
 
-    def __init__(self, token, username, query, per_page, source_result, sourcename):
+    def __init__(self, token, username, query, per_page, source_result, name):
         self.token = token
         self.username = username
         self.query = query
         self.per_page = per_page
         self.rate_limit_expiry = None
-        self.sourcename = sourcename
+        self.name = name
         self.source_result = source_result
         assert(type(query) == str and query !=
                ""), "Query has to be a non empty string"
@@ -36,9 +36,9 @@ class BaseSearcher(object):
     def validate_and_parse(self, response, **kwargs) -> None:
         status, banned_till = self.validate(response)
         if not status:
-            logger.warn("Response isn't valid not proceeding")
+            logger.warn("Response isn't valid for f{name} not proceeding")
             if banned_till:
-                logger.warn("Rate limit exceeded")
+                logger.warn("Rate limit exceeded for f{name}")
                 self.rate_limit_expiry = banned_till
             return None
         self.source_result.add(self.parse(response))

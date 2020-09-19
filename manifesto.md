@@ -8,3 +8,4 @@
 6. I don't want link to make requests if a source has run out of data ( the last request didn't return data == per_page )
 7. I wan't link to handle user only searches
 8. I want link to support source filtering
+9. Handle non valid and non rate limit exceeded states

@@ -24,7 +24,7 @@ class Searcher(BaseSearcher):
     name = "stackoverflow"
 
     def __init__(self, token, username, query, per_page, source_result):
-        super().__init__(token, username, query, per_page, source_result, self.source)
+        super().__init__(token, username, query, per_page, source_result, self.name)
 
     def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
         self.current_page = page
