@@ -74,7 +74,9 @@ class Link(object):
 
         for name, result in self.__source_results.items():
             self.__results.add_source_result(result)
-            if result.last_page_result_count() < self.__page_size:
+            if len(result) != len(self.__pages) + 1:
+                self.__exhausted.add(name)
+            elif result.last_page_result_count() < self.__page_size:
                 self.__exhausted.add(name)
 
         self.__page += 1

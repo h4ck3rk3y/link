@@ -149,6 +149,9 @@ class SourceResult(object):
 
         return result
 
+    def __len__(self):
+        return len(self.__pages)
+
 
 class Results(object):
 
