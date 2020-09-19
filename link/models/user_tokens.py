@@ -1,4 +1,4 @@
-from .base import Base
+from typing import Dict
 
 
 class UserToken(object):
@@ -27,10 +27,13 @@ class UserToken(object):
         return "Username: {self.__username}"
 
 
-class UserTokens(Base):
+class UserTokens:
 
-    def __init__(self, slack: UserToken = None, github: UserToken = None, trello: UserToken = None, stackoverflow: UserToken = None, gitlab: UserToken = None):
-        super().__init__(slack, github, trello, stackoverflow, gitlab)
+    def __init__(self, tokens: Dict[str, UserToken]):
+        self.tokens = tokens
 
     def __str__(self):
-        return f"User tokens enabled for slack:{self.slack!=None} github:{self.github!=None} trello:{self.trello!=None} stackoverflow:{self.stackoverflow!=None} gitlab:{self.gitlab!=None}"
+        as_str = []
+        for source in self.tokens.keys():
+            as_str.append(f"{source} enabled")
+        return " ".join(as_str)

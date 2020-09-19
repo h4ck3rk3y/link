@@ -1,10 +1,13 @@
-from .base import Base
+from typing import List
 
 
-class SourcesEnabled(Base):
+class SourcesEnabled:
 
-    def __init__(self, slack=True, github=True, stackoverflow=True, trello=True, gitlab=None):
-        super().__init__(slack, github, trello, stackoverflow, gitlab)
+    def __init__(self, tokens: List[str]):
+        self.tokens = tokens
 
-    def __to__str(self):
-        return f"slack:{self.slack} github:{self.github} trello:{self.trello} stackoverflow:{self.stackoverflow}, gitlab:{self.gitlab}"
+    def __str__(self):
+        as_str = []
+        for source in self.tokens:
+            as_str.append(f"{source} enabled")
+        return " ".join(as_str)
