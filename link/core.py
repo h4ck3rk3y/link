@@ -63,21 +63,23 @@ class Link(object):
         for source in self.__sources_enabled.tokens:
             for fetcher in self.__fetchers[source]:
                 if fetcher.rate_limit_exceeded():
-                    logger.warn(
+                    logger.warning(
                         f"Skipping {fetcher.name} as rate limit is exceeded")
-                if fetcher.name in self.__exhausted:
+                elif fetcher.name in self.__exhausted:
                     logger.info(
                         f"Skipping {fetcher.name} as all possible results have been retrieved")
-                requests.append(fetcher.construct_request(self.__page))
+                else:
+                    requests.append(fetcher.construct_request(self.__page))
 
         grequests.map(requests)
 
-        for name, result in self.__source_results.items():
-            self.__results.add_source_result(result)
-            if len(result) != len(self.__pages) + 1:
-                self.__exhausted.add(name)
-            elif result.last_page_result_count() < self.__page_size:
-                self.__exhausted.add(name)
+        if not fetcher.rate_limit_exceeded():
+            for name, result in self.__source_results.items():
+                self.__results.add_source_result(result)
+                if len(result) != len(self.__pages) + 1:
+                    self.__exhausted.add(name)
+                elif result.last_page_result_count() < self.__page_size:
+                    self.__exhausted.add(name)
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
