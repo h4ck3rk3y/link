@@ -36,10 +36,10 @@ class BaseSearcher(object):
     def validate_and_parse(self, response, **kwargs) -> None:
         status, banned_till = self.validate(response)
         if not status:
-            logger.warn(
+            logger.warning(
                 f"Response isn't valid for {self.name} not proceeding")
             if banned_till:
-                logger.warn(f"Rate limit exceeded for {self.name}")
+                logger.warning(f"Rate limit exceeded for {self.name}")
                 self.rate_limit_expiry = banned_till
             return None
         self.source_result.add(self.parse(response))

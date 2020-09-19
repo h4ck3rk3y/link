@@ -26,7 +26,7 @@ class Github(BaseSearcher):
         payload = {"q": self.query,
                    "page": page, "per_page": self.per_page}
         headers = {"Accept": "application/vnd.github.v3+json"}
-        if self.token:
+        if type(self.token) == str and len(self.token) > 0:
             headers["Authorization"] = f"token {self.token}"
         return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]}, headers=headers)
 
