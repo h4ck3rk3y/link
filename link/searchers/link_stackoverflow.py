@@ -35,6 +35,7 @@ class Searcher(BaseSearcher):
     def validate(self, response):
         banned_until = None
         if response.status_code != 200:
+            response = response.json()
             if response['error_message'].startswith('too many requests from this IP'):
                 banned_seconds = Searcher.parse_time_from_message(
                     response['error_message'])
