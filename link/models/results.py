@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class SingleResult(object):
-    def __init__(self, preview=None, link=None, source=None, date=None, category=None, title=None):
+    def __init__(self, preview=None, link=None, source=None, date=None, category=None, title=None, score=0):
         self.__preview = preview
         self.__link = link
         self.__source = source
@@ -15,6 +15,7 @@ class SingleResult(object):
         self.__date = date
         self.__category = category
         self.__title = title
+        self.__score = 0
 
     @property
     def title(self):
@@ -72,6 +73,14 @@ class SingleResult(object):
     def category(self, value):
         self.__category = value
 
+    @property
+    def score(self):
+        return self.__score
+
+    @score.setter
+    def score(self, score):
+        self.__score = score
+
     def __str__(self):
         return f"Link:{self.__link}\nTitle:{self.__title}\nPreview Text:{self.__preview}\nSource:{self.__source}\nDate:{self.__date}\nCategory:{self.__category}"
 
@@ -107,7 +116,7 @@ class Page(object):
         return self.__results[key]
 
     def extend(self, another):
-        return self.__results.extend(another.__results)
+        self.__results.extend(another.__results)
 
     def __len__(self):
         return len(self.__results)

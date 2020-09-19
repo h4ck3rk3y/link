@@ -49,7 +49,8 @@ class BaseSearcher(object):
         page = self.parse(response.json())
         if len(page) != self.per_page:
             self.exhausted = True
-        self.source_result.add(page)
+        if len(page) != 0:
+            self.source_result.add(page)
         return None
 
     def rate_limit_exceeded(self):
