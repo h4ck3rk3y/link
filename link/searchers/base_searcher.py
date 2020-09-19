@@ -41,7 +41,8 @@ class BaseSearcher(object):
             logger.warning(
                 f"Response isn't valid for {self.name} not proceeding")
             if banned_till:
-                logger.warning(f"Rate limit exceeded for {self.name}")
+                logger.warning(
+                    f"Rate limit exceeded for {self.name}, try after {banned_till}")
                 self.rate_limit_expiry = banned_till
             else:
                 self.errored = True
@@ -49,8 +50,7 @@ class BaseSearcher(object):
         page = self.parse(response.json())
         if len(page) != self.per_page:
             self.exhausted = True
-        if len(page) != 0:
-            self.source_result.add(page)
+        self.source_result.add(page)
         return None
 
     def rate_limit_exceeded(self):

@@ -1,4 +1,5 @@
 
+import random
 from collections import defaultdict
 import logging
 REALLY_LARGE_NUMBER = 2**1000
@@ -15,7 +16,7 @@ class SingleResult(object):
         self.__date = date
         self.__category = category
         self.__title = title
-        self.__score = 0
+        self.__score = score
 
     @property
     def title(self):
@@ -78,8 +79,8 @@ class SingleResult(object):
         return self.__score
 
     @score.setter
-    def score(self, score):
-        self.__score = score
+    def score(self, value):
+        self.__score = value
 
     def __str__(self):
         return f"Link:{self.__link}\nTitle:{self.__title}\nPreview Text:{self.__preview}\nSource:{self.__source}\nDate:{self.__date}\nCategory:{self.__category}"
@@ -117,6 +118,12 @@ class Page(object):
 
     def extend(self, another):
         self.__results.extend(another.__results)
+        self.__score_based_shuffle__()
+
+    def __score_based_shuffle__(self):
+        random.shuffle(self.__results)
+        self.__results = sorted(
+            self.__results, lambda x: x.score, reverse=True)
 
     def __len__(self):
         return len(self.__results)

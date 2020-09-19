@@ -27,6 +27,6 @@ class Searcher(Github):
             created_at = None
 
             single_result = SingleResult(
-                preview, link, Searcher.source, created_at, CODE, title)
+                preview, link, Searcher.source, created_at, CODE, title, score=item['score'])
             result_page.add(single_result)
         return result_page
