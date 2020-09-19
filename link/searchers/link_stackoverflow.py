@@ -22,14 +22,14 @@ class Searcher(BaseSearcher):
     source = "stackoverflow"
     url = "https://api.stackexchange.com/2.2/search"
 
-    def __init__(self, token, username, query, per_page):
-        super().__init__(token, username, query, per_page, self.source)
+    def __init__(self, token, username, query, per_page, source_result):
+        super().__init__(token, username, query, per_page, source_result, self.source)
 
     def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
         self.current_page = page
         payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
-        return grequests.get(url=self.url, params=payload, hooks={'response': self.validate_and_parse})
+        return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]})
 
     def validate(self, response):
         banned_until = None
@@ -43,7 +43,7 @@ class Searcher(BaseSearcher):
 
     def parse(self, response):
         result_page = Page()
-        for item in response['items']:
+        for item in response.json()['items']:
             preview = Searcher.generate_preview(item)
             title = item['title']
             link = item['link']
@@ -51,14 +51,13 @@ class Searcher(BaseSearcher):
             single_result = SingleResult(
                 preview, link, Searcher.source, date, QUESTION, title)
             result_page.add(single_result)
+        self.sourcename.add(result_page)
 
-        return result_page
-
-    @staticmethod
+    @ staticmethod
     def generate_preview(item):
         return f"This question has been viewed {item['view_count']} times and has {item['answer_count']} answers"
 
-    @staticmethod
+    @ staticmethod
     def parse_time_from_message(message):
         pattern = re.compile("\\d+")
         result = pattern.search(message)

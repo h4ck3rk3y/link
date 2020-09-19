@@ -35,7 +35,7 @@ class Link(object):
         self.__fetchers = defaultdict(list)
 
         for source in self.__sources_enabled.tokens:
-            self.__source_results[source] = SourceResult("source")
+            self.__source_results[source] = SourceResult(source)
 
         self.load_searchers()
         self.__reset()
@@ -66,9 +66,9 @@ class Link(object):
         for source in self.__sources_enabled.tokens:
             for fetcher in self.__fetchers[source]:
                 requests.append(fetcher.construct_request(self.__page))
-        pages = grequests.map(requests)
 
-        self.__source_results["stackoverflow"].add(pages[0])
+        grequests.map(requests)
+
         self.__results.add_source_result(
             self.__source_results["stackoverflow"])
 
@@ -94,7 +94,7 @@ class Link(object):
                     logger.info(
                         f"Creating fetcher for {source} with module {name}")
                     self.__fetchers[source].append(
-                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size))
+                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, self.__source_results[source]))
 
     @staticmethod
     def remove_github_filters(query):
