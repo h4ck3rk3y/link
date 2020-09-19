@@ -16,6 +16,8 @@ class BaseSearcher(object):
         self.rate_limit_expiry = None
         self.name = name
         self.source_result = source_result
+        self.errored = False
+        self.exhausted = False
         assert(type(query) == str and query !=
                ""), "Query has to be a non empty string"
 
@@ -41,11 +43,22 @@ class BaseSearcher(object):
             if banned_till:
                 logger.warning(f"Rate limit exceeded for {self.name}")
                 self.rate_limit_expiry = banned_till
+            else:
+                self.errored = True
             return None
-        self.source_result.add(self.parse(response.json()))
+        page = self.parse(response.json())
+        if len(page) != self.per_page:
+            self.exhausted = True
+        self.source_result.add(page)
         return None
 
     def rate_limit_exceeded(self):
         """ parses a response and checks whether rate limits have been violated """
         if self.rate_limit_expiry and self.rate_limit_expiry > datetime.now():
             return True
+
+    def irrecoverable_error(self):
+        return self.errored
+
+    def is_exhausted(self):
+        return self.exhausted

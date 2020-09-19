@@ -32,7 +32,7 @@ class Link(object):
         self.__results = Results()
         self.__source_results = {}
         self.__fetchers_modules = {}
-        self.__exhausted = set()
+        self.__failed_or_exhausted_fetchers = set()
         self.__fetchers = defaultdict(list)
         self.load_searchers()
         self.__reset()
@@ -65,21 +65,18 @@ class Link(object):
                 if fetcher.rate_limit_exceeded():
                     logger.warning(
                         f"Skipping {fetcher.name} as rate limit is exceeded")
-                elif fetcher.name in self.__exhausted:
+                elif fetcher.name in self.__failed_or_exhausted_fetchers:
                     logger.info(
-                        f"Skipping {fetcher.name} as all possible results have been retrieved")
+                        f"Skipping {fetcher.name} as all possible results have been retrieved or has errored")
                 else:
                     requests.append(fetcher.construct_request(self.__page))
 
         grequests.map(requests)
 
-        if not fetcher.rate_limit_exceeded():
-            for name, result in self.__source_results.items():
-                self.__results.add_source_result(result)
-                if len(result) != len(self.__pages) + 1:
-                    self.__exhausted.add(name)
-                elif result.last_page_result_count() < self.__page_size:
-                    self.__exhausted.add(name)
+        for _, source_fetchers in self.__fetchers.items():
+            for fetcher in source_fetchers:
+                if fetcher.irrecoverable_error() or fetcher.is_exhausted():
+                    self.__failed_or_exhausted_fetchers.add(fetcher.name)
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
@@ -102,8 +99,10 @@ class Link(object):
                 if module.Searcher.source == source:
                     logger.info(
                         f"Creating fetcher for {source} with module {name}")
-                    self.__source_results[module.Searcher.name] = SourceResult(
+                    soure_result = SourceResult(
                         module.Searcher.name)
+                    self.__source_results[module.Searcher.name] = soure_result
+                    self.__results.add_source_result(soure_result)
                     self.__fetchers[source].append(
                         module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, self.__source_results[module.Searcher.name]))
 
