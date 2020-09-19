@@ -65,7 +65,7 @@ class Link(object):
             self.__stackoverflow_result.add(page)
             self.__results.add_source_result(self.__stackoverflow_result)
 
-        for source in self.__sources_enabled:
+        for source in self.__sources_enabled.tokens:
             """ To Do Implement Async Stuff Here"""
             pass
 
