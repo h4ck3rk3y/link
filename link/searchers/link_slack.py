@@ -36,7 +36,7 @@ class Searcher(BaseSearcher):
         banned_until = None
         if response.status_code != 200 or not response.json()['ok']:
             if response.status_code == 429:
-                banned_seconds = response.headers['Retry-After']
+                banned_seconds = int(response.headers['Retry-After'])
                 banned_until = datetime.now() + timedelta(seconds=banned_seconds)
             return False, banned_until
         return True, banned_until
