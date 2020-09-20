@@ -45,7 +45,7 @@ class Searcher(BaseSearcher):
 
     def parse(self, response):
         result_page = Page()
-        if 'messages' not in response or 'matches' not in response['matches']:
+        if 'messages' not in response or 'matches' not in response['messages']:
             return result_page
         for message in response["messages"]["matches"]:
             preview = message["text"]
@@ -55,5 +55,4 @@ class Searcher(BaseSearcher):
             single_result = SingleResult(
                 preview, link, Searcher.source, date, MESSAGE, title)
             result_page.add(single_result)
-
         return result_page
