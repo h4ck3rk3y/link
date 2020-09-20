@@ -48,13 +48,11 @@ class TestLink(unittest.TestCase):
 
         date = results[0].date
         link = results[0].link
-        preview = results[0].preview
         source = results[0].source
         title = results[0].title
 
         self.assertIsNotNone(date)
         self.assertIsNotNone(link)
-        self.assertIsNotNone(preview)
         self.assertIsNotNone(source)
         self.assertIsNotNone(title)
 
