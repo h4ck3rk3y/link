@@ -13,7 +13,7 @@ requests at protected paths that exceed 10 requests per minute per IP address.
 """
 
 
-class Gitlab(BaseSearcher):
+class GitlabSearcher(BaseSearcher):
     url = "https://gitlab.com/api/v4/search"
 
     def __init__(self, token, username, query, per_page, source_result, name, scope):

@@ -1,4 +1,4 @@
-from .github import Github
+from .github import GithubSearcher
 import grequests
 from ..models.results import SingleResult, Page
 from datetime import datetime
@@ -6,7 +6,7 @@ from .constants import ISSUE
 from datetime import timedelta
 
 
-class Searcher(Github):
+class Searcher(GithubSearcher):
 
     source = "github"
     url = "https://api.github.com/search/issues"

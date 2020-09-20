@@ -13,7 +13,7 @@ for unauthenticated requests github allows 10 queries / minute
 """
 
 
-class Github(BaseSearcher):
+class GithubSearcher(BaseSearcher):
     source = "github"
 
     def __init__(self, token, username, query, per_page, source_result, name, url):

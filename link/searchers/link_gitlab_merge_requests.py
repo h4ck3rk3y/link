@@ -1,4 +1,4 @@
-from .gitlab import Gitlab
+from .gitlab import GitlabSearcher
 import grequests
 from ..models.results import SingleResult, Page
 from datetime import datetime
@@ -6,7 +6,7 @@ from .constants import MERGE_REQUESTS
 from datetime import timedelta
 
 
-class Searcher(Gitlab):
+class Searcher(GitlabSearcher):
 
     source = "gitlab"
     name = "gitlab_merge_requests"
