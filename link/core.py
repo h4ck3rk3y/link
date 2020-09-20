@@ -92,15 +92,15 @@ class Link(object):
 
     def initialize_fetchers(self):
         for source in self.__sources_enabled.tokens:
-            soure_result = SourceResult(source)
+            source_result = SourceResult(source)
             for name, module in self.__fetchers_modules.items():
                 if module.Searcher.source == source:
                     logger.info(
                         f"Creating fetcher for {source} with module {name}")
-                    self.__source_results[module.Searcher.source] = soure_result
-                    self.__results.add_source_result(soure_result)
+                    self.__source_results[module.Searcher.source] = source_result
+                    self.__results.add_source_result(source_result)
                     self.__fetchers[source].append(
-                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, soure_result))
+                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result))
 
     def previous(self):
         if self.__page < 3:
