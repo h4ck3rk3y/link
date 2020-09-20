@@ -1,5 +1,4 @@
 from .github import GithubSearcher
-import grequests
 from ..models.results import SingleResult, Page
 from datetime import datetime
 from .constants import ISSUE
