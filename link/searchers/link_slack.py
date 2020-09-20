@@ -7,7 +7,6 @@ import re
 
 
 """
-just exploring the slack api here
 Documentation: https://api.slack.com/methods/search.messages
 At the time of writing slack api didn't support filteirng by date.
 
