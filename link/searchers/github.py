@@ -22,7 +22,6 @@ class Github(BaseSearcher):
         super().__init__(token, username, query, per_page, source_result, name)
 
     def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
-        self.current_page = page
         payload = {"q": self.query,
                    "page": page, "per_page": self.per_page}
         headers = {"Accept": "application/vnd.github.v3+json"}

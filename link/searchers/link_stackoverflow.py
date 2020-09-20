@@ -27,7 +27,6 @@ class Searcher(BaseSearcher):
         super().__init__(token, username, query, per_page, source_result, self.name)
 
     def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
-        self.current_page = page
         payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
         return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]})
