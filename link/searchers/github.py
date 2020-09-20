@@ -1,6 +1,5 @@
 from .base_searcher import BaseSearcher
 import grequests
-from ..models.results import SingleResult, Page
 from datetime import datetime
 from datetime import timedelta
 
