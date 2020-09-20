@@ -58,13 +58,14 @@ class BaseSearcher(object):
         self.source_result.add(page)
         return None
 
-    def rate_limit_exceeded(self):
+    def rate_limit_exceeded(self) -> bool:
         """ parses a response and checks whether rate limits have been violated """
         if self.rate_limit_expiry and self.rate_limit_expiry > datetime.now():
             return True
+        return False
 
-    def irrecoverable_error(self):
+    def irrecoverable_error(self) -> bool:
         return self.errored
 
-    def is_exhausted(self):
+    def is_exhausted(self) -> bool:
         return self.exhausted
