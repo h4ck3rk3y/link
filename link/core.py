@@ -141,6 +141,8 @@ class Link(object):
         assert(self.__query != ""), "Query cant be empty"
         assert(self.__user_tokens != None), "User Tokens cant be none"
         assert(len(self.__sources_enabled.tokens) > 0), "No source enabled"
+        assert(set(self.__sources_enabled.tokens).issubset(
+            self.__user_tokens.tokens.keys())), "More sources enabled than tokens provided"
 
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE
