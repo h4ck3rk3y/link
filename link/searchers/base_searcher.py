@@ -20,7 +20,7 @@ class BaseSearcher(object):
         self.source_result = source_result
         self.errored = False
         self.exhausted = False
-        self.acceptable_qualifiers = qualifiers
+        self.acceptable_qualifiers = acceptable_qualifiers
 
         self.remove_non_acceptable_qualifiers()
         assert(type(query) == str and query !=
