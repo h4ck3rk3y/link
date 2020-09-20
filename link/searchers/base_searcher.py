@@ -3,12 +3,14 @@ from datetime import datetime
 import grequests
 from typing import Tuple
 import logging
+import re
+
 logger = logging.getLogger(__name__)
 
 
 class BaseSearcher(object):
 
-    def __init__(self, token, username, query, per_page, source_result, name):
+    def __init__(self, token, username, query, per_page, source_result, name, acceptable_qualifiers=set()):
         self.token = token
         self.username = username
         self.query = query
@@ -18,6 +20,9 @@ class BaseSearcher(object):
         self.source_result = source_result
         self.errored = False
         self.exhausted = False
+        self.acceptable_qualifiers = qualifiers
+
+        self.remove_non_acceptable_qualifiers()
         assert(type(query) == str and query !=
                ""), "Query has to be a non empty string"
 
@@ -69,3 +74,12 @@ class BaseSearcher(object):
 
     def is_exhausted(self) -> bool:
         return self.exhausted
+
+    def remove_non_acceptable_qualifiers(self):
+        query = self.query
+        regex_exp_for_qualifiers = r'([\w-]+:[\w-]+)'
+        for potential_qualifier in re.findall(regex_exp_for_qualifiers, query):
+            if not(potential_qualifier in self.acceptable_qualifiers or potential_qualifier.split(':')[0] in self.acceptable_qualifiers):
+                query = query.replace(potential_qualifier, "")
+
+        self.query = re.sub(r'\s+', ' ', query).strip()

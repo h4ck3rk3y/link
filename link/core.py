@@ -1,7 +1,7 @@
 from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
 import os
-from .searchers.constants import DEFAULT_PAGE_SIZE, GITHUB_QUALIFIERS
+from .searchers.constants import DEFAULT_PAGE_SIZE
 from importlib import import_module
 from .models.results import Results, SourceResult
 from .decorators import immutable
@@ -102,16 +102,6 @@ class Link(object):
                     self.__fetchers[source].append(
                         module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, soure_result))
 
-    @staticmethod
-    def remove_github_filters(query):
-        regex_exp_for_qualifiers = r'([\w-]+:[\w-]+)'
-
-        for potential_qualifier in re.findall(regex_exp_for_qualifiers, query):
-            if potential_qualifier in GITHUB_QUALIFIERS or potential_qualifier.split(':')[0] in GITHUB_QUALIFIERS:
-                query = query.replace(potential_qualifier, "")
-
-        return re.sub(r'\s+', ' ', query).strip()
-
     def previous(self):
         if self.__page < 3:
             logger.info("Went too far back, this page doesn't exist")
@@ -128,9 +118,6 @@ class Link(object):
     @immutable("query")
     def query(self, query):
         self.__query = query
-        self.__non_github_query = Link.remove_github_filters(query)
-        logger.debug(
-            f"Filtered query is  raw query: {self.__non_github_query == self.__query}")
         return self
 
     def __disable_all_sources(self):

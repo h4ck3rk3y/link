@@ -1,5 +1,7 @@
 from link.core import Link
 from link.models.user_tokens import UserTokens, UserToken
+from link.searchers.base_searcher import BaseSearcher
+from link.searchers.constants import GITHUB_QUALIFIERS
 import unittest
 from datetime import datetime
 
@@ -186,7 +188,6 @@ class TestLink(unittest.TestCase):
             "reviewed-by:tomatoes are red",
             "user: psdh is sodhi",
             "review-requested:sodhi is psdh",
-            "",
         ]
 
         expected_results = [
@@ -200,15 +201,35 @@ class TestLink(unittest.TestCase):
             "are red",
             "user: psdh is sodhi",
             "is psdh",
-            ""
         ]
-        user_token = UserTokens({"stackoverflow": UserToken(token="")})
 
         for index, test in enumerate(test_cases):
-            link = Link.builder(user_token).query(test)
+            searcher = BaseSearcher(token="", username="",
+                                    query=test, per_page=15, source_result=None, name="foo")
 
             self.assertEqual(
-                expected_results[index], link.remove_github_filters(test))
+                expected_results[index], searcher.query)
+
+    def test_github_qualifiers_for_github(self):
+        test_cases = [
+            "is:public tomatoes are red user:psdh",
+            "tomatoes are red",
+            "memes user:psdh",
+            "memes is:private",
+            "foobar is:public user:h4ck3rk3y can be user:psdh org:darkstark going",
+            "foobar is:public going",
+            "tomatoes are red review:changes_requested",
+            "reviewed-by:tomatoes are red",
+            "user: psdh is sodhi",
+            "review-requested:sodhi is psdh",
+        ]
+
+        for test in test_cases:
+            searcher = BaseSearcher(token="", username="",
+                                    query=test, per_page=15, source_result=None, name="foo", acceptable_qualifiers=GITHUB_QUALIFIERS)
+
+            self.assertEqual(
+                test, searcher.query)
 
     @unittest.skip("Needs a working gitlab token")
     def test_gitlab_works(self):

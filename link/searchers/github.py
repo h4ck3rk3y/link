@@ -1,6 +1,7 @@
 from .base_searcher import BaseSearcher
 from datetime import datetime
 from datetime import timedelta
+from .constants import GITHUB_QUALIFIERS
 
 """
 base model of the github searcher
@@ -17,7 +18,8 @@ class Github(BaseSearcher):
 
     def __init__(self, token, username, query, per_page, source_result, name, url):
         self.url = url
-        super().__init__(token, username, query, per_page, source_result, name)
+        super().__init__(token, username, query, per_page,
+                         source_result, name, acceptable_qualifiers=GITHUB_QUALIFIERS)
 
     def construct_request_parts(self, page, user_only):
         payload = {"q": self.query,
