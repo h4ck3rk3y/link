@@ -1,5 +1,4 @@
 from .base_searcher import BaseSearcher
-import grequests
 from datetime import datetime
 from datetime import timedelta
 
@@ -21,10 +20,10 @@ class Gitlab(BaseSearcher):
         self.scope = scope
         super().__init__(token, username, query, per_page, source_result, name)
 
-    def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
+    def construct_request_parts(self, page, user_only):
         payload = {"search": self.query,
                    "per_page": self.per_page, "page": page, "access_token": self.token, "scope": self.scope}
-        return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]})
+        return self.url, payload, None
 
     def validate(self, response):
         banned_until = None

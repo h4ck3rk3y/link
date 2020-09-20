@@ -1,5 +1,4 @@
 from .base_searcher import BaseSearcher
-import grequests
 from ..models.results import SingleResult, SourceResult, Page
 from datetime import datetime
 from .constants import CARDS
@@ -28,10 +27,10 @@ class Searcher(BaseSearcher):
     def __init__(self, token, username, query, per_page, source_result):
         super().__init__(token, username, query, per_page, source_result, self.name)
 
-    def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
+    def construct_request_parts(self, page, user_only):
         payload = {"token": self.token,
                    "key": self.username, "query": self.query, "cards_page": page - 1, "cards_limit": self.per_page, "modelTypes": CARDS}
-        return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]})
+        return self.url, payload, None
 
     def validate(self, response):
         banned_until = None

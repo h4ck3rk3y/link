@@ -1,5 +1,4 @@
 from .base_searcher import BaseSearcher
-import grequests
 from datetime import datetime
 from datetime import timedelta
 
@@ -20,13 +19,13 @@ class Github(BaseSearcher):
         self.url = url
         super().__init__(token, username, query, per_page, source_result, name)
 
-    def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
+    def construct_request_parts(self, page, user_only):
         payload = {"q": self.query,
                    "page": page, "per_page": self.per_page}
         headers = {"Accept": "application/vnd.github.v3+json"}
         if type(self.token) == str and len(self.token) > 0:
             headers["Authorization"] = f"token {self.token}"
-        return grequests.get(url=self.url, params=payload, hooks={'response': [self.validate_and_parse]}, headers=headers)
+        return self.url, payload, headers
 
     def validate(self, response):
         banned_until = None

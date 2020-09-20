@@ -1,6 +1,6 @@
 from ..models.results import Page
 from datetime import datetime
-from grequests import AsyncRequest
+import grequests
 from typing import Tuple
 import logging
 logger = logging.getLogger(__name__)
@@ -21,9 +21,14 @@ class BaseSearcher(object):
         assert(type(query) == str and query !=
                ""), "Query has to be a non empty string"
 
-    def construct_request(self, page=0, user_only=False) -> AsyncRequest:
+    def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
         """ creates a request from query, token and other parameters.
         """
+        url, payload, headers = self.construct_request_parts(page, user_only)
+        return grequests.get(url, params=payload, headers=headers, hooks={"response": [self.validate_and_parse]})
+
+    def construct_request_parts(self, page, user_only) -> Tuple[str, dict, dict]:
+        """ returns url, payload, headers """
         raise NotImplementedError("define the method in the derived class")
 
     def parse(self, response) -> Page:
