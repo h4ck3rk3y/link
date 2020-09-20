@@ -155,60 +155,6 @@ class TestLink(unittest.TestCase):
         self.assertGreaterEqual(len(result), 1)
 
     @unittest.skip("this test should be done in person with an api key and token")
-    def test_trello_organizations(self):
-
-        token = ""
-        key = ""
-        user_token = UserTokens(
-            {"trello": UserToken(token=token, username=key)})
-
-        link = Link.builder(user_token).query("PilaniCoders").page_size(10)
-        result = link.fetch()
-
-        self.assertGreaterEqual(len(result), 1)
-
-        self.assertEqual(result[0].preview, "pilanicoders")
-        self.assertEqual(result[0].title, "PilaniCoders")
-        self.assertEqual(result[0].date, None)
-        self.assertEqual(result[0].link, None)
-
-    @unittest.skip("this test should be done in person with an api key and token")
-    def test_trello_members(self):
-
-        token = ""
-        key = ""
-        user_token = UserTokens(
-            {"trello": UserToken(token=token, username=key)})
-
-        link = Link.builder(user_token).query("Shubhankar").page_size(10)
-        result = link.fetch()
-
-        self.assertGreaterEqual(len(result), 1)
-
-        self.assertEqual(result[0].preview, "shubh24")
-        self.assertEqual(result[0].title, "Shubhankar Srivastava")
-        self.assertEqual(result[0].date, None)
-        self.assertEqual(result[0].link, None)
-
-    @unittest.skip("this test should be done in person with an api key and token")
-    def test_trello_boards(self):
-
-        token = ""
-        key = ""
-        user_token = UserTokens(
-            {"trello": UserToken(token=token, username=key)})
-
-        link = Link.builder(user_token).query("Focal").page_size(10)
-        result = link.fetch()
-
-        self.assertGreaterEqual(len(result), 1)
-
-        self.assertEqual(result[0].preview, None)
-        self.assertEqual(result[0].title, "Focal.AI")
-        self.assertEqual(result[0].date, None)
-        self.assertEqual(result[0].link, None)
-
-    @unittest.skip("this test should be done in person with an api key and token")
     def test_trello_cards(self):
 
         token = ""
@@ -218,6 +164,8 @@ class TestLink(unittest.TestCase):
 
         link = Link.builder(user_token).query("Neural Network").page_size(10)
         result = link.fetch()
+
+        result = sorted(result, key=lambda x: x.date)
 
         self.assertGreaterEqual(len(result), 1)
 
