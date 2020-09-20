@@ -95,7 +95,7 @@ class Link(object):
             source_result = SourceResult(source)
             for name, module in self.__fetchers_modules.items():
                 if module.Searcher.source == source:
-                    logger.info(
+                    logger.debug(
                         f"Creating fetcher for {source} with module {name}")
                     self.__source_results[module.Searcher.source] = source_result
                     self.__results.add_source_result(source_result)
