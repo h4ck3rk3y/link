@@ -17,7 +17,7 @@ class Searcher(Gitlab):
 
     def parse(self, response):
         result_page = Page()
-        for item in response['items']:
+        for item in response:
             link = item["web_url"]
             preview = item["description"]
             title = item["title"]
