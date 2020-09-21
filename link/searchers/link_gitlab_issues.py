@@ -2,7 +2,7 @@ from .gitlab import GitlabSearcher
 import grequests
 from ..models.results import SingleResult, Page
 from datetime import datetime
-from .constants import ISSUE
+from .constants import ISSUE, TRELLO_GITLAB_TIME_FORMAT
 from datetime import timedelta
 
 
@@ -22,7 +22,7 @@ class Searcher(GitlabSearcher):
             preview = item["description"]
             title = item["title"]
             created_at = datetime.strptime(
-                item["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                item["created_at"], TRELLO_GITLAB_TIME_FORMAT)
             single_result = SingleResult(
                 preview=preview, link=link, source=Searcher.source, date=created_at, category=ISSUE, title=title)
             result_page.add(single_result)

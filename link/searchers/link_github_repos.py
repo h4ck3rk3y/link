@@ -2,7 +2,7 @@ from .github import GithubSearcher
 import grequests
 from ..models.results import SingleResult, Page
 from datetime import datetime
-from .constants import REPO
+from .constants import REPO, GITHUB_TIME_FORMAT
 from datetime import timedelta
 
 
@@ -24,7 +24,7 @@ class Searcher(GithubSearcher):
             title = item["full_name"]
 
             created_at = datetime.strptime(
-                item["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+                item["created_at"], GITHUB_TIME_FORMAT)
 
             single_result = SingleResult(
                 preview, link, Searcher.source, created_at, REPO, title, score=item['score'])

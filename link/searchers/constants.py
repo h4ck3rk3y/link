@@ -125,3 +125,7 @@ GITHUB_QUALIFIERS = set([
     "fork:only",
     "fork:true",
 ])
+
+
+GITHUB_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+TRELLO_GITLAB_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"

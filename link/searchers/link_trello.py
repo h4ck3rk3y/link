@@ -1,7 +1,7 @@
 from .base_searcher import BaseSearcher
 from ..models.results import SingleResult, SourceResult, Page
 from datetime import datetime
-from .constants import CARDS
+from .constants import CARDS, TRELLO_GITLAB_TIME_FORMAT
 from datetime import timedelta
 import re
 
@@ -59,4 +59,4 @@ class Searcher(BaseSearcher):
         if not date_as_str:
             return None
         return datetime.strptime(
-            date_as_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+            date_as_str, TRELLO_GITLAB_TIME_FORMAT)
