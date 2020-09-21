@@ -16,7 +16,7 @@ in so the searches can't be personalized
 """
 
 
-class Searcher(BaseSearcher):
+class StackoverflowSearcher(BaseSearcher):
 
     source = "stackoverflow"
     url = "https://api.stackexchange.com/2.2/search"
@@ -35,7 +35,7 @@ class Searcher(BaseSearcher):
         if response.status_code != 200:
             response = response.json()
             if response['error_message'].startswith('too many requests from this IP'):
-                banned_seconds = Searcher.parse_time_from_message(
+                banned_seconds = self.parse_time_from_message(
                     response['error_message'])
                 banned_until = datetime.now() + timedelta(seconds=banned_seconds)
             return False, banned_until
@@ -44,12 +44,12 @@ class Searcher(BaseSearcher):
     def parse(self, response):
         result_page = Page()
         for item in response['items']:
-            preview = Searcher.generate_preview(item)
+            preview = self.generate_preview(item)
             title = item['title']
             link = item['link']
             date = datetime.fromtimestamp(item['creation_date'])
             single_result = SingleResult(
-                preview, link, Searcher.source, date, QUESTION, title)
+                preview, link, self.source, date, QUESTION, title)
             result_page.add(single_result)
         return result_page
 

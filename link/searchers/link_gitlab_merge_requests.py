@@ -6,14 +6,14 @@ from .constants import MERGE_REQUESTS, TRELLO_GITLAB_TIME_FORMAT
 from datetime import timedelta
 
 
-class Searcher(GitlabSearcher):
+class GitlabMergeRequestSearcher(GitlabSearcher):
 
     source = "gitlab"
     name = "gitlab_merge_requests"
 
     def __init__(self, token, username, query, per_page, source_result):
         super().__init__(token, username, query, per_page,
-                         source_result, Searcher.name, "merge_requests")
+                         source_result, self.name, "merge_requests")
 
     def parse(self, response):
         result_page = Page()
@@ -24,6 +24,6 @@ class Searcher(GitlabSearcher):
             created_at = datetime.strptime(
                 item["created_at"], TRELLO_GITLAB_TIME_FORMAT)
             single_result = SingleResult(
-                preview=preview, link=link, source=Searcher.source, date=created_at, category=MERGE_REQUESTS, title=title)
+                preview=preview, link=link, source=self.source, date=created_at, category=MERGE_REQUESTS, title=title)
             result_page.add(single_result)
         return result_page

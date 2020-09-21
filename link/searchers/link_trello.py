@@ -3,7 +3,6 @@ from ..models.results import SingleResult, SourceResult, Page
 from datetime import datetime
 from .constants import CARDS, TRELLO_GITLAB_TIME_FORMAT
 from datetime import timedelta
-import re
 
 """
 Note this needs both token and key. We are using the username field of the UserToken
@@ -18,7 +17,7 @@ https://developer.atlassian.com/cloud/trello/rest/api-group-search/#api-search-g
 """
 
 
-class Searcher(BaseSearcher):
+class TrelloSearcher(BaseSearcher):
 
     source = "trello"
     url = "https://api.trello.com/1/search/"
@@ -47,8 +46,8 @@ class Searcher(BaseSearcher):
                 preview=item["desc"],
                 title=item["name"],
                 link=item["shortUrl"],
-                date=Searcher.get_date(item["dateLastActivity"]),
-                source=Searcher.source,
+                date=self.get_date(item["dateLastActivity"]),
+                source=self.source,
                 category=CARDS
             )
             result_page.add(single_result)

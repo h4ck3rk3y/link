@@ -16,7 +16,7 @@ https://api.slack.com/docs/rate-limits#tier_t2
 """
 
 
-class Searcher(BaseSearcher):
+class SlackSearcher(BaseSearcher):
 
     source = "slack"
     url = "https://slack.com/api/search.messages"
