@@ -29,6 +29,19 @@ class BaseSearcher(object):
     def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
         """ creates a request from query, token and other parameters.
         """
+        if self.rate_limit_exceeded():
+            logger.warning(
+                f"Skipping {self.name} as rate limit is exceeded")
+            return None
+        elif self.irrecoverable_error():
+            logger.warning(
+                f"Skipping {self.name} as last run ran into an unknown error")
+            return None
+        elif self.is_exhausted():
+            logger.info(
+                f"Skipping {self.name} as all results have been retrieved")
+            return None
+
         url, payload, headers = self.construct_request_parts(page, user_only)
         return grequests.get(url, params=payload, headers=headers, hooks={"response": [self.validate_and_parse]})
 

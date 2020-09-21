@@ -61,17 +61,9 @@ class Link(object):
         requests = []
         for source in self.__sources_enabled.tokens:
             for fetcher in self.__fetchers[source]:
-                if fetcher.rate_limit_exceeded():
-                    logger.warning(
-                        f"Skipping {fetcher.name} as rate limit is exceeded")
-                elif fetcher.irrecoverable_error():
-                    logger.warning(
-                        f"Skipping {fetcher.name} as last run ran into an unknown error")
-                elif fetcher.is_exhausted():
-                    logger.info(
-                        f"Skipping {fetcher.name} as all results have been retrieved")
-                else:
-                    requests.append(fetcher.construct_request(self.__page))
+                request = fetcher.construct_request(self.__page)
+                if request is not None:
+                    requests.append(request)
 
         grequests.map(requests)
 
