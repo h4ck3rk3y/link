@@ -1,5 +1,7 @@
 from link.core import Link
 from link.models.user_tokens import UserTokens, UserToken
+from link.searchers.base_searcher import BaseSearcher
+from link.searchers.constants import GITHUB_QUALIFIERS
 import unittest
 from datetime import datetime
 
@@ -8,7 +10,7 @@ class TestLink(unittest.TestCase):
 
     def test_links_build(self):
         user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
+            {"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("foo").page_size(5)
         first_set = set([x.title for x in link.fetch()])
         second_set = set([x.title for x in link.fetch()])
@@ -22,7 +24,7 @@ class TestLink(unittest.TestCase):
     def test_all_atributes_are_set(self):
 
         user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
+            {"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("foo").page_size(1)
 
         result = link.fetch()
@@ -35,25 +37,10 @@ class TestLink(unittest.TestCase):
         self.assertIsNotNone(result.source)
         self.assertIsNotNone(result.title)
 
-    def test_date_filtering_works(self):
-        user_token = UserTokens(
-            stackoverflow=UserToken(token=""))
-        link = Link.builder(user_token).query(
-            "python").page_size(15).fromdate(datetime(2015, 5, 23)).enddate(datetime(2015, 5, 31))
-
-        results = link.fetch()
-
-        for result in results:
-            date = result.date
-            self.assertEqual(date.year, 2015)
-            self.assertEqual(date.month, 5)
-            self.assertGreaterEqual(date.day, 23)
-            self.assertLessEqual(date.day, 31)
-
     def test_github_works(self):
 
-        user_token = UserTokens(
-            github=UserToken(token=""))
+        user_token = UserTokens({
+            "github": UserToken(token="")})
         link = Link.builder(user_token).query("python").page_size(6)
 
         results = link.fetch()
@@ -63,20 +50,18 @@ class TestLink(unittest.TestCase):
 
         date = results[0].date
         link = results[0].link
-        preview = results[0].preview
         source = results[0].source
         title = results[0].title
 
         self.assertIsNotNone(date)
         self.assertIsNotNone(link)
-        self.assertIsNotNone(preview)
         self.assertIsNotNone(source)
         self.assertIsNotNone(title)
 
     def test_both_github_and_stackoverflow(self):
 
-        user_token = UserTokens(stackoverflow=UserToken(
-            token=""), github=UserToken(token=""))
+        user_token = UserTokens({"stackoverflow": UserToken(
+            token=""), "github": UserToken(token="")})
         link = Link.builder(user_token).query("python").page_size(12)
 
         results = link.fetch()
@@ -99,7 +84,7 @@ class TestLink(unittest.TestCase):
 
     def test_next_previous(self):
 
-        user_token = UserTokens(stackoverflow=UserToken(token=""))
+        user_token = UserTokens({"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("python").page_size(12)
 
         first_result_a = link.fetch()
@@ -132,7 +117,7 @@ class TestLink(unittest.TestCase):
 
     def tets_odd_number_of_pulls(self):
 
-        user_token = UserTokens(stackoverflow=UserToken(token=""))
+        user_token = UserTokens({"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("python").page_size(13)
 
         result = link.fetch()
@@ -142,7 +127,7 @@ class TestLink(unittest.TestCase):
     def test_github_urls_are_not_api_urls(self):
 
         user_token = UserTokens(
-            github=UserToken(token=""))
+            {"github": UserToken(token="")})
         link = Link.builder(user_token).query("python").page_size(20)
 
         result = link.fetch()
@@ -162,7 +147,7 @@ class TestLink(unittest.TestCase):
     @unittest.skip("only run in person with token")
     def test_slack(self):
 
-        user_token = UserTokens(slack=UserToken(token=""))
+        user_token = UserTokens({"slack": UserToken(token="")})
 
         link = Link.builder(user_token).query("memes").page_size(5)
         result = link.fetch()
@@ -170,65 +155,17 @@ class TestLink(unittest.TestCase):
         self.assertGreaterEqual(len(result), 1)
 
     @unittest.skip("this test should be done in person with an api key and token")
-    def test_trello_organizations(self):
-
-        token = ""
-        key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
-
-        link = Link.builder(user_token).query("PilaniCoders").page_size(10)
-        result = link.fetch()
-
-        self.assertGreaterEqual(len(result), 1)
-
-        self.assertEqual(result[0].preview, "pilanicoders")
-        self.assertEqual(result[0].title, "PilaniCoders")
-        self.assertEqual(result[0].date, None)
-        self.assertEqual(result[0].link, None)
-
-    @unittest.skip("this test should be done in person with an api key and token")
-    def test_trello_members(self):
-
-        token = ""
-        key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
-
-        link = Link.builder(user_token).query("Shubhankar").page_size(10)
-        result = link.fetch()
-
-        self.assertGreaterEqual(len(result), 1)
-
-        self.assertEqual(result[0].preview, "shubh24")
-        self.assertEqual(result[0].title, "Shubhankar Srivastava")
-        self.assertEqual(result[0].date, None)
-        self.assertEqual(result[0].link, None)
-
-    @unittest.skip("this test should be done in person with an api key and token")
-    def test_trello_boards(self):
-
-        token = ""
-        key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
-
-        link = Link.builder(user_token).query("Focal").page_size(10)
-        result = link.fetch()
-
-        self.assertGreaterEqual(len(result), 1)
-
-        self.assertEqual(result[0].preview, None)
-        self.assertEqual(result[0].title, "Focal.AI")
-        self.assertEqual(result[0].date, None)
-        self.assertEqual(result[0].link, None)
-
-    @unittest.skip("this test should be done in person with an api key and token")
     def test_trello_cards(self):
 
         token = ""
         key = ""
-        user_token = UserTokens(trello=UserToken(token=token, username=key))
+        user_token = UserTokens(
+            {"trello": UserToken(token=token, username=key)})
 
         link = Link.builder(user_token).query("Neural Network").page_size(10)
         result = link.fetch()
+
+        result = sorted(result, key=lambda x: x.date)
 
         self.assertGreaterEqual(len(result), 1)
 
@@ -251,7 +188,6 @@ class TestLink(unittest.TestCase):
             "reviewed-by:tomatoes are red",
             "user: psdh is sodhi",
             "review-requested:sodhi is psdh",
-            "",
         ]
 
         expected_results = [
@@ -265,21 +201,41 @@ class TestLink(unittest.TestCase):
             "are red",
             "user: psdh is sodhi",
             "is psdh",
-            ""
         ]
-        user_token = UserTokens(stackoverflow=UserToken(token=""))
 
         for index, test in enumerate(test_cases):
-            link = Link.builder(user_token).query(test)
+            searcher = BaseSearcher(token="", username="",
+                                    query=test, per_page=15, source_result=None, name="foo")
 
             self.assertEqual(
-                expected_results[index], link.remove_github_filters(test))
+                expected_results[index], searcher.query)
+
+    def test_github_qualifiers_for_github(self):
+        test_cases = [
+            "is:public tomatoes are red user:psdh",
+            "tomatoes are red",
+            "memes user:psdh",
+            "memes is:private",
+            "foobar is:public user:h4ck3rk3y can be user:psdh org:darkstark going",
+            "foobar is:public going",
+            "tomatoes are red review:changes_requested",
+            "reviewed-by:tomatoes are red",
+            "user: psdh is sodhi",
+            "review-requested:sodhi is psdh",
+        ]
+
+        for test in test_cases:
+            searcher = BaseSearcher(token="", username="",
+                                    query=test, per_page=15, source_result=None, name="foo", acceptable_qualifiers=GITHUB_QUALIFIERS)
+
+            self.assertEqual(
+                test, searcher.query)
 
     @unittest.skip("Needs a working gitlab token")
     def test_gitlab_works(self):
 
-        user_token = UserTokens(
-            gitlab=UserToken(token=""))
+        user_token = UserTokens({
+            "gitlab": UserToken(token="")})
         link = Link.builder(user_token).query("file").page_size(6)
 
         results = link.fetch()

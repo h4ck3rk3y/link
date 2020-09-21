@@ -1,14 +1,14 @@
 
+import random
 from collections import defaultdict
 import logging
-from .base import Base
 REALLY_LARGE_NUMBER = 2**1000
 
 logger = logging.getLogger(__name__)
 
 
 class SingleResult(object):
-    def __init__(self, preview=None, link=None, source=None, date=None, category=None, title=None):
+    def __init__(self, preview=None, link=None, source=None, date=None, category=None, title=None, score=0):
         self.__preview = preview
         self.__link = link
         self.__source = source
@@ -16,6 +16,7 @@ class SingleResult(object):
         self.__date = date
         self.__category = category
         self.__title = title
+        self.__score = score
 
     @property
     def title(self):
@@ -73,6 +74,14 @@ class SingleResult(object):
     def category(self, value):
         self.__category = value
 
+    @property
+    def score(self):
+        return self.__score
+
+    @score.setter
+    def score(self, value):
+        self.__score = value
+
     def __str__(self):
         return f"Link:{self.__link}\nTitle:{self.__title}\nPreview Text:{self.__preview}\nSource:{self.__source}\nDate:{self.__date}\nCategory:{self.__category}"
 
@@ -98,8 +107,7 @@ class SingleResult(object):
 
 class Page(object):
 
-    def __init__(self, page):
-        self.__page = page
+    def __init__(self):
         self.__results = []
 
     def add(self, item: SingleResult):
@@ -108,40 +116,49 @@ class Page(object):
     def __getitem__(self, key):
         return self.__results[key]
 
+    def extend(self, another):
+        self.__results.extend(another.__results)
+        self.__score_based_shuffle__()
+
+    def __score_based_shuffle__(self):
+        random.shuffle(self.__results)
+        self.__results = sorted(
+            self.__results, lambda x: x.score, reverse=True)
+
+    def __len__(self):
+        return len(self.__results)
+
 
 class SourceResult(object):
     def __init__(self, sourcename: str):
         self.__sourcename = sourcename
-        self.__pages = []
+        self.page = Page()
 
-    @property
+    @ property
     def sourcename(self):
         return self.__sourcename
 
-    @sourcename.setter
+    @ sourcename.setter
     def sourcename(self, sourcename):
         return sourcename
 
     def add(self, page: Page):
-        if page:
-            self.__pages.append(page)
+        self.page.extend(page)
 
     def unfetched_results(self):
         count = 0
-        for page in self.__pages:
-            for single_result in page:
-                if not single_result.fetched:
-                    count += 1
+        for single_result in self.page:
+            if not single_result.fetched:
+                count += 1
         return count
 
     def topk(self, k):
         result = []
-        for page in self.__pages:
-            for single_result in page:
-                if len(result) == k:
-                    break
-                if not single_result.fetched:
-                    result.append(single_result)
+        for single_result in self.page:
+            if len(result) == k:
+                break
+            if not single_result.fetched:
+                result.append(single_result)
 
         return result
 
@@ -165,7 +182,7 @@ class Results(object):
         logger.info(f"Will be requesting {per_source} results per source")
 
         while len(output) < k and len(self.__finished) != len(self.__sources):
-            for source_name in ['trello', 'slack', 'github', 'stackoverflow', 'gitlab']:
+            for source_name in sorted(self.__sources.keys()):
                 if source_name not in self.__sources or source_name in self.__finished:
                     continue
                 source_result = self.__sources[source_name]

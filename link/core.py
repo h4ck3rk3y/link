@@ -1,15 +1,15 @@
 from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
-from .searchers.constants import DEFAULT_PAGE_SIZE, GITHUB_QUALIFIERS
-from .searchers.stackoverflow import StackOverflow
-from .searchers.github import Github
-from .searchers.slack import Slack
-from .searchers.trello import Trello
-from .searchers.gitlab import Gitlab
+import os
+from .searchers.constants import DEFAULT_PAGE_SIZE
+from importlib import import_module
 from .models.results import Results, SourceResult
 from .decorators import immutable
 import logging
 import re
+from collections import defaultdict
+from pathlib import Path
+import grequests
 
 logger = logging.getLogger(__name__)
 
@@ -23,39 +23,17 @@ class Link(object):
         self.__sources_enabled = sources_enabled
         self.__user_tokens = user_tokens
         if self.__sources_enabled is None:
-            stackoverflow = user_tokens.stackoverflow is not None
-            trello = user_tokens.trello is not None
-            github = user_tokens.github is not None
-            slack = user_tokens.slack is not None
-            gitlab = user_tokens.gitlab is not None
             self.__sources_enabled = SourcesEnabled(
-                stackoverflow=stackoverflow, github=github, trello=trello, slack=slack, gitlab=gitlab)
+                self.__user_tokens.tokens.keys())
 
         super().__init__()
         self.__page = 1
         self.__pages = []
         self.__results = Results()
-
-        if self.__sources_enabled.stackoverflow:
-            self.__stackoverflow = None
-            self.__stackoverflow_result = SourceResult("stackoverflow")
-
-        if self.__sources_enabled.github:
-            self.__github = None
-            self.__github_result = SourceResult("github")
-
-        if self.__sources_enabled.slack:
-            self.__slack = None
-            self.__slack_result = SourceResult("slack")
-
-        if self.__sources_enabled.trello:
-            self.__trello = None
-            self.__trello_result = SourceResult("trello")
-
-        if self.__sources_enabled.gitlab:
-            self.__gitlab = None
-            self.__gitlab_result = SourceResult("gitlab")
-
+        self.__source_results = {}
+        self.__fetchers_modules = {}
+        self.__fetchers = defaultdict(list)
+        self.load_searchers()
         self.__reset()
 
     @staticmethod
@@ -77,65 +55,44 @@ class Link(object):
             self.__pages.append(output)
             return output
 
-        if self.__sources_enabled.stackoverflow:
-            if not self.__stackoverflow:
-                logger.info("Stackoverflow searcher is being created")
-                self.__stackoverflow = StackOverflow.builder(self.__user_tokens.stackoverflow).fromdate(self.__fromdate).enddate(
-                    self.__enddate).query(self.__non_github_query).pagesize(self.__page_size)
+        if not self.__fetchers:
+            self.initialize_fetchers()
 
-            page = self.__stackoverflow.fetch(self.__page)
-            self.__stackoverflow_result.add(page)
-            self.__results.add_source_result(self.__stackoverflow_result)
+        requests = []
+        for source in self.__sources_enabled.tokens:
+            for fetcher in self.__fetchers[source]:
+                request = fetcher.construct_request(self.__page)
+                if request is not None:
+                    requests.append(request)
 
-        if self.__sources_enabled.github:
-            if not self.__github:
-                logger.info("Github searcher is being created")
-                self.__github = Github.builder(
-                    self.__user_tokens.github).query(self.__query).pagesize(self.__page_size)
-            page = self.__github.fetch(self.__page)
-            self.__github_result.add(page)
-            self.__results.add_source_result(self.__github_result)
-
-        if self.__sources_enabled.slack:
-            if not self.__slack:
-                logger.info("Slack searcher is being created")
-                self.__slack = Slack.builder(self.__user_tokens.slack).query(
-                    self.__non_github_query).pagesize(self.__page_size)
-            page = self.__slack.fetch(self.__page)
-            self.__slack_result.add(page)
-            self.__results.add_source_result(self.__slack_result)
-
-        if self.__sources_enabled.trello:
-            if not self.__trello:
-                logger.info("Trello searcher is being created")
-                self.__trello = Trello.builder(self.__user_tokens.trello).query(
-                    self.__non_github_query).pagesize(self.__page_size)
-            page = self.__trello.fetch(self.__page)
-            self.__trello_result.add(page)
-            self.__results.add_source_result(self.__trello_result)
-
-        if self.__sources_enabled.gitlab:
-            if not self.__gitlab:
-                logger.info("Gitlab searcher is being created")
-                self.__gitlab = Gitlab.builder(self.__user_tokens.gitlab).query(
-                    self.__non_github_query).pagesize(self.__page_size)
-            page = self.__gitlab.fetch(self.__page)
-            self.__gitlab_result.add(page)
-            self.__results.add_source_result(self.__gitlab_result)
+        grequests.map(requests)
 
         self.__page += 1
         output = self.__results.topk(self.__page_size)
         self.__pages.append(output)
         return output
 
-    def remove_github_filters(self, query):
-        regex_exp_for_qualifiers = r'([\w-]+:[\w-]+)'
+    def load_searchers(self):
+        fetchers = {}
+        searcher_directory = Path(__file__).parent / "searchers"
+        for searcher in os.listdir(searcher_directory):
+            if searcher.startswith("link_"):
+                searcher_name = searcher.replace(".py", "")
+                fetchers[searcher_name] = import_module(
+                    f".searchers.{searcher_name}", package="link")
+        self.__fetchers_modules = fetchers
 
-        for potential_qualifier in re.findall(regex_exp_for_qualifiers, query):
-            if potential_qualifier in GITHUB_QUALIFIERS or potential_qualifier.split(':')[0] in GITHUB_QUALIFIERS:
-                query = query.replace(potential_qualifier, "")
-
-        return re.sub(r'\s+', ' ', query).strip()
+    def initialize_fetchers(self):
+        for source in self.__sources_enabled.tokens:
+            source_result = SourceResult(source)
+            for name, module in self.__fetchers_modules.items():
+                if module.Searcher.source == source:
+                    logger.debug(
+                        f"Creating fetcher for {source} with module {name}")
+                    self.__source_results[module.Searcher.source] = source_result
+                    self.__results.add_source_result(source_result)
+                    self.__fetchers[source].append(
+                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result))
 
     def previous(self):
         if self.__page < 3:
@@ -145,109 +102,27 @@ class Link(object):
         self.__page -= 1
         return self.__pages[self.__page-2]
 
-    def stackoverflow_rate_limit_exceeded(self):
-        if self.__stackoverflow:
-            return self.__stackoverflow.rate_limit_exceeded()
-
-    def github_rate_limit_exceeded(self):
-        if self.__github:
-            return self.__github.rate_limit_exceeded()
-
-    def slack_rate_limit_exceeded(self):
-        if self.__slack:
-            return self.__slack.rate_limit_exceeded()
-
-    def trello_rate_limit_exceeded(self):
-        if self.__trello:
-            return self.__slack.rate_limit_exceeded()
-
-    def gitlab_rate_limit_exceeded(self):
-        if self.__gitlab:
-            return self.__gitlab.rate_limit_exceeded()
-
     @immutable("page_size", DEFAULT_PAGE_SIZE)
     def page_size(self, page_size):
         self.__page_size = page_size
         return self
 
-    @ immutable("fromdate")
-    def fromdate(self, fromdate):
-        self.__fromdate = fromdate
-        return self
-
-    @ immutable("enddate")
-    def enddate(self, enddate):
-        self.__enddate = enddate
-        return self
-
-    @ immutable("query")
+    @immutable("query")
     def query(self, query):
         self.__query = query
-        self.__non_github_query = self.remove_github_filters(query)
-        logger.debug(
-            f"Filtered query is  raw query: {self.__non_github_query == self.__query}")
-        return self
-
-    def slack_only(self):
-        self.__disable_all_sources()
-        self.__sources_enabled.slack = True
-        return self
-
-    def not_slack(self):
-        self.__sources_enabled.slack = False
-        return self
-
-    def github_only(self):
-        self.__disable_all_sources()
-        self.__sources_enabled.github = True
-        return self
-
-    def not_github(self):
-        self.__sources_enabled.github = False
-        return self
-
-    def trello_only(self):
-        self.__disable_all_sources()
-        self.__sources_enabled.trello = True
-        return self
-
-    def not_trello(self):
-        self.__sources_enabled.trello = False
-        return self
-
-    def stackoverflow_only(self):
-        self.__disable_all_sources()
-        self.__sources_enabled.stackoverflow = True
-        return self
-
-    def not_stackoverflow(self):
-        self.__sources_enabled.stackoverflow = False
-        return self
-
-    def gitlab_only(self):
-        self.__disable_all_sources()
-        self.__sources_enabled.gitlab = True
-        return self
-
-    def not_gitlab(self):
-        self.__sources_enabled.gitlab = False
         return self
 
     def __disable_all_sources(self):
-        self.__sources_enabled.slack = False
-        self.__sources_enabled.stackoverflow = False
-        self.__sources_enabled.trello = False
-        self.__sources_enabled.github = False
-        self.__sources_enabled.gitlab = False
+        self.__sources_enabled = []
 
     def __validate(self):
         assert(self.__query != None), "Query cant be None"
         assert(self.__query != ""), "Query cant be empty"
         assert(self.__user_tokens != None), "User Tokens cant be none"
-        assert(self.__sources_enabled.slack or self.__sources_enabled.stackoverflow or self.__sources_enabled.github or self.__sources_enabled.trello or self.__sources_enabled.gitlab), "No source enabled"
+        assert(len(self.__sources_enabled.tokens) > 0), "No source enabled"
+        assert(set(self.__sources_enabled.tokens).issubset(
+            self.__user_tokens.tokens.keys())), "More sources enabled than tokens provided"
 
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE
-        self.__fromdate = None
-        self.__enddate = None
         self.__query = None
