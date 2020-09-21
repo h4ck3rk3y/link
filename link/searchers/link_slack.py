@@ -50,6 +50,6 @@ class SlackSearcher(BaseSearcher):
             link = message['permalink']
             date = datetime.fromtimestamp(float(message['ts']))
             single_result = SingleResult(
-                preview, link, Searcher.source, date, MESSAGE, title)
+                preview, link, self.source, date, MESSAGE, title)
             result_page.add(single_result)
         return result_page
