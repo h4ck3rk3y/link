@@ -24,7 +24,7 @@ class Link(object):
         self.__user_tokens = user_tokens
         if self.__sources_enabled is None:
             self.__sources_enabled = SourcesEnabled(
-                self.__user_tokens.tokens.keys())
+                list(self.__user_tokens.tokens.keys()))
 
         super().__init__()
         self.__page = 1
