@@ -256,7 +256,7 @@ class TestLink(unittest.TestCase):
         self.assertIsNotNone(source)
         self.assertIsNotNone(title)
 
-    def test_link_picles(self):
+    def test_link_pickles(self):
         user_token = UserTokens(
             {"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("foo").page_size(5)
