@@ -6,7 +6,7 @@ from .constants import CODE
 from datetime import timedelta
 
 
-class Searcher(GithubSearcher):
+class GithubCodeSearcher(GithubSearcher):
 
     source = "github"
     url = "https://api.github.com/search/code"
@@ -14,7 +14,7 @@ class Searcher(GithubSearcher):
 
     def __init__(self, token, username, query, per_page, source_result):
         super().__init__(token, username, query, per_page,
-                         source_result, Searcher.name, Searcher.url)
+                         source_result, self.name, self.url)
 
     def parse(self, response):
         result_page = Page()
@@ -27,6 +27,6 @@ class Searcher(GithubSearcher):
             created_at = None
 
             single_result = SingleResult(
-                preview, link, Searcher.source, created_at, CODE, title, score=item['score'])
+                preview, link, self.source, created_at, CODE, title, score=item['score'])
             result_page.add(single_result)
         return result_page

@@ -1,14 +1,11 @@
 from .models.user_tokens import UserTokens
 from .models.sources_enabled import SourcesEnabled
-import os
 from .searchers.constants import DEFAULT_PAGE_SIZE
-from importlib import import_module
 from .models.results import Results, SourceResult
+from .searchers import available_searchers
 from .decorators import immutable
 import logging
-import re
 from collections import defaultdict
-from pathlib import Path
 import grequests
 
 logger = logging.getLogger(__name__)
@@ -33,7 +30,6 @@ class Link(object):
         self.__source_results = {}
         self.__fetchers_modules = {}
         self.__fetchers = defaultdict(list)
-        self.load_searchers()
         self.__reset()
 
     @staticmethod
@@ -72,27 +68,16 @@ class Link(object):
         self.__pages.append(output)
         return output
 
-    def load_searchers(self):
-        fetchers = {}
-        searcher_directory = Path(__file__).parent / "searchers"
-        for searcher in os.listdir(searcher_directory):
-            if searcher.startswith("link_"):
-                searcher_name = searcher.replace(".py", "")
-                fetchers[searcher_name] = import_module(
-                    f".searchers.{searcher_name}", package="link")
-        self.__fetchers_modules = fetchers
-
     def initialize_fetchers(self):
         for source in self.__sources_enabled.tokens:
             source_result = SourceResult(source)
-            for name, module in self.__fetchers_modules.items():
-                if module.Searcher.source == source:
-                    logger.debug(
-                        f"Creating fetcher for {source} with module {name}")
-                    self.__source_results[module.Searcher.source] = source_result
-                    self.__results.add_source_result(source_result)
-                    self.__fetchers[source].append(
-                        module.Searcher(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result))
+            for module in available_searchers[source]:
+                logger.debug(
+                    f"Creating fetcher for {source} with name {module.name}")
+                self.__source_results[source] = source_result
+                self.__results.add_source_result(source_result)
+                self.__fetchers[source].append(
+                    module(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result))
 
     def previous(self):
         if self.__page < 3:

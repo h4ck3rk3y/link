@@ -4,6 +4,7 @@ from link.searchers.base_searcher import BaseSearcher
 from link.searchers.constants import GITHUB_QUALIFIERS
 import unittest
 from datetime import datetime
+import pickle
 
 
 class TestLink(unittest.TestCase):
@@ -254,3 +255,10 @@ class TestLink(unittest.TestCase):
         self.assertIsNotNone(preview)
         self.assertIsNotNone(source)
         self.assertIsNotNone(title)
+
+    def test_link_pickles(self):
+        user_token = UserTokens(
+            {"stackoverflow": UserToken(token="")})
+        link = Link.builder(user_token).query("foo").page_size(5)
+        dumpd = pickle.dumps(link)
+        self.assertIsNotNone(dumpd)
