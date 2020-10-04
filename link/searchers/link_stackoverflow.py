@@ -27,10 +27,10 @@ class StackoverflowSearcher(BaseSearcher):
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
 
-    def construct_request_parts(self, page, user_only):
+    def construct_request_parts(self, page):
         payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
-        if user_only and len(self.username) > 0:
+        if self.user_only and len(self.username) > 0:
             payload["user"] = self.username
         return self.url, payload, None
 
