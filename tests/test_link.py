@@ -125,6 +125,7 @@ class TestLink(unittest.TestCase):
 
         self.assertEqual(len(result), 13)
 
+    @unittest.skip("skipping this for now in order to not go over the api limit")
     def test_github_urls_are_not_api_urls(self):
 
         user_token = UserTokens(
