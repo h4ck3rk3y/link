@@ -129,15 +129,24 @@ class Page(object):
         self.__results.extend(another.__results)
         self.__score_based_shuffle__()
         self.__user_based_shuffle()
+        self.__dedupe()
 
     def __score_based_shuffle__(self):
         random.shuffle(self.__results)
         self.__results = sorted(
-            self.__results, key=lambda x: x.score, reverse=True)
+            self.__results, key=lambda result: result.score, reverse=True)
 
     def __user_based_shuffle(self):
         self.__results = sorted(
-            self.__results, key=lambda x: x.user, reverse=True)
+            self.__results, key=lambda result: result.user, reverse=True)
+
+    def __dedupe(self):
+        all_links = set()
+        deduped_results = []
+        for result in self.__results:
+            if result.link not in all_links:
+                deduped_results.append(result)
+        self.__results = deduped_results
 
     def __len__(self):
         return len(self.__results)
