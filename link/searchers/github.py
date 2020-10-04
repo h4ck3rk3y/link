@@ -16,18 +16,18 @@ for unauthenticated requests github allows 10 queries / minute
 class GithubSearcher(BaseSearcher):
     source = "github"
 
-    def __init__(self, token, username, query, per_page, source_result, name, url):
+    def __init__(self, token, username, query, per_page, source_result, name, url, user_only):
         self.url = url
         super().__init__(token, username, query, per_page,
-                         source_result, name, acceptable_qualifiers=GITHUB_QUALIFIERS)
+                         source_result, name, user_only, acceptable_qualifiers=GITHUB_QUALIFIERS)
 
-    def construct_request_parts(self, page, user_only):
+    def construct_request_parts(self, page):
         payload = {"q": self.query,
                    "page": page, "per_page": self.per_page}
         headers = {"Accept": "application/vnd.github.v3+json"}
         if type(self.token) == str and len(self.token) > 0:
             headers["Authorization"] = f"token {self.token}"
-        if user_only:
+        if self.user_only:
             payload["q"] = f"{payload['q']}+user:{self.username}"
         return self.url, payload, headers
 

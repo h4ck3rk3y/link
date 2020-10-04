@@ -15,9 +15,9 @@ requests at protected paths that exceed 10 requests per minute per IP address.
 
 class GitlabSearcher(BaseSearcher):
 
-    def __init__(self, token, username, query, per_page, source_result, name, url):
+    def __init__(self, token, username, query, per_page, source_result, name, url, user_only):
         self.url = url
-        super().__init__(token, username, query, per_page, source_result, name)
+        super().__init__(token, username, query, per_page, source_result, name, user_only)
 
     def validate(self, response):
         banned_until = None

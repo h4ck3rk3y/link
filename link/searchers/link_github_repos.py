@@ -11,10 +11,11 @@ class GithubRepoSearcher(GithubSearcher):
     source = "github"
     url = "https://api.github.com/search/repositories"
     name = "github_repos"
+    user_priority = True
 
-    def __init__(self, token, username, query, per_page, source_result):
+    def __init__(self, token, username, query, per_page, source_result, user_only):
         super().__init__(token, username, query, per_page,
-                         source_result, self.name, self.url)
+                         source_result, self.name, self.url, user_only)
 
     def parse(self, response):
         result_page = Page()

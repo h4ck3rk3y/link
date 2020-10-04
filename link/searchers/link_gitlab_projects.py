@@ -11,15 +11,16 @@ class GitlabProjectSearcher(GitlabSearcher):
     source = "gitlab"
     name = "gitlab_projects"
     url = "https://gitlab.com/api/v4/projects"
+    user_priority = True
 
-    def __init__(self, token, username, query, per_page, source_result):
+    def __init__(self, token, username, query, per_page, source_result, user_only):
         super().__init__(token, username, query, per_page,
-                         source_result, self.name, self.url)
+                         source_result, self.name, self.url, user_only)
 
-    def construct_request_parts(self, page, user_only):
+    def construct_request_parts(self, page):
         payload = {"search": self.query,
                    "per_page": self.per_page, "page": page, "access_token": self.token}
-        if user_only:
+        if self.user_only:
             payload["owned"] = True
         return self.url, payload, None
 
