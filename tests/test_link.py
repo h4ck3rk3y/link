@@ -41,7 +41,7 @@ class TestLink(unittest.TestCase):
     def test_github_works(self):
 
         user_token = UserTokens({
-            "github": UserToken(token="")})
+            "github": UserToken(token="", username="h4ck3rk3y")})
         link = Link.builder(user_token).query("python").page_size(6)
 
         results = link.fetch()
@@ -62,7 +62,7 @@ class TestLink(unittest.TestCase):
     def test_both_github_and_stackoverflow(self):
 
         user_token = UserTokens({"stackoverflow": UserToken(
-            token=""), "github": UserToken(token="")})
+            token=""), "github": UserToken(token="", username="h4ck3rk3y")})
         link = Link.builder(user_token).query("python").page_size(12)
 
         results = link.fetch()
