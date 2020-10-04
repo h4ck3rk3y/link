@@ -58,7 +58,7 @@ class Link(object):
         for source in self.__sources_enabled.tokens:
             for fetcher in self.__fetchers[source]:
                 request = fetcher.construct_request(
-                    self.__page, user_only=self.__user_only)
+                    self.__page)
                 if request is not None:
                     requests.append(request)
 
@@ -78,7 +78,10 @@ class Link(object):
                 self.__source_results[source] = source_result
                 self.__results.add_source_result(source_result)
                 self.__fetchers[source].append(
-                    module(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result))
+                    module(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result, self.__user_only))
+                if not self.__user_only and module.user_priority:
+                    self.__fetchers[source].append(
+                        module(self.__user_tokens.tokens[source].token, self.__user_tokens.tokens[source].username, self.__query, self.__page_size, source_result, True))
 
     def previous(self):
         if self.__page < 3:
