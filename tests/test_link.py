@@ -241,8 +241,31 @@ class TestLink(unittest.TestCase):
 
         results = link.fetch()
 
-        self.assertGreaterEqual(len(results), 0)
         self.assertEqual(len(results), 6)
+
+        date = results[0].date
+        link = results[0].link
+        preview = results[0].preview
+        source = results[0].source
+        title = results[0].title
+
+        self.assertIsNotNone(date)
+        self.assertIsNotNone(link)
+        self.assertIsNotNone(preview)
+        self.assertIsNotNone(source)
+        self.assertIsNotNone(title)
+
+    @unittest.skip("This needs to run with gyanis token and username")
+    def test_gitlab_works_user_only(self):
+
+        user_token = UserTokens({
+            "gitlab": UserToken(token="", username="")})
+        link = Link.builder(user_token).query(
+            "nisploit").user_only(True).page_size(6)
+
+        results = link.fetch()
+
+        self.assertEqual(len(results), 1)
 
         date = results[0].date
         link = results[0].link
