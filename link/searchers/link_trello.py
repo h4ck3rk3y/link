@@ -29,8 +29,6 @@ class TrelloSearcher(BaseSearcher):
     def construct_request_parts(self, page, user_only):
         payload = {"token": self.token,
                    "key": self.username, "query": self.query, "cards_page": page - 1, "cards_limit": self.per_page, "modelTypes": CARDS}
-        if user_only:
-            raise NotImplemented("Trello Doesn't Support User Filtering")
         return self.url, payload, None
 
     def validate(self, response):
