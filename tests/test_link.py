@@ -206,7 +206,7 @@ class TestLink(unittest.TestCase):
 
         for index, test in enumerate(test_cases):
             searcher = BaseSearcher(token="", username="",
-                                    query=test, per_page=15, source_result=None, name="foo")
+                                    query=test, per_page=15, source_result=None, name="foo", user_only=False)
 
             self.assertEqual(
                 expected_results[index], searcher.query)
@@ -227,7 +227,7 @@ class TestLink(unittest.TestCase):
 
         for test in test_cases:
             searcher = BaseSearcher(token="", username="",
-                                    query=test, per_page=15, source_result=None, name="foo", acceptable_qualifiers=GITHUB_QUALIFIERS)
+                                    query=test, per_page=15, source_result=None, name="foo", acceptable_qualifiers=GITHUB_QUALIFIERS, user_only=False)
 
             self.assertEqual(
                 test, searcher.query)
