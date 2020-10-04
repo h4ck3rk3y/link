@@ -28,6 +28,8 @@ class StackoverflowSearcher(BaseSearcher):
     def construct_request_parts(self, page, user_only):
         payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
+        if self.user_only:
+            payload["user"] = self.username
         return self.url, payload, None
 
     def validate(self, response):

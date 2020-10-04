@@ -57,7 +57,8 @@ class Link(object):
         requests = []
         for source in self.__sources_enabled.tokens:
             for fetcher in self.__fetchers[source]:
-                request = fetcher.construct_request(self.__page)
+                request = fetcher.construct_request(
+                    self.__page, user_only=self.__user_only)
                 if request is not None:
                     requests.append(request)
 
@@ -97,6 +98,11 @@ class Link(object):
         self.__query = query
         return self
 
+    @immutable("user_only", False)
+    def user_only(self, user_only=False):
+        self.__user_only = user_only
+        return self
+
     def __disable_all_sources(self):
         self.__sources_enabled = []
 
@@ -111,3 +117,4 @@ class Link(object):
     def __reset(self):
         self.__page_size = DEFAULT_PAGE_SIZE
         self.__query = None
+        self.__user_only = False

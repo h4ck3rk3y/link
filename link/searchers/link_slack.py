@@ -29,6 +29,8 @@ class SlackSearcher(BaseSearcher):
         headers = {"Content-type": "application/x-www-form-urlencoded"}
         payload = {"token": self.token,
                    "query": self.query, "count": self.per_page, "page": page}
+        if user_only:
+            payload["token"] = f"{self.token} from:{self.username}"
         return self.url, payload, headers
 
     def validate(self, response):

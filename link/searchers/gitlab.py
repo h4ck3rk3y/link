@@ -14,16 +14,10 @@ requests at protected paths that exceed 10 requests per minute per IP address.
 
 
 class GitlabSearcher(BaseSearcher):
-    url = "https://gitlab.com/api/v4/search"
 
-    def __init__(self, token, username, query, per_page, source_result, name, scope):
-        self.scope = scope
+    def __init__(self, token, username, query, per_page, source_result, name, url):
+        self.url = url
         super().__init__(token, username, query, per_page, source_result, name)
-
-    def construct_request_parts(self, page, user_only):
-        payload = {"search": self.query,
-                   "per_page": self.per_page, "page": page, "access_token": self.token, "scope": self.scope}
-        return self.url, payload, None
 
     def validate(self, response):
         banned_until = None

@@ -27,6 +27,8 @@ class GithubSearcher(BaseSearcher):
         headers = {"Accept": "application/vnd.github.v3+json"}
         if type(self.token) == str and len(self.token) > 0:
             headers["Authorization"] = f"token {self.token}"
+        if user_only:
+            payload["q"] = f"{payload['q']}+user:{self.username}"
         return self.url, payload, headers
 
     def validate(self, response):

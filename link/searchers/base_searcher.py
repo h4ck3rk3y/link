@@ -73,6 +73,7 @@ class BaseSearcher(object):
         page = self.parse(response.json())
         if len(page) != self.per_page:
             self.exhausted = True
+        logger.info(f"Received {len(page)} results from {self.name}")
         self.source_result.add(page)
         return None
 

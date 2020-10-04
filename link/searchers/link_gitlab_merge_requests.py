@@ -10,10 +10,18 @@ class GitlabMergeRequestSearcher(GitlabSearcher):
 
     source = "gitlab"
     name = "gitlab_merge_requests"
+    url = "https://gitlab.com/api/v4/merge_requests"
 
     def __init__(self, token, username, query, per_page, source_result):
         super().__init__(token, username, query, per_page,
-                         source_result, self.name, "merge_requests")
+                         source_result, self.name, self.url)
+
+    def construct_request_parts(self, page, user_only):
+        payload = {"search": self.query,
+                   "per_page": self.per_page, "page": page, "access_token": self.token, "in": "title"}
+        if not user_only:
+            payload["scope"] = "all"
+        return self.url, payload, None
 
     def parse(self, response):
         result_page = Page()
