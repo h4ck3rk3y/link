@@ -146,6 +146,7 @@ class Page(object):
         for result in self.__results:
             if result.link not in all_links:
                 deduped_results.append(result)
+                all_links.add(result.link)
         self.__results = deduped_results
 
     def __len__(self):
