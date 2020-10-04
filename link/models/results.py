@@ -133,10 +133,11 @@ class Page(object):
     def __score_based_shuffle__(self):
         random.shuffle(self.__results)
         self.__results = sorted(
-            self.__results, lambda x: x.score, reverse=True)
+            self.__results, key=lambda x: x.score, reverse=True)
 
     def __user_based_shuffle(self):
-        self.__results = sorted(self.__results, lambda x: x.user, reverse=True)
+        self.__results = sorted(
+            self.__results, key=lambda x: x.user, reverse=True)
 
     def __len__(self):
         return len(self.__results)

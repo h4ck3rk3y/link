@@ -76,8 +76,8 @@ class BaseSearcher(object):
             self.exhausted = True
         logger.info(f"Received {len(page)} results from {self.name}")
         if self.user_only:
-            for single_result in page:
-                single_result.user = True
+            for result in page:
+                result.user = True
         self.source_result.add(page)
         return None
 
