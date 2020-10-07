@@ -13,9 +13,9 @@ class TestLink(unittest.TestCase):
         user_token = UserTokens(
             {"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("foo").page_size(5)
-        first_set = set([x.title for x in link.fetch()])
-        second_set = set([x.title for x in link.fetch()])
-        third_set = set([x.title for x in link.fetch()])
+        first_set = set([x.link for x in link.fetch()])
+        second_set = set([x.link for x in link.fetch()])
+        third_set = set([x.link for x in link.fetch()])
         self.assertIsNotNone(link, "link shouldnt be none")
         self.assertLessEqual(len(second_set), len(first_set))
         self.assertLessEqual(len(third_set), len(second_set))
