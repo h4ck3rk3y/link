@@ -20,7 +20,7 @@ class GitlabIssueSearcher(GitlabSearcher):
     def construct_request_parts(self, page):
         payload = {"search": self.query,
                    "per_page": self.per_page, "page": page, "access_token": self.token, "in": "title"}
-        if self.user_only:
+        if not self.user_only:
             payload["scope"] = "all"
         return self.url, payload, None
 
