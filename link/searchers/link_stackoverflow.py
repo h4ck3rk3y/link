@@ -51,7 +51,6 @@ class StackoverflowSearcher(BaseSearcher):
     def parse(self, response):
         result_page = Page()
         for item in response['items']:
-            print(item)
             preview = item["excerpt"]
             title = item['title']
             link = self._get_link_for_stackoverflow(item)
