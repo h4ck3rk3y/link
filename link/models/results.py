@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class SingleResult(object):
-    def __init__(self, preview=None, link=None, source=None, date=None, category=None, title=None, score=0):
+    def __init__(self, preview=None, link=None, source=None, date=None, category=None, title=None, score=0, user=False):
         self.__preview = preview
         self.__link = link
         self.__source = source
@@ -17,6 +17,7 @@ class SingleResult(object):
         self.__category = category
         self.__title = title
         self.__score = score
+        self.__user = user
 
     @property
     def title(self):
@@ -82,6 +83,14 @@ class SingleResult(object):
     def score(self, value):
         self.__score = value
 
+    @property
+    def user(self):
+        return self.__user
+
+    @user.setter
+    def user(self, value):
+        self.__user = value
+
     def __str__(self):
         return f"Link:{self.__link}\nTitle:{self.__title}\nPreview Text:{self.__preview}\nSource:{self.__source}\nDate:{self.__date}\nCategory:{self.__category}"
 
@@ -119,11 +128,26 @@ class Page(object):
     def extend(self, another):
         self.__results.extend(another.__results)
         self.__score_based_shuffle__()
+        self.__user_based_shuffle()
+        self.__dedupe()
 
     def __score_based_shuffle__(self):
         random.shuffle(self.__results)
         self.__results = sorted(
-            self.__results, lambda x: x.score, reverse=True)
+            self.__results, key=lambda result: result.score, reverse=True)
+
+    def __user_based_shuffle(self):
+        self.__results = sorted(
+            self.__results, key=lambda result: result.user, reverse=True)
+
+    def __dedupe(self):
+        all_links = set()
+        deduped_results = []
+        for result in self.__results:
+            if result.link not in all_links:
+                deduped_results.append(result)
+                all_links.add(result.link)
+        self.__results = deduped_results
 
     def __len__(self):
         return len(self.__results)

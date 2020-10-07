@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class BaseSearcher(object):
 
-    def __init__(self, token, username, query, per_page, source_result, name, acceptable_qualifiers=set()):
+    def __init__(self, token, username, query, per_page, source_result, name, user_only, acceptable_qualifiers=set()):
         self.token = token
         self.username = username
         self.query = query
@@ -21,12 +21,13 @@ class BaseSearcher(object):
         self.errored = False
         self.exhausted = False
         self.acceptable_qualifiers = acceptable_qualifiers
+        self.user_only = user_only
 
         self.remove_non_acceptable_qualifiers()
         assert(type(query) == str and query !=
                ""), "Query has to be a non empty string"
 
-    def construct_request(self, page=0, user_only=False) -> grequests.AsyncRequest:
+    def construct_request(self, page=0) -> grequests.AsyncRequest:
         """ creates a request from query, token and other parameters.
         """
         if self.rate_limit_exceeded():
@@ -42,10 +43,10 @@ class BaseSearcher(object):
                 f"Skipping {self.name} as all results have been retrieved")
             return None
 
-        url, payload, headers = self.construct_request_parts(page, user_only)
+        url, payload, headers = self.construct_request_parts(page)
         return grequests.get(url, params=payload, headers=headers, hooks={"response": [self.validate_and_parse]})
 
-    def construct_request_parts(self, page, user_only) -> Tuple[str, dict, dict]:
+    def construct_request_parts(self, page) -> Tuple[str, dict, dict]:
         """ returns url, payload, headers """
         raise NotImplementedError("define the method in the derived class")
 
@@ -73,6 +74,10 @@ class BaseSearcher(object):
         page = self.parse(response.json())
         if len(page) != self.per_page:
             self.exhausted = True
+        logger.info(f"Received {len(page)} results from {self.name}")
+        if self.user_only:
+            for result in page:
+                result.user = True
         self.source_result.add(page)
         return None
 

@@ -21,13 +21,17 @@ class StackoverflowSearcher(BaseSearcher):
     source = "stackoverflow"
     url = "https://api.stackexchange.com/2.2/search"
     name = "stackoverflow"
+    user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result):
-        super().__init__(token, username, query, per_page, source_result, self.name)
+    def __init__(self, token, username, query, per_page, source_result, user_only):
+        super().__init__(token, username, query, per_page,
+                         source_result, self.name, user_only)
 
-    def construct_request_parts(self, page, user_only):
+    def construct_request_parts(self, page):
         payload = {"intitle": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
+        if self.user_only and len(self.username) > 0:
+            payload["user"] = self.username
         return self.url, payload, None
 
     def validate(self, response):

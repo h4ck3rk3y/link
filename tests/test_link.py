@@ -38,10 +38,11 @@ class TestLink(unittest.TestCase):
         self.assertIsNotNone(result.source)
         self.assertIsNotNone(result.title)
 
+    @unittest.skip("skipping in favor of the github & so search as github has a limit of 12 with async we hit this quickly")
     def test_github_works(self):
 
         user_token = UserTokens({
-            "github": UserToken(token="")})
+            "github": UserToken(token="", username="h4ck3rk3y")})
         link = Link.builder(user_token).query("python").page_size(6)
 
         results = link.fetch()
@@ -49,12 +50,10 @@ class TestLink(unittest.TestCase):
         self.assertGreaterEqual(len(results), 0)
         self.assertEqual(len(results), 6)
 
-        date = results[0].date
         link = results[0].link
         source = results[0].source
         title = results[0].title
 
-        self.assertIsNotNone(date)
         self.assertIsNotNone(link)
         self.assertIsNotNone(source)
         self.assertIsNotNone(title)
@@ -62,7 +61,7 @@ class TestLink(unittest.TestCase):
     def test_both_github_and_stackoverflow(self):
 
         user_token = UserTokens({"stackoverflow": UserToken(
-            token=""), "github": UserToken(token="")})
+            token=""), "github": UserToken(token="", username="h4ck3rk3y")})
         link = Link.builder(user_token).query("python").page_size(12)
 
         results = link.fetch()
@@ -125,6 +124,7 @@ class TestLink(unittest.TestCase):
 
         self.assertEqual(len(result), 13)
 
+    @unittest.skip("skipping this for now in order to not go over the api limit")
     def test_github_urls_are_not_api_urls(self):
 
         user_token = UserTokens(
@@ -206,7 +206,7 @@ class TestLink(unittest.TestCase):
 
         for index, test in enumerate(test_cases):
             searcher = BaseSearcher(token="", username="",
-                                    query=test, per_page=15, source_result=None, name="foo")
+                                    query=test, per_page=15, source_result=None, name="foo", user_only=False)
 
             self.assertEqual(
                 expected_results[index], searcher.query)
@@ -227,7 +227,7 @@ class TestLink(unittest.TestCase):
 
         for test in test_cases:
             searcher = BaseSearcher(token="", username="",
-                                    query=test, per_page=15, source_result=None, name="foo", acceptable_qualifiers=GITHUB_QUALIFIERS)
+                                    query=test, per_page=15, source_result=None, name="foo", acceptable_qualifiers=GITHUB_QUALIFIERS, user_only=False)
 
             self.assertEqual(
                 test, searcher.query)
@@ -241,8 +241,31 @@ class TestLink(unittest.TestCase):
 
         results = link.fetch()
 
-        self.assertGreaterEqual(len(results), 0)
         self.assertEqual(len(results), 6)
+
+        date = results[0].date
+        link = results[0].link
+        preview = results[0].preview
+        source = results[0].source
+        title = results[0].title
+
+        self.assertIsNotNone(date)
+        self.assertIsNotNone(link)
+        self.assertIsNotNone(preview)
+        self.assertIsNotNone(source)
+        self.assertIsNotNone(title)
+
+    @unittest.skip("This needs to run with gyanis token and username")
+    def test_gitlab_works_user_only(self):
+
+        user_token = UserTokens({
+            "gitlab": UserToken(token="", username="")})
+        link = Link.builder(user_token).query(
+            "nisploit").user_only(True).page_size(6)
+
+        results = link.fetch()
+
+        self.assertEqual(len(results), 1)
 
         date = results[0].date
         link = results[0].link

@@ -21,14 +21,18 @@ class SlackSearcher(BaseSearcher):
     source = "slack"
     url = "https://slack.com/api/search.messages"
     name = "slack"
+    user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result):
-        super().__init__(token, username, query, per_page, source_result, self.name)
+    def __init__(self, token, username, query, per_page, source_result, user_only):
+        super().__init__(token, username, query, per_page,
+                         source_result, self.name, user_only)
 
-    def construct_request_parts(self, page, user_only):
+    def construct_request_parts(self, page):
         headers = {"Content-type": "application/x-www-form-urlencoded"}
         payload = {"token": self.token,
                    "query": self.query, "count": self.per_page, "page": page}
+        if self.user_only:
+            payload["token"] = f"{self.token} from:{self.username}"
         return self.url, payload, headers
 
     def validate(self, response):

@@ -4,7 +4,7 @@ setuptools.setup(
     name='link',
     packages=setuptools.find_packages(),
     description="Link - Fetch's link to the rest of world",
-    version='3.0.2',
+    version='3.1.0',
     url='https://github.com/h4ck3rk3y/link',
     author='Fetch',
     author_email='hello@gofetch.io',
