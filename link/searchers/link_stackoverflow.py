@@ -19,16 +19,19 @@ in so the searches can't be personalized
 class StackoverflowSearcher(BaseSearcher):
 
     source = "stackoverflow"
-    url = "https://api.stackexchange.com/2.2/search"
+    url = "https://api.stackexchange.com/2.2/search/excerpts"
     name = "stackoverflow"
     user_priority = False
+
+    QUESTION_STACKOVERFLOW_URL = "https://stackoverflow.com/q/%d"
+    ANSWER_STACKOVERFLOW_URL = "https://stackoverflow.com/a/%d"
 
     def __init__(self, token, username, query, per_page, source_result, user_only):
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):
-        payload = {"intitle": self.query, "site": self.source,
+        payload = {"q": self.query, "site": self.source,
                    "page": page, "pagesize": self.per_page}
         if self.user_only and len(self.username) > 0:
             payload["user"] = self.username
@@ -48,9 +51,9 @@ class StackoverflowSearcher(BaseSearcher):
     def parse(self, response):
         result_page = Page()
         for item in response['items']:
-            preview = self.generate_preview(item)
+            preview = item["excerpt"]
             title = item['title']
-            link = item['link']
+            link = self._get_link_for_stackoverflow(item)
             date = datetime.fromtimestamp(item['creation_date'])
             single_result = SingleResult(
                 preview, link, self.source, date, QUESTION, title)
@@ -58,11 +61,13 @@ class StackoverflowSearcher(BaseSearcher):
         return result_page
 
     @ staticmethod
-    def generate_preview(item):
-        return f"This question has been viewed {item['view_count']} times and has {item['answer_count']} answers"
-
-    @ staticmethod
     def parse_time_from_message(message):
         pattern = re.compile("\\d+")
         result = pattern.search(message)
         return int(result.group(0))
+
+    def _get_link_for_stackoverflow(self, item):
+        if item["item_type"] == "answer":
+            return self.ANSWER_STACKOVERFLOW_URL % item["answer_id"]
+
+        return self.QUESTION_STACKOVERFLOW_URL % item["question_id"]
