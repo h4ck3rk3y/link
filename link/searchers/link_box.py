@@ -15,6 +15,8 @@ Search is tier 2
 https://api.slack.com/docs/rate-limits#tier_t2
 """
 
+BOX_URL = "https://app.box.com"
+
 
 class BoxSearcher(BaseSearcher):
 
@@ -29,9 +31,9 @@ class BoxSearcher(BaseSearcher):
 
     def construct_request_parts(self, page):
         headers = {"Content-type": "application/json"}
-        headers["Authorization"] = self.token
+        headers["Authorization"] = f"Bearer {self.token}"
         payload = {
-            "query": self.token, "limit": self.per_page, "offset": page*self.per_page
+            "query": self.query, "limit": self.per_page, "offset": (page-1)*self.per_page
         }
         return self.url, payload, headers
 
@@ -49,10 +51,15 @@ class BoxSearcher(BaseSearcher):
         for entry in response["entries"]:
             preview = entry["description"]
             title = entry["name"]
-            link = entry["shared_link"]["url"]
+            link = BoxSearcher.parse_path(entry["path_collection"])
             date = datetime.strptime(entry["created_at"], BOX_TIME_FORMAT)
-            assert(entry["type"] in {FILE, FOLDER, WEB_LINK})
+            assert(entry["type"] in [FILE, FOLDER, WEB_LINK])
             single_result = SingleResult(
                 preview, link, self.source, date, entry["type"], title)
             result_page.add(single_result)
         return result_page
+
+    @ staticmethod
+    def parse_path(path_collection):
+        entry = path_collection["entries"][-1]
+        return f"{BOX_URL}/folder/{entry['id']}"
