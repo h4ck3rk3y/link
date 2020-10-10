@@ -4,6 +4,7 @@ from datetime import datetime
 from .constants import FILE, FOLDER, WEB_LINK, BOX_TIME_FORMAT
 from datetime import timedelta
 import re
+import requests
 
 
 """
@@ -26,6 +27,9 @@ class BoxSearcher(BaseSearcher):
     user_priority = False
 
     def __init__(self, token, username, query, per_page, source_result, user_only):
+        self.user_id = ""
+        if user_only:
+            self.user_id = BoxSearcher.get_user_id(token)
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
 
@@ -35,6 +39,8 @@ class BoxSearcher(BaseSearcher):
         payload = {
             "query": self.query, "limit": self.per_page, "offset": (page-1)*self.per_page
         }
+        if self.user_only and self.user_id != "":
+            payload["owner_user_ids"] = f"{self.user_id}"
         return self.url, payload, headers
 
     def validate(self, response):
@@ -59,7 +65,20 @@ class BoxSearcher(BaseSearcher):
             result_page.add(single_result)
         return result_page
 
-    @ staticmethod
+    @staticmethod
     def parse_path(path_collection):
         entry = path_collection["entries"][-1]
         return f"{BOX_URL}/folder/{entry['id']}"
+
+    @staticmethod
+    def get_user_id(token):
+        user_api = "https://api.box.com/2.0/users/me"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}"
+        }
+        response = requests.get(user_api, headers=headers)
+        if response.status_code == 200:
+            return response.json()["id"]
+        else:
+            return ""
