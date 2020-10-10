@@ -286,6 +286,7 @@ class TestLink(unittest.TestCase):
         dumpd = pickle.dumps(link)
         self.assertIsNotNone(dumpd)
 
+    @unittest.skip("Needs a token")
     def test_link_box(self):
         user_token = UserTokens(
             {"box": UserToken(token="")}
