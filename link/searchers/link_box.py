@@ -8,12 +8,10 @@ import requests
 
 
 """
-Documentation: https://api.slack.com/methods/search.messages
-At the time of writing slack api didn't support filteirng by date.
+At the moment the links are constructed assuming
+standard box not enterprise box.
 
-Slack allows atleast 20 requests per minute
-Search is tier 2
-https://api.slack.com/docs/rate-limits#tier_t2
+https://developer.box.com/reference/get-search/
 """
 
 BOX_URL = "https://app.box.com"
