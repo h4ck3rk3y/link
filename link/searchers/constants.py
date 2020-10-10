@@ -8,6 +8,9 @@ CODE = "code"
 REPO = "repository"
 MESSAGE = "message"
 MERGE_REQUESTS = "merge_requests"
+FILE = "file"
+FOLDER = "folder"
+WEB_LINK = "web_link"
 
 
 # Trello
@@ -128,4 +131,5 @@ GITHUB_QUALIFIERS = set([
 
 
 GITHUB_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+BOX_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 TRELLO_GITLAB_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"

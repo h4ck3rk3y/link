@@ -7,6 +7,7 @@ from .link_gitlab_projects import GitlabProjectSearcher
 from .link_slack import SlackSearcher
 from .link_stackoverflow import StackoverflowSearcher
 from .link_trello import TrelloSearcher
+from .link_box import BoxSearcher
 
 
 available_searchers = {
@@ -24,5 +25,8 @@ available_searchers = {
     ],
     "stackoverflow": [
         StackoverflowSearcher
+    ],
+    "box": [
+        BoxSearcher
     ]
 }

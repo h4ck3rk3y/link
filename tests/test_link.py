@@ -285,3 +285,12 @@ class TestLink(unittest.TestCase):
         link = Link.builder(user_token).query("foo").page_size(5)
         dumpd = pickle.dumps(link)
         self.assertIsNotNone(dumpd)
+
+    @unittest.skip("Needs a token")
+    def test_link_box(self):
+        user_token = UserTokens(
+            {"box": UserToken(token="")}
+        )
+        link = Link.builder(user_token).query("yellow-chilli").page_size(5)
+        result = link.fetch()
+        self.assertGreater(len(result), 0)
