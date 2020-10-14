@@ -8,6 +8,7 @@ from .link_slack import SlackSearcher
 from .link_stackoverflow import StackoverflowSearcher
 from .link_trello import TrelloSearcher
 from .link_box import BoxSearcher
+from .link_asana import AsanaSearcher
 
 
 available_searchers = {
@@ -28,5 +29,8 @@ available_searchers = {
     ],
     "box": [
         BoxSearcher
+    ],
+    "asana": [
+        AsanaSearcher
     ]
 }

@@ -19,6 +19,9 @@ BOARDS = "boards"
 ORGANIZATIONS = "organizations"
 MEMBERS = "members"
 
+# Task
+TASK = "task"
+
 
 GITHUB_QUALIFIERS = set([
     "in:file",
