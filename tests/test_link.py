@@ -294,3 +294,13 @@ class TestLink(unittest.TestCase):
         link = Link.builder(user_token).query("yellow-chilli").page_size(5)
         result = link.fetch()
         self.assertGreater(len(result), 0)
+
+    @unittest.skip("needs a valid asana token")
+    def test_link_asana(self):
+        user_token = UserTokens(
+            {"asana": UserToken(token="")}
+        )
+        link = Link.builder(user_token).query("Lynk").page_size(5)
+        result = link.fetch()
+        print(result)
+        self.assertGreater(len(result), 0)
