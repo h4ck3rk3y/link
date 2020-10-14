@@ -14,6 +14,8 @@ Then need to use the advanced task search feature
 GET /workspaces/{workspace_gid}/tasks/search
 
 I am searching the first work space by default
+
+https://developers.asana.com/docs/search-tasks-in-a-workspace
 """
 
 
@@ -25,8 +27,9 @@ class AsanaSearcher(BaseSearcher):
     user_priority = False
 
     def __init__(self, token, username, query, per_page, source_result, user_only):
-        workspace = AsanaSearcher.get_workspace(token)
+        workspace, workspace_name = AsanaSearcher.get_workspace(token)
         self.url = self.url % (workspace)
+        self.workspace_name = workspace_name
         self.offset = None
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
@@ -59,7 +62,7 @@ class AsanaSearcher(BaseSearcher):
         for task in response["data"]:
             link = AsanaSearcher.get_url(task["gid"])
             title = task["name"]
-            preview = ""
+            preview = f"A task  in the {self.workspace_name} workspace"
             single_result = SingleResult(preview=preview, link=link, source=self.source,
                                          date=None, category=TASK, title=title)
             result_page.add(single_result)
@@ -67,7 +70,7 @@ class AsanaSearcher(BaseSearcher):
 
     @staticmethod
     def get_url(task_id):
-        return "https://app.asana.com/0/0/{task_id}"
+        return f"https://app.asana.com/0/0/{task_id}"
 
     @staticmethod
     def get_workspace(token):
@@ -75,6 +78,6 @@ class AsanaSearcher(BaseSearcher):
             "Accept": "application/json",
             "Authorization": f"Bearer {token}"
         })
-        if response.status != 200:
-            return -1
-        return response.json()["data"][0]["gid"]
+        if response.status_code != 200:
+            return -1, ""
+        return response.json()["data"][0]["gid"], response.json()["data"][0]["name"]
