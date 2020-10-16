@@ -22,7 +22,7 @@ class GDriveSearcher(BaseSearcher):
     user_priority = False
 
     def __init__(self, token, username, query, per_page, source_result, user_only):
-        self.page_token = ""
+        self.page_token = None
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
 
@@ -30,9 +30,10 @@ class GDriveSearcher(BaseSearcher):
         headers = {"Content-type": "application/json"}
         headers["Authorization"] = f"Bearer {self.token}"
         payload = {
-            "q": form_google_query(self.query),
+            "q": form_gdrive_query(self.query),
             "pageSize": self.per_page,
             "corpora": "user",
+            "fields": "nextPageToken, incompleteSearch, files(name, mimeType, description, webViewLink, createdTime)"
         }
         if self.page_token:
             payload["pageToken"] = self.page_token
@@ -47,23 +48,30 @@ class GDriveSearcher(BaseSearcher):
             if response.status_code == 403:
                 banned_seconds = int(response.headers['retry-after'])
                 banned_until = datetime.now() + timedelta(seconds=banned_seconds)
+            else:
+                logger.error(f"Something went wrong with the Gdrive request. response: {response}")
             return False, banned_until
         return True, banned_until
 
     def parse(self, response):
-        if response['incompleteSearch']:
-            logger.warning(f"Last search was incomplete. response: {response}")
-        self.page_token = response["nextPageToken"]
+        if response.get('incompleteSearch', False):
+            logger.warning(f"Last search wasn't com plete. response: {response}")
+
+        if not response.get("nextPageToken", None):
+            self.exhausted = True
+        else:
+            self.page_token = response["nextPageToken"]
 
         result_page = Page()
         for entry in response["files"]:
-            preview = entry["description"]
+            preview = entry.get("description", "")
             title = entry["name"]
             link = entry["webViewLink"]
-            date = datetime.fromisoformat(entry["createdTime"])
-            logger.info(entry)
+            date = datetime.fromisoformat(entry["createdTime"].replace("Z", "")) # bit of a hack: https://stackoverflow.com/questions/1941927/convert-an-rfc-3339-time-to-a-standard-python-timestamp
             single_result = SingleResult(
-                preview, link, self.source, date, "", title)
+                preview, link, self.source, date, entry["mimeType"], title)
             result_page.add(single_result)
         return result_page
 
+def form_gdrive_query(user_query_string):
+    return f"fullText contains '{user_query_string}' or name contains '{user_query_string}'"
