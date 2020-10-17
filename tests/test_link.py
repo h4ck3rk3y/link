@@ -312,5 +312,4 @@ class TestLink(unittest.TestCase):
         )
         link = Link.builder(user_token).query("passport").page_size(5)
         result = link.fetch()
-        print(result)
         self.assertGreater(len(result), 0)

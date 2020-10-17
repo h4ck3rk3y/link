@@ -48,8 +48,6 @@ class GDriveSearcher(BaseSearcher):
             if response.status_code == 403:
                 banned_seconds = int(response.headers['retry-after'])
                 banned_until = datetime.now() + timedelta(seconds=banned_seconds)
-            else:
-                logger.error(f"Something went wrong with the Gdrive request. response: {response}")
             return False, banned_until
         return True, banned_until
 
@@ -67,7 +65,8 @@ class GDriveSearcher(BaseSearcher):
             preview = entry.get("description", "")
             title = entry["name"]
             link = entry["webViewLink"]
-            date = datetime.fromisoformat(entry["createdTime"].replace("Z", "")) # bit of a hack: https://stackoverflow.com/questions/1941927/convert-an-rfc-3339-time-to-a-standard-python-timestamp
+            # bit of a hack: https://stackoverflow.com/questions/1941927/convert-an-rfc-3339-time-to-a-standard-python-timestamp
+            date = datetime.fromisoformat(entry["createdTime"].replace("Z", ""))
             single_result = SingleResult(
                 preview, link, self.source, date, entry["mimeType"], title)
             result_page.add(single_result)
