@@ -3,12 +3,13 @@ from ..models.results import SingleResult, Page
 from datetime import datetime
 from .constants import ISSUE, GITHUB_TIME_FORMAT
 from datetime import timedelta
+import os
 
 
 class GithubIssueSearcher(GithubSearcher):
 
     source = "github"
-    url = "https://api.github.com/search/issues"
+    url = os.getenv("GITHUB_ISSUES_DOMAIN", "https://api.github.com/search/issues")
     name = "github_issues"
     user_priority = True
 

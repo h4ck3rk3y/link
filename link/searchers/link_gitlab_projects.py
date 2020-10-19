@@ -4,13 +4,14 @@ from ..models.results import SingleResult, Page
 from datetime import datetime
 from .constants import REPO, TRELLO_GITLAB_TIME_FORMAT
 from datetime import timedelta
+import os
 
 
 class GitlabProjectSearcher(GitlabSearcher):
 
     source = "gitlab"
     name = "gitlab_projects"
-    url = "https://gitlab.com/api/v4/projects"
+    url = os.getenv("GITLAB_PROJECTS_DOMAIN", "https://gitlab.com/api/v4/projects")
     user_priority = True
 
     def __init__(self, token, username, query, per_page, source_result, user_only):

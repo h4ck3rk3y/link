@@ -4,13 +4,14 @@ from ..models.results import SingleResult, Page
 from datetime import datetime
 from .constants import MERGE_REQUESTS, TRELLO_GITLAB_TIME_FORMAT
 from datetime import timedelta
+import os
 
 
 class GitlabMergeRequestSearcher(GitlabSearcher):
 
     source = "gitlab"
     name = "gitlab_merge_requests"
-    url = "https://gitlab.com/api/v4/merge_requests"
+    url = os.getenv("GITLAB_MERGE_REQUEST_DOMAIN", "https://gitlab.com/api/v4/merge_requests")
     user_priority = True
 
     def __init__(self, token, username, query, per_page, source_result, user_only):

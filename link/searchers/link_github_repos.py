@@ -4,12 +4,13 @@ from ..models.results import SingleResult, Page
 from datetime import datetime
 from .constants import REPO, GITHUB_TIME_FORMAT
 from datetime import timedelta
+import os
 
 
 class GithubRepoSearcher(GithubSearcher):
 
     source = "github"
-    url = "https://api.github.com/search/repositories"
+    url = os.getenv("GITHUB_SEARCH_DOMAIN", "https://api.github.com/search/repositories")
     name = "github_repos"
     user_priority = True
 
