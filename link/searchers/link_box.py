@@ -5,7 +5,7 @@ from .constants import FILE, FOLDER, WEB_LINK, BOX_TIME_FORMAT
 from datetime import timedelta
 import re
 import requests
-
+import os
 
 """
 At the moment the links are constructed assuming
@@ -20,7 +20,7 @@ BOX_URL = "https://app.box.com"
 class BoxSearcher(BaseSearcher):
 
     source = "box"
-    url = "https://api.box.com/2.0/search/"
+    url = os.getenv("BOX_DOMAIN", "https://api.box.com/2.0/search/")
     name = "box"
     user_priority = False
 

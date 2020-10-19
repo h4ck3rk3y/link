@@ -4,12 +4,13 @@ from ..models.results import SingleResult, Page
 from datetime import datetime
 from .constants import CODE
 from datetime import timedelta
+import os
 
 
 class GithubCodeSearcher(GithubSearcher):
 
     source = "github"
-    url = "https://api.github.com/search/code"
+    url = os.getenv("GITHUB_CODE_DOMAIN", "https://api.github.com/search/code")
     name = "github_code"
     user_priority = True
 
