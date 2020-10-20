@@ -9,7 +9,7 @@ from .link_stackoverflow import StackoverflowSearcher
 from .link_trello import TrelloSearcher
 from .link_box import BoxSearcher
 from .link_asana import AsanaSearcher
-
+from .link_google import GDriveSearcher
 
 available_searchers = {
     "github": [
@@ -32,5 +32,8 @@ available_searchers = {
     ],
     "asana": [
         AsanaSearcher
+    ],
+    "google": [
+        GDriveSearcher
     ]
 }

@@ -304,3 +304,12 @@ class TestLink(unittest.TestCase):
         result = link.fetch()
         print(result)
         self.assertGreater(len(result), 0)
+
+    @unittest.skip("needs a valid google drive token")
+    def test_link_google_drive(self):
+        user_token = UserTokens(
+            {"google": UserToken(token="")}
+        )
+        link = Link.builder(user_token).query("passport").page_size(5)
+        result = link.fetch()
+        self.assertGreater(len(result), 0)
