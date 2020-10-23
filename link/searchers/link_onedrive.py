@@ -1,7 +1,7 @@
 from .base_searcher import BaseSearcher
 from ..models.results import SingleResult, Page
 from datetime import datetime
-from .constants import TASK
+from .constants import FILE
 from datetime import timedelta
 import requests
 import urllib.parse as urlparse
@@ -51,12 +51,12 @@ class MicrosoftOneDriveSearcher(BaseSearcher):
             self.skip_token = get_skip_token(response["@odata.nextlink"])
         else:
             self.skip_token = None
-        for task in response["data"]:
-            link = "url"
-            title = task["name"]
-            preview = "preview"
+        for item in response["value"]:
+            link = item["webUrl"]
+            title = item["name"]
+            preview = ""
             single_result = SingleResult(preview=preview, link=link, source=self.source,
-                                         date=None, category=TASK, title=title)
+                                         date=None, category=FILE, title=title)
             result_page.add(single_result)
         return result_page
 
