@@ -313,3 +313,12 @@ class TestLink(unittest.TestCase):
         link = Link.builder(user_token).query("passport").page_size(5)
         result = link.fetch()
         self.assertGreater(len(result), 0)
+
+    @unittest.skip("neeed a microsoft token")
+    def test_link_onedrive(self):
+        user_token = UserTokens(
+            {"microsoft": UserToken(token="")}
+        )
+        link = Link.builder(user_token).query("yellow").page_size(5)
+        result = link.fetch()
+        self.assertGreater(len(result), 0)
