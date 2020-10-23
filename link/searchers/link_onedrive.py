@@ -10,6 +10,10 @@ from urllib.parse import parse_qs
 
 """
 https://docs.microsoft.com/en-us/onedrive/developer/rest-api/api/driveitem_search?view=odsp-graph-online
+
+The link below is more valid, go to onedrive and then file search
+
+https://developer.microsoft.com/en-us/graph/graph-explorer
 """
 
 
