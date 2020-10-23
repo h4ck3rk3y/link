@@ -1,7 +1,7 @@
 from .base_searcher import BaseSearcher
 from ..models.results import SingleResult, Page
 from datetime import datetime
-from .constants import FILE
+from .constants import FILE, MICROSOFT_TIME_FORMAT
 from datetime import timedelta
 import requests
 import urllib.parse as urlparse
@@ -16,7 +16,7 @@ https://docs.microsoft.com/en-us/onedrive/developer/rest-api/api/driveitem_searc
 class MicrosoftOneDriveSearcher(BaseSearcher):
 
     source = "microsoft"
-    url = "https://graph.microsoft.com/v1.0/me/drive/search(q='%s')"
+    url = "https://graph.microsoft.com/v1.0/me/drive/search(q='%s')?select=name,webUrl,createdDateTime,createdBy"
     name = "onedrive"
     user_priority = False
 
@@ -54,9 +54,10 @@ class MicrosoftOneDriveSearcher(BaseSearcher):
         for item in response["value"]:
             link = item["webUrl"]
             title = item["name"]
-            preview = ""
+            date = datetime.strptime(item["createdDateTime"], MICROSOFT_TIME_FORMAT)
+            preview = f"A file created by {item.get('user', {}).get('displayName', 'unknown')}"
             single_result = SingleResult(preview=preview, link=link, source=self.source,
-                                         date=None, category=FILE, title=title)
+                                         date=date, category=FILE, title=title)
             result_page.add(single_result)
         return result_page
 
