@@ -10,6 +10,8 @@ from .link_trello import TrelloSearcher
 from .link_box import BoxSearcher
 from .link_asana import AsanaSearcher
 from .link_google import GDriveSearcher
+from .link_onedrive import MicrosoftOneDriveSearcher
+
 
 available_searchers = {
     "github": [
@@ -35,5 +37,8 @@ available_searchers = {
     ],
     "google": [
         GDriveSearcher
+    ],
+    "microsoft": [
+        MicrosoftOneDriveSearcher
     ]
 }
