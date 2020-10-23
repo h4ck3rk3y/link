@@ -59,7 +59,7 @@ class MicrosoftOneDriveSearcher(BaseSearcher):
             link = item["webUrl"]
             title = item["name"]
             date = datetime.strptime(item["createdDateTime"], MICROSOFT_TIME_FORMAT)
-            preview = f"A file created by {item.get('user', {}).get('displayName', 'unknown')}"
+            preview = f"A file created by {item.get('createdBy', {}).get('user', {}).get('displayName', 'unknown')}"
             single_result = SingleResult(preview=preview, link=link, source=self.source,
                                          date=date, category=FILE, title=title)
             result_page.add(single_result)
