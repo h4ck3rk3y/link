@@ -22,6 +22,8 @@ MEMBERS = "members"
 # Task
 TASK = "task"
 
+# Jira
+ISSUE = "issue"
 
 GITHUB_QUALIFIERS = set([
     "in:file",
