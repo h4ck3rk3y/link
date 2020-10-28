@@ -11,7 +11,7 @@ from .link_box import BoxSearcher
 from .link_asana import AsanaSearcher
 from .link_google import GDriveSearcher
 from .link_onedrive import MicrosoftOneDriveSearcher
-
+from .link_jira import JiraSearcher
 
 available_searchers = {
     "github": [
@@ -40,5 +40,8 @@ available_searchers = {
     ],
     "microsoft": [
         MicrosoftOneDriveSearcher
+    ],
+    "atlassian": [
+        JiraSearcher
     ]
 }

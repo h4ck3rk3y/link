@@ -17,21 +17,22 @@ class JiraSearcher(BaseSearcher):
     user_priority = False
 
     def __init__(self, token, username, query, per_page, source_result, user_only):
-        self.url = username
+        self.url = f"{username}/rest/api/2/search"
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):
         headers = {"Accept": "application/json"}
-        headers["Authorization"] = get_auth_header(self.token)
+        headers["Authorization"] = f"bearer {self.token}"
         payload = {
-            "jql": f"text ~ {self.query}",
+            "jql": f'text ~ "{self.query}"',
             "maxResults": self.per_page,
-            "startAt": self.per_page*(page-1)
+            "startAt": self.per_page*(page-1),
         }
         return self.url, payload, headers
 
     def validate(self, response):
+        print(response.text)
         banned_until = None
         if response.status_code != 200:
             if response.status_code == 429:
@@ -53,5 +54,6 @@ class JiraSearcher(BaseSearcher):
 
 
 def get_auth_header(token):
-    b64_encoded_user_pass = b64encode(f"{token}").decode("ascii")
+    token_as_bytes = token.encode("utf-8")
+    b64_encoded_user_pass = b64encode(token_as_bytes).decode("ascii")
     return f"Basic {b64_encoded_user_pass}"
