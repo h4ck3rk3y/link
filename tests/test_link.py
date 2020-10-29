@@ -327,7 +327,8 @@ class TestLink(unittest.TestCase):
     def test_link_jira(self):
         token = ""
         user_token = UserTokens(
-            {"atlassian": UserToken(token=token, extra_data={"cloudId": "45520742-69bf-4d99-9c22-86de4e5de604"})}
+            {"atlassian": UserToken(token=token, extra_data={
+                                    "cloudId": "45520742-69bf-4d99-9c22-86de4e5de604", "url": "https://getfetch.atlassian.net"})}
         )
         link = Link.builder(user_token).query("little").page_size(5)
         result = link.fetch()
