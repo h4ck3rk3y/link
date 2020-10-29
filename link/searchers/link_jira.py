@@ -46,7 +46,7 @@ class JiraSearcher(BaseSearcher):
         for issue in response["issues"]:
             preview = f"An issue in the {issue['fields']['project']['name']} project"
             title = issue['fields']['summary']
-            link = get_link(self.atlassian_instance, key)
+            link = get_link(self.atlassian_instance, issue['key'])
             date = datetime.strptime(issue['fields']['created'], ATLASSIAN_FORMAT)
             single_result = SingleResult(preview, link, self.source, date, ISSUE, title)
             result_page.add(single_result)
@@ -54,4 +54,4 @@ class JiraSearcher(BaseSearcher):
 
 
 def get_link(url, key):
-    return url + "/browse" + key
+    return url + "/browse/" + key
