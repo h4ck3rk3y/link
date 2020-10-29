@@ -3,9 +3,10 @@ from typing import Dict
 
 class UserToken(object):
 
-    def __init__(self, token: str = None, username: str = None):
+    def __init__(self, token: str = None, username: str = None, extra_data: dict = None):
         self.__username = username
         self.__token = token
+        self.__extra_data = extra_data
 
     @property
     def username(self):
@@ -22,6 +23,14 @@ class UserToken(object):
     @token.setter
     def token(self, value):
         self.__token = value
+
+    @property
+    def extra_data(self):
+        return self.__extra_data
+
+    @extra_data.setter
+    def extra_data(self, value):
+        self.__extra_data = value
 
     def __str__(self):
         return "Username: {self.__username}"

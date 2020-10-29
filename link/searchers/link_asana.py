@@ -26,12 +26,12 @@ class AsanaSearcher(BaseSearcher):
     name = "asana"
     user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result, user_only):
-        workspace, workspace_name = AsanaSearcher.get_workspace(token)
+    def __init__(self, user_token, query, per_page, source_result, user_only):
+        workspace, workspace_name = AsanaSearcher.get_workspace(user_token.token)
         self.url = self.url % (workspace)
         self.workspace_name = workspace_name
         self.offset = None
-        super().__init__(token, username, query, per_page,
+        super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):

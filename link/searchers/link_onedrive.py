@@ -24,10 +24,10 @@ class MicrosoftOneDriveSearcher(BaseSearcher):
     name = "onedrive"
     user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result, user_only):
+    def __init__(self, user_token, query, per_page, source_result, user_only):
         self.skip_token = None
         self.url = self.url % query
-        super().__init__(token, username, query, per_page,
+        super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):

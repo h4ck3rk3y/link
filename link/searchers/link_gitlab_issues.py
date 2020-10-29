@@ -14,8 +14,8 @@ class GitlabIssueSearcher(GitlabSearcher):
     url = os.getenv("GITLAB_ISSUES_DOMAIN", "https://gitlab.com/api/v4/issues")
     user_priority = True
 
-    def __init__(self, token, username, query, per_page, source_result, user_only):
-        super().__init__(token, username, query, per_page,
+    def __init__(self, user_token, query, per_page, source_result, user_only):
+        super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, self.url, user_only)
 
     def construct_request_parts(self, page):

@@ -21,9 +21,9 @@ class GDriveSearcher(BaseSearcher):
     name = "gdrive"
     user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result, user_only):
+    def __init__(self, user_token, query, per_page, source_result, user_only):
         self.page_token = None
-        super().__init__(token, username, query, per_page,
+        super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):
@@ -71,6 +71,7 @@ class GDriveSearcher(BaseSearcher):
                 preview, link, self.source, date, entry["mimeType"], title)
             result_page.add(single_result)
         return result_page
+
 
 def form_gdrive_query(user_query_string):
     return f"fullText contains '{user_query_string}' or name contains '{user_query_string}'"
