@@ -12,6 +12,7 @@ from .link_asana import AsanaSearcher
 from .link_google import GDriveSearcher
 from .link_onedrive import MicrosoftOneDriveSearcher
 from .link_jira import JiraSearcher
+from .link_confluence import ConfluenceSearcher
 
 available_searchers = {
     "github": [
@@ -42,6 +43,6 @@ available_searchers = {
         MicrosoftOneDriveSearcher
     ],
     "atlassian": [
-        JiraSearcher
+        JiraSearcher, ConfluenceSearcher
     ]
 }
