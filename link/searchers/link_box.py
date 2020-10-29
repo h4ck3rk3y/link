@@ -24,11 +24,11 @@ class BoxSearcher(BaseSearcher):
     name = "box"
     user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result, user_only):
+    def __init__(self, user_token, query, per_page, source_result, user_only):
         self.user_id = ""
         if user_only:
-            self.user_id = BoxSearcher.get_user_id(token)
-        super().__init__(token, username, query, per_page,
+            self.user_id = BoxSearcher.get_user_id(user_token.token)
+        super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):

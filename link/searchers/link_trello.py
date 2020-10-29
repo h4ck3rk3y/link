@@ -24,13 +24,14 @@ class TrelloSearcher(BaseSearcher):
     name = "trello"
     user_priority = False
 
-    def __init__(self, token, username, query, per_page, source_result, user_only):
-        super().__init__(token, username, query, per_page,
+    def __init__(self, user_token, query, per_page, source_result, user_only):
+        self.key = user_token.extra_data["key"]
+        super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):
         payload = {"token": self.token,
-                   "key": self.username, "query": self.query, "cards_page": page - 1, "cards_limit": self.per_page, "modelTypes": CARDS}
+                   "key": self.key, "query": self.query, "cards_page": page - 1, "cards_limit": self.per_page, "modelTypes": CARDS}
         return self.url, payload, None
 
     def validate(self, response):

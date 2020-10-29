@@ -22,6 +22,8 @@ MEMBERS = "members"
 # Task
 TASK = "task"
 
+# Jira
+ISSUE = "issue"
 
 GITHUB_QUALIFIERS = set([
     "in:file",
@@ -137,3 +139,4 @@ GITHUB_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 BOX_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 TRELLO_GITLAB_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MICROSOFT_TIME_FORMAT = TRELLO_GITLAB_TIME_FORMAT
+ATLASSIAN_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
