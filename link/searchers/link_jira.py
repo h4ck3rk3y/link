@@ -1,7 +1,7 @@
 from .base_searcher import BaseSearcher
 from ..models.results import SingleResult, Page
 from datetime import datetime
-from .constants import ISSUE
+from .constants import ISSUE, ATLASSIAN_FORMAT
 from datetime import timedelta
 from base64 import b64encode
 
@@ -17,13 +17,13 @@ class JiraSearcher(BaseSearcher):
     user_priority = False
 
     def __init__(self, token, username, query, per_page, source_result, user_only):
-        self.url = f"{username}/rest/api/2/search"
+        self.url = f"https://api.atlassian.com/ex/jira/{username}/rest/api/2/search"
         super().__init__(token, username, query, per_page,
                          source_result, self.name, user_only)
 
     def construct_request_parts(self, page):
         headers = {"Accept": "application/json"}
-        headers["Authorization"] = f"bearer {self.token}"
+        headers["Authorization"] = f"Bearer {self.token}"
         payload = {
             "jql": f'text ~ "{self.query}"',
             "maxResults": self.per_page,
@@ -32,7 +32,6 @@ class JiraSearcher(BaseSearcher):
         return self.url, payload, headers
 
     def validate(self, response):
-        print(response.text)
         banned_until = None
         if response.status_code != 200:
             if response.status_code == 429:
@@ -44,10 +43,10 @@ class JiraSearcher(BaseSearcher):
     def parse(self, response):
         result_page = Page()
         for issue in response["issues"]:
-            preview = f"An issue in the {issue['project']['name']} project"
-            title = issue["description"]
+            preview = f"An issue in the {issue['fields']['project']['name']} project"
+            title = issue['fields']['summary']
             link = issue["self"]
-            date = None
+            date = datetime.strptime(issue['fields']['created'], ATLASSIAN_FORMAT)
             single_result = SingleResult(preview, link, self.source, date, ISSUE, title)
             result_page.add(single_result)
         return result_page
