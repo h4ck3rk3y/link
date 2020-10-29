@@ -322,3 +322,14 @@ class TestLink(unittest.TestCase):
         link = Link.builder(user_token).query("yellow").page_size(5)
         result = link.fetch()
         self.assertGreater(len(result), 0)
+
+    @unittest.skip("needs a jira token")
+    def test_link_jira(self):
+        # the username here is actually a cloud id
+        token = ""
+        user_token = UserTokens(
+            {"atlassian": UserToken(token=token, username="45520742-69bf-4d99-9c22-86de4e5de604")}
+        )
+        link = Link.builder(user_token).query("little").page_size(5)
+        result = link.fetch()
+        self.assertGreater(len(result), 0)
