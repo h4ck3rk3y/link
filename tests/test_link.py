@@ -323,13 +323,16 @@ class TestLink(unittest.TestCase):
         result = link.fetch()
         self.assertGreater(len(result), 0)
 
-    @unittest.skip("needs a jira token")
+    @unittest.skip("needs a valid token")
     def test_link_jira(self):
         token = ""
         user_token = UserTokens(
             {"atlassian": UserToken(token=token, extra_data={
                                     "cloudId": "45520742-69bf-4d99-9c22-86de4e5de604", "url": "https://getfetch.atlassian.net"})}
         )
-        link = Link.builder(user_token).query("little").page_size(5)
-        result = link.fetch()
-        self.assertGreater(len(result), 0)
+        link = Link.builder(user_token).query("Supreme").page_size(2)
+        first_result = link.fetch()
+        self.assertEqual(len(first_result), 2)
+        second_result = link.fetch()
+        self.assertNotEqual(first_result, second_result)
+        self.assertGreaterEqual(len(second_result), 1)
