@@ -67,5 +67,5 @@ class MicrosoftOneDriveSearcher(BaseSearcher):
 
 
 def get_skip_token(url):
-    parsed = urlparse.urlparse(url)
-    return parse_qs(parsed)['$skipToken'], True
+    parsed = urlparse.urlparse(url).query
+    return parse_qs(parsed)['$skipToken'][0]

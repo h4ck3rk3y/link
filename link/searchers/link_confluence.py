@@ -9,6 +9,8 @@ from urllib.parse import parse_qs
 
 """
 https://developer.atlassian.com/server/jira/platform/jira-rest-api-examples/
+
+have tested pagination
 """
 
 
@@ -21,7 +23,7 @@ class ConfluenceSearcher(BaseSearcher):
     def __init__(self, user_token, query, per_page, source_result, user_only):
         self.atlassian_instance = user_token.extra_data["url"]
         self.cursor = None
-        self.url = f"https://api.atlassian.com/ex/wiki/{user_token.extra_data['cloudId']}/rest/api/search"
+        self.url = f"https://api.atlassian.com/ex/confluence/{user_token.extra_data['cloudId']}/wiki/rest/api/search"
         super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, user_only)
 
@@ -34,6 +36,8 @@ class ConfluenceSearcher(BaseSearcher):
         }
         if self.cursor:
             payload["cursror"] = self.cursor
+            payload["next"] = True
+            payload["start"] = self.per_page*(page-1)
         return self.url, payload, headers
 
     def validate(self, response):
@@ -52,15 +56,23 @@ class ConfluenceSearcher(BaseSearcher):
             self.cursor = None
         result_page = Page()
         for wiki in response["results"]:
-            preview = wiki["excerpt"]
+            preview = clean_text(wiki["excerpt"])
             title = wiki["title"]
-            link = wiki["url"]
+            link = get_url(self.atlassian_instance, wiki["content"]["_links"]["webui"])
             date = datetime.strptime(wiki["lastModified"], ATLASSIAN_FORMAT)
             single_result = SingleResult(preview, link, self.source, date, WIKI, title)
             result_page.add(single_result)
         return result_page
 
 
+def clean_text(text):
+    return text.replace("@@@hl@@@", "").replace("@@@endhl@@@", "")
+
+
+def get_url(url, path):
+    return url + "/wiki" + path
+
+
 def get_cursor(url):
-    parsed = urlparse.urlparse(url)
-    return parse_qs(parsed)['cursor'], True
+    parsed = urlparse.urlparse(url).query
+    return parse_qs(parsed)['cursor'][0]
