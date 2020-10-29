@@ -24,6 +24,7 @@ TASK = "task"
 
 # Jira
 ISSUE = "issue"
+WIKI = "wiki"
 
 GITHUB_QUALIFIERS = set([
     "in:file",
