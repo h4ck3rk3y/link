@@ -161,7 +161,7 @@ class TestLink(unittest.TestCase):
         token = ""
         key = ""
         user_token = UserTokens(
-            {"trello": UserToken(token=token, username=key)})
+            {"trello": UserToken(token=token, extra_data={"key": key})})
 
         link = Link.builder(user_token).query("Neural Network").page_size(10)
         result = link.fetch()
