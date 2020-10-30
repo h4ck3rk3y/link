@@ -9,7 +9,7 @@ import os
 class GithubIssueSearcher(GithubSearcher):
 
     source = "github"
-    url = os.getenv("GITHUB_ISSUES_DOMAIN", "https://api.github.com/search/issues")
+    url = "https://api.github.com/search/issues"
     name = "github_issues"
     user_priority = True
 

@@ -10,7 +10,7 @@ import os
 class GithubRepoSearcher(GithubSearcher):
 
     source = "github"
-    url = os.getenv("GITHUB_SEARCH_DOMAIN", "https://api.github.com/search/repositories")
+    url = "https://api.github.com/search/repositories"
     name = "github_repos"
     user_priority = True
 
