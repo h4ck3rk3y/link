@@ -20,7 +20,7 @@ BOX_URL = "https://app.box.com"
 class BoxSearcher(BaseSearcher):
 
     source = "box"
-    url = os.getenv("BOX_DOMAIN", "https://api.box.com/2.0/search/")
+    url = "https://api.box.com/2.0/search/"
     name = "box"
     user_priority = False
 

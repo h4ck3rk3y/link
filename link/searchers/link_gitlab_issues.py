@@ -11,10 +11,12 @@ class GitlabIssueSearcher(GitlabSearcher):
 
     source = "gitlab"
     name = "gitlab_issues"
-    url = os.getenv("GITLAB_ISSUES_DOMAIN", "https://gitlab.com/api/v4/issues")
+    url = "https://gitlab.com/api/v4/issues"
     user_priority = True
 
     def __init__(self, user_token, query, per_page, source_result, user_only):
+        if "url" in user_token.extra_data:
+            self.url = user_token.extra_data["url"] + "/api/v4/issues"
         super().__init__(user_token.token, user_token.username, query, per_page,
                          source_result, self.name, self.url, user_only)
 

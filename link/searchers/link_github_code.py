@@ -10,7 +10,7 @@ import os
 class GithubCodeSearcher(GithubSearcher):
 
     source = "github"
-    url = os.getenv("GITHUB_CODE_DOMAIN", "https://api.github.com/search/code")
+    url = "https://api.github.com/search/code"
     name = "github_code"
     user_priority = True
 
