@@ -5,6 +5,7 @@ from .constants import FILE, FOLDER, WEB_LINK, BOX_TIME_FORMAT
 from datetime import timedelta
 import re
 import requests
+from mimetype_description import get_mime_type_description
 
 import logging
 logger = logging.getLogger(__name__)
@@ -67,8 +68,11 @@ class GDriveSearcher(BaseSearcher):
             link = entry["webViewLink"]
             # bit of a hack: https://stackoverflow.com/questions/1941927/convert-an-rfc-3339-time-to-a-standard-python-timestamp
             date = datetime.fromisoformat(entry["createdTime"].replace("Z", ""))
+            description = get_mime_type_description(entry["mimeType"])
+            if description is None:
+                description = entry["mimeType"]
             single_result = SingleResult(
-                preview, link, self.source, date, entry["mimeType"], title)
+                preview, link, self.source, date, description, title)
             result_page.add(single_result)
         return result_page
 
