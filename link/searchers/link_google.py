@@ -68,9 +68,9 @@ class GDriveSearcher(BaseSearcher):
             link = entry["webViewLink"]
             # bit of a hack: https://stackoverflow.com/questions/1941927/convert-an-rfc-3339-time-to-a-standard-python-timestamp
             date = datetime.fromisoformat(entry["createdTime"].replace("Z", ""))
-            description = get_mime_type_description(entry["mimetype"])
+            description = get_mime_type_description(entry["mimeType"])
             if description is None:
-                description = entry["mimetype"]
+                description = entry["mimeType"]
             single_result = SingleResult(
                 preview, link, self.source, date, description, title)
             result_page.add(single_result)
