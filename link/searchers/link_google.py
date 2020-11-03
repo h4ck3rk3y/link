@@ -71,6 +71,8 @@ class GDriveSearcher(BaseSearcher):
             description = get_mime_type_description(entry["mimeType"])
             if description is None:
                 description = entry["mimeType"]
+            if description == "application/vnd.google-apps.folder":
+                description = "folder"
             single_result = SingleResult(
                 preview, link, self.source, date, description, title)
             result_page.add(single_result)
