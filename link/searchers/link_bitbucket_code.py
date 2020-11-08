@@ -1,8 +1,10 @@
 from .base_searcher import BaseSearcher
 from ..models.results import SingleResult, Page
 from urllib.parse import quote, urlparse
+from datetime import timedelta, datetime
 
 """
+API and example output can be found here:
 https://developer.atlassian.com/bitbucket/api/2/reference/resource/workspaces/%7Bworkspace%7D/search/code
 """
 
@@ -29,6 +31,11 @@ class BitbucketCodeSearcher(BaseSearcher):
 
     def validate(self, response):
         banned_until = None
+        if response.status_code != 200:
+            if response.status_code == 429:
+                banned_seconds = int(response.headers['Retry-After'])
+                banned_until = datetime.now() + timedelta(seconds=banned_seconds)
+            return False, banned_until
         return True, banned_until
 
     def parse(self, response):
@@ -38,8 +45,6 @@ class BitbucketCodeSearcher(BaseSearcher):
         result_page = Page()
         for entry in response["values"]:
             href = get_link(entry["file"]["links"]["self"]["href"])
-            print("asfds")
-            print(href)
             preview = get_preview(entry)
             category = entry["type"]
             title = entry["file"]["path"]
@@ -48,12 +53,6 @@ class BitbucketCodeSearcher(BaseSearcher):
                 preview, link, self.source, None, category, title)
             result_page.add(single_result)
         return result_page
-
-
-"""
-Example output can be found here:
-https://developer.atlassian.com/bitbucket/api/2/reference/resource/workspaces/%7Bworkspace%7D/search/code
-"""
 
 
 def get_preview(matches):
