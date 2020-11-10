@@ -13,6 +13,7 @@ from .link_google import GDriveSearcher
 from .link_onedrive import MicrosoftOneDriveSearcher
 from .link_jira import JiraSearcher
 from .link_confluence import ConfluenceSearcher
+from .link_bitbucket_code import BitbucketCodeSearcher
 
 available_searchers = {
     "github": [
@@ -44,5 +45,8 @@ available_searchers = {
     ],
     "atlassian": [
         JiraSearcher, ConfluenceSearcher
+    ],
+    "bitbucket": [
+        BitbucketCodeSearcher
     ]
 }
