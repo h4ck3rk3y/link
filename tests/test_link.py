@@ -3,7 +3,6 @@ from link.models.user_tokens import UserTokens, UserToken
 from link.searchers.base_searcher import BaseSearcher
 from link.searchers.constants import GITHUB_QUALIFIERS
 import unittest
-from datetime import datetime
 import pickle
 
 
@@ -22,7 +21,7 @@ class TestLink(unittest.TestCase):
         self.assertNotEqual(first_set, second_set)
         self.assertNotEqual(third_set, second_set)
 
-    def test_all_atributes_are_set(self):
+    def test_all_attributes_are_set(self):
 
         user_token = UserTokens(
             {"stackoverflow": UserToken(token="")})
@@ -115,7 +114,7 @@ class TestLink(unittest.TestCase):
         self.assertNotEqual(fifth_result_a, fourth_result_a)
         self.assertNotEqual(fourth_result_a, third_results_a)
 
-    def tets_odd_number_of_pulls(self):
+    def test_odd_number_of_pulls(self):
 
         user_token = UserTokens({"stackoverflow": UserToken(token="")})
         link = Link.builder(user_token).query("python").page_size(13)
@@ -336,3 +335,14 @@ class TestLink(unittest.TestCase):
         second_result = link.fetch()
         self.assertNotEqual(first_result, second_result)
         self.assertGreaterEqual(len(second_result), 1)
+
+    def test_link_bitbucket(self):
+        token = ""
+        user_token = UserTokens(
+            {"bitbucket": UserToken(token=token, extra_data={
+                "uuid": "bhavdeepdhanjal"
+            })}
+        )
+        link = Link.builder(user_token).query("index.js").page_size(2)
+        result = link.fetch()
+        self.assertGreater(len(result), 0)
