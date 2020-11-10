@@ -6,6 +6,9 @@ from datetime import timedelta, datetime
 """
 API and example output can be found here:
 https://developer.atlassian.com/bitbucket/api/2/reference/resource/workspaces/%7Bworkspace%7D/search/code
+
+Request Limits:
+https://support.atlassian.com/bitbucket-cloud/docs/api-request-limits/
 """
 
 
