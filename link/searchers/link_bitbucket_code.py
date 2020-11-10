@@ -2,6 +2,7 @@ from .base_searcher import BaseSearcher
 from ..models.results import SingleResult, Page
 from urllib.parse import quote, urlparse
 from datetime import timedelta, datetime
+from .constants import CODE
 
 """
 API and example output can be found here:
@@ -53,7 +54,7 @@ class BitbucketCodeSearcher(BaseSearcher):
             title = entry["file"]["path"]
             link = f"{href}#lines-{get_highlighted_lines(entry)}"
             single_result = SingleResult(
-                preview, link, self.source, None, category, title)
+                preview, link, self.source, None, CODE, title)
             result_page.add(single_result)
         return result_page
 
