@@ -39,8 +39,8 @@ class GDriveSearcher(BaseSearcher):
         if self.page_token:
             payload["pageToken"] = self.page_token
 
-        if self.user_only and self.user_id != "":
-            payload["owner_user_ids"] = f"{self.user_id}"
+        if self.user_only and self.username != "" and self.username != None:
+            payload["owner_user_ids"] = f"{self.username}"
         return self.url, payload, headers
 
     def validate(self, response):
