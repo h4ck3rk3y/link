@@ -73,6 +73,11 @@ class GDriveSearcher(BaseSearcher):
                 description = entry["mimeType"]
             if description == "application/vnd.google-apps.folder":
                 description = "folder"
+            if description == "application/vnd.google-apps.spreadsheet":
+                description = "Google Sheet"
+            if description == "application/vnd.google-apps.document":
+                description = "Google Doc"
+
             single_result = SingleResult(
                 preview, link, self.source, date, description, title)
             result_page.add(single_result)
